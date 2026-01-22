@@ -1,10 +1,10 @@
-\documentclass[british,titlepage]{ntnuthesis}
+\documentclass[american, titlepage]{ntnuthesis}
 
-\title{An NTNU Thesis \LaTeX{} Document Class}
-\shorttitle{An NTNU Thesis Document Class}
-\author{Community of Practice in Computer Science Education at NTNU}
-\shortauthor{CoPCSE$@$NTNU}
-\date{CC-BY \ntnuthesisdate}
+\title{title}
+\shorttitle{Multi Leak Detection}
+\author{Anders Mørk}
+\shortauthor{A. Mørk}
+\date{\today}
 
 \addbibresource{thesis.bib}
 
@@ -12,13 +12,16 @@
 
 \begin{document}
 
+%\includepdf[pages=-]{master_agreement.pdf}
+%\includepdf[pages=-]{AI_declaration.pdf}
+
 \input{chapters/0a-abstract.tex}
 \input{chapters/0b-sammendrag.tex}
 
 \tableofcontents
-\listoffigures
-\listoftables
-\lstlistoflistings
+% \listoffigures
+% \listoftables
+% \lstlistoflistings
 
 \chapter*{\acronymname}           % Create an unnumbered chapter for the acronyms
 \printglossary[type=\acronymtype] % Print acronyms
@@ -27,14 +30,12 @@
 \printglossary                    % Print glossary
 
 \input{chapters/1-introduction}
-\input{chapters/2-usage.tex}
-\input{chapters/3-structure.tex}
+% \input{chapters/2-usage.tex}
+% \input{chapters/3-structure.tex}
 \input{chapters/4-conclusion.tex}
 
 \chapter*{\bibname}
 \printbibliography[heading=none]
-
-\input{chapters/papers.tex}
 
 \appendix
 \input{appendices/a-appendix.tex}

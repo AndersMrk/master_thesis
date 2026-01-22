@@ -8,11 +8,8 @@
 
 %% IDENTIFICATION
 
-\xdef\ntnuthesisdate{2019/07/18}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{ntnuthesis}
- [\ntnuthesisdate\space
-   CC-BY CoPCSE at NTNU 2019]
 
 
 %% CLASS OPTIONS
@@ -35,31 +32,8 @@
     }
 }
 
-% British
+% American Language
 \newif\ifcapitalize
-\DeclareOption{british}{
-    \capitalizetrue
-    \def\papername{Paper}
-    \newcommand{\NTNU}{{N}orwegian {U}niversity of {S}cience and {T}echnology}
-    \newcommand{\NTNUTrondheim}{{NTNU} in {T}rondheim}
-    \newcommand{\NTNUGjoevik}{{NTNU} in {G}j\o{}vik}
-    \newcommand{\NTNUAalesund}{{NTNU} in {\AA}lesund}
-    \AtBeginDocument{
-        \renewcommand{\lstlistingname}{Code listing}
-        \renewcommand{\lstlistlistingname}{Code Listings}
-        \crefname{listing}{Code listing}{Code listings}
-        \crefname{paper}{Paper}{Papers}
-        \addto\captionsbritish{
-            \renewcommand{\contentsname}{Contents}
-            \renewcommand{\listfigurename}{Figures}
-            \renewcommand{\listtablename}{Tables}
-            \renewcommand{\glossaryname}{Glossary}
-            \renewcommand{\acronymname}{Acronyms}
-        }
-    }
-}
-
-% American
 \DeclareOption{american}{
     \capitalizetrue
     \def\papername{Paper}
@@ -78,57 +52,6 @@
             \renewcommand{\listtablename}{Tables}
             \renewcommand{\glossaryname}{Glossary}
             \renewcommand{\acronymname}{Acronyms}
-        }
-    }
-}
-
-% Bokmål
-\DeclareOption{norsk}{
-    \capitalizefalse
-    \def\papername{Artikkel}
-    \newcommand{\NTNU}{{N}orges teknisk-naturvitenskapelige universitet}
-    \newcommand{\NTNUTrondheim}{{NTNU} i {T}rondheim}
-    \newcommand{\NTNUGjoevik}{{NTNU} i {G}j\o{}vik}
-    \newcommand{\NTNUAalesund}{{NTNU} i {\AA}lesund}
-    \AtBeginDocument{
-        \renewcommand{\lstlistingname}{Kodeliste}
-        \renewcommand{\lstlistlistingname}{Kodelister}
-        \crefname{listing}{kodeliste}{kodelister}
-        \crefname{equation}{ligning}{ligninger}
-        \crefname{appendix}{vedlegg}{vedlegg}
-        \crefname{paper}{artikkel}{artikler}
-        \addto\captionsnorsk{
-            \renewcommand{\appendixname}{Vedlegg}
-            \renewcommand{\glossaryname}{Ordliste}
-            \renewcommand{\acronymname}{Akronymer}
-        }
-    }
-}
-
-% Nynorsk
-\DeclareOption{nynorsk}{
-    \capitalizefalse
-    \def\papername{Artikkel}
-    \newcommand{\NTNU}{{N}oregs teknisk-naturvitskaplege universitet}
-    \newcommand{\NTNUTrondheim}{{NTNU} i {T}rondheim}
-    \newcommand{\NTNUGjoevik}{{NTNU} i {G}j\o{}vik}
-    \newcommand{\NTNUAalesund}{{NTNU} i {\AA}lesund}
-    \AtBeginDocument{
-        \renewcommand{\lstlistingname}{Kodeliste}
-        \renewcommand{\lstlistlistingname}{Kodelister}
-        \crefname{listing}{kodeliste}{kodelister}
-        \crefname{equation}{likning}{likningar}
-        \crefname{table}{tabell}{tabellar}
-        \crefname{figure}{figur}{figurar}
-        \crefname{section}{avsnitt}{avsnitt}
-        \crefname{chapter}{kapittel}{kapittel}
-        \crefname{appendix}{vedlegg}{vedlegg}
-        \crefname{paper}{artikkel}{artiklar}
-        \renewcommand{\appendixname}{Vedlegg}
-        \addto\captionsnynorsk{
-            \renewcommand{\appendixname}{Vedlegg}
-            \renewcommand{\glossaryname}{Ordliste}
-            \renewcommand{\acronymname}{Akronym}
         }
     }
 }
