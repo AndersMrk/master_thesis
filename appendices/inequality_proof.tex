@@ -1,0 +1,144 @@
+\chapter{Proof of Non-Unique Leak Ordering of Single-Leak Equivalents in Pipe With 3 Leaks}
+\label{app:3_leak_eq_proof}
+
+% Make some introduction?
+
+Consider a straight pipeline of length $L$ operating in steady state, with three leaks located along the pipe. 
+Following the same model as in \cref{chap:model}...
+
+\subsection*{Calculate Single Leak Equivalent $L_{eq}$}
+The pressure drop along the pipe can be formulated as the sum of the four pressure drops between leaks:
+\begin{align}
+h_0-h_L &= \theta(L_1q_0^2+L_2q_1^2+L_3q_2^2 + (L-L_1-L_2-L_3)q_L^2) \notag \\
+    &= \theta(L q_L^2 + L_1(q_0^2-q_L^2)+ L_2(q_1^2-q_L^2)+ L_3(q_2^2-q_L^2)) \label{eq:three_leaks_pres_drop}
+\end{align}
+We can construct a fictitious single leak equivalent at location $L_{eq}$ with leak coefficient $c_{eq}$ that produces the same change of pressure and flow along the pipe. The pressure drop can be formulated as the sum of the pressure drop upstream and downstream of the single leak equivalent:
+\begin{align}
+h_0-h_L &= \theta(L_{eq}q_0^2+(L-L_{eq})q_L^2) \notag \\
+    &= \theta(L q_L^2+L_{eq}(q_0^2-q_L^2)) \label{eq:single_leak_eq}
+\end{align}
+By equating \cref{eq:three_leaks_pres_drop} and \cref{eq:single_leak_eq} we get:
+\begin{equation}\label{eq:Lf_general}
+L_{eq}
+=
+L_1
++ L_2\,r_1
++ L_3\,r_2,
+\end{equation}
+where the dimensionless ratios are
+\begin{equation}\label{eq:ratios_def}
+r_1 := \frac{q_1^2-q_L^2}{q_0^2-q_L^2},
+\qquad
+r_2 := \frac{q_2^2-q_L^2}{q_0^2-q_L^2}.
+\end{equation}
+Since $0<q_L<q_2<q_1<q_0$, these ratios satisfy
+\begin{equation}\label{eq:ratio_bounds}
+0< r_2 < r_1 < 1.
+\end{equation}
+
+\subsection*{Operating Point and Ratio Equality}
+We show that for fixed leak locations $z_1<z_2<z_3$ and fixed leak coefficients $c_i>0$,
+any pair $(r_1,r_2)$ satisfying \cref{eq:ratio_bounds} can be realized by some steady-state
+operating point $\{h_0,h_L,q_0,q_L\}$.
+
+Fix any $(r_1,r_2)$ satisfying \cref{eq:ratio_bounds}. Choose $q_L>0$ and choose $q_0>q_L$.
+From \cref{eq:ratios_def} we obtain
+\begin{equation*}
+q_1 = \sqrt{q_L^2 + r_1\,(q_0^2-q_L^2)}, 
+\qquad
+q_2 = \sqrt{q_L^2 + r_2\,(q_0^2-q_L^2)}.
+\end{equation*}
+
+The leak flows are defined as
+\begin{equation*}
+q_{f1}:=q_0-q_1,\qquad
+q_{f2}:=q_1-q_2,\qquad
+q_{f3}:=q_2-q_L,
+\end{equation*}
+which are strictly positive. Enforce the leak law at $z_3$ by defining
+\begin{equation*}
+h(z_3):=\left(\frac{q_{f3}}{c_3}\right)^2.
+\end{equation*}
+Now define the interior pressures uniquely by the friction relations moving upstream:
+\begin{align*}
+h(z_2) &:= h(z_3)+\theta\,(z_3-z_2)\,q_2^2,\\
+h(z_1) &:= h(z_2)+\theta\,(z_2-z_1)\,q_1^2,
+\end{align*}
+and define the boundary pressures by
+\begin{equation*}
+h_L := h(z_3)-\theta\,(L-z_3)\,q_L^2,
+\qquad
+h_0 := h(z_1)+\theta\,z_1\,q_0^2.
+\end{equation*}
+With these definitions, all segment pressure drops satisfy the quadratic friction law by construction.
+
+It remains to satisfy the leak laws at $z_2$ and $z_1$. Since $q_{f2}$ and $q_{f1}$ are fixed by
+$(q_0,q_1,q_2,q_L)$, the leak laws at $z_2$ and $z_1$ are equivalent to the compatibility constraints
+\begin{align}
+\left(\frac{q_{f2}}{c_2}\right)^2 &= h(z_2)=h(z_3)+\theta\,(z_3-z_2)\,q_2^2,
+\label{eq:compat_z2}\\
+\left(\frac{q_{f1}}{c_1}\right)^2 &= h(z_1)=h(z_2)+\theta\,(z_2-z_1)\,q_1^2.
+\label{eq:compat_z1}
+\end{align}
+\cref{eq:compat_z2,eq:compat_z1} constrain the admissible operating points
+(e.g., they can be enforced by adjusting the boundary conditions $q_0$ and/or $q_L$).
+Whenever these compatibilities hold, the constructed $\{h_0,h_L,q_0,q_L\}$ is a valid steady state
+realizing the prescribed $(r_1,r_2)$.
+
+\subsection*{Signed Distance $\Delta$}
+The second leak is located at $L_1+L_2$. We introduce the signed distance
+\begin{equation*}
+\Delta := L_{eq} - (L_1+L_2).
+\end{equation*}
+Using \cref{eq:Lf_general} gives
+\begin{equation}\label{eq:Delta_r}
+\Delta
+=
+-\,L_2(1-r_1)+L_3 r_2.
+\end{equation}
+Hence,
+\begin{equation}\label{eq:intervals}
+\Delta < 0 \iff L_{eq} \in (L_1,\,L_1+L_2),
+\qquad
+\Delta > 0 \iff L_{eq} \in (L_1+L_2,\,L_1+L_2+L_3).
+\end{equation}
+The boundary $\Delta=0$ is equivalently
+\begin{equation*}
+r_2 = \frac{L_2}{L_3}(1-r_1).
+\end{equation*}
+
+\subsection*{Existence of ratios yielding $\Delta < 0$}
+Fix any $r_1\in(0,1)$. Choose $r_2$ such that
+\begin{equation*}
+0<r_2<\min\!\left\{r_1,\ \frac{L_2}{L_3}(1-r_1)\right\}.
+\end{equation*}
+Then $(r_1,r_2)$ follows \cref{eq:ratio_bounds}, and using \cref{eq:Delta_r} gives
+\begin{equation*}
+\Delta = -L_2(1-r_1)+L_3r_2 < -L_2(1-r_1)+L_3\cdot \frac{L_2}{L_3}(1-r_1)=0,
+\end{equation*}
+so $\Delta<0$ and hence $L_{eq}\in(L_1,L_1+L_2)$ by \cref{eq:intervals}.
+
+\subsection*{Existence of ratios yielding $\Delta > 0$}
+Choose any $r_1$ satisfying
+\begin{equation*}
+\frac{L_2}{L_2+L_3}<r_1<1,
+\end{equation*}
+which implies $\frac{L_2}{L_3}(1-r_1)<r_1$. Then choose $r_2$ such that
+\begin{equation*}
+\frac{L_2}{L_3}(1-r_1)<r_2<r_1.
+\end{equation*}
+Again $(r_1,r_2)$ follows \cref{eq:ratio_bounds}, and from \cref{eq:Delta_r} we obtain
+\begin{equation*}
+\Delta = -L_2(1-r_1)+L_3r_2 > -L_2(1-r_1)+L_3\cdot \frac{L_2}{L_3}(1-r_1)=0,
+\end{equation*}
+so $\Delta>0$ and hence $L_{eq}\in(L_1+L_2,L_1+L_2+L_3)$ by \cref{eq:intervals}.
+
+\hfill \break
+\hfill \break
+\begin{center}
+    \noindent\fbox{
+        \parbox{0.9\textwidth}{
+            Two different pairs of ratios that both satisfy \cref{eq:ratio_bounds} and yield opposite signs for \cref{eq:Delta_r} were found. This is equivalent to the single leak equivalent $L_{eq}$ existing both upstream and downstream of the second leak for two different steady state operating points. As a result, a unique ordering of the actual leaks and leak equivalents does not exist across all possible steady state operating points for a pipe with three leaks.
+        }
+    }
+\end{center}

@@ -1,0 +1,28 @@
+\chapter{Conclusion}
+
+You definitely should use the \texttt{ntnuthesis} \LaTeX{} document class for your thesis.
+
+\begin{algorithm}[ht]
+\caption{Compartment Detection}
+\label{alg:compartment_detection}
+\DontPrintSemicolon
+
+\SetKwFunction{func}{CompartmentDetection}
+\SetKwProg{Fn}{Function}{:}{}
+\Fn{\func{pointCloud}}{
+    planarPoints $\gets$ ClassifyPlanarPoints(pointCloud) \;
+    bboxes $\gets$ [(points.min, points.max)] \tcp{Initial bbox of entire scene}
+    \While{len(bboxes) is changed}{
+        \ForEach{axis $\in$ (x,y,z)}{
+            newBboxes $\gets$ [] \;
+            \ForEach{bbox $\in$ bboxes}{
+                axisPoints $\gets \{ p \in planarPoints.axis \mid p \in bbox\}$ \;
+                splits $\gets$ DetectEnclosurePlanes(axisPoints) \;
+                newBboxes.append(CreateNewBboxes(bbox, splits)) \;
+            }
+            bboxes $\gets$ newBboxes \;
+        }
+    }
+    SaveToFile(bboxes) \;
+}
+\end{algorithm}

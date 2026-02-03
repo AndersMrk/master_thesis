@@ -14,8 +14,16 @@
 
 %% CLASS OPTIONS
 
+% Penalties
+\hyphenpenalty=400
+
 % Package for some reason needed before the options
 \RequirePackage{pdfpages}                   % including pdf files
+
+% Tikz
+\RequirePackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{calc,positioning}
 
 % One or twosided paging
 \newcommand{\paging}{twoside}
@@ -52,6 +60,7 @@
             \renewcommand{\listtablename}{Tables}
             \renewcommand{\glossaryname}{Glossary}
             \renewcommand{\acronymname}{Acronyms}
+            \renewcommand{\listalgorithmcfname}{Algorithms}
         }
     }
 }
@@ -61,6 +70,17 @@
 %% CLASS FILE LOADING
 
 \LoadClass[a4paper,11pt,openright,\paging]{report}
+
+%% CUSTOM PACKAGE LOADING
+
+\RequirePackage{amsmath}
+
+\RequirePackage[ruled,vlined]{algorithm2e}
+\AtBeginDocument{
+  \renewcommand{\algorithmautorefname}{Algorithm}
+}
+\providecommand{\algorithmautorefname}{Algorithm}
+
 
 %% PACKAGE LOADING
 

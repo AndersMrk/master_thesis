@@ -1,0 +1,96 @@
+\chapter{Derivation of Fixed Number of Leaks}
+\section{One Leak With One Measurement}
+
+\begin{equation*}
+    \mu = \{h_0,h_L,q_0,q_L\}
+\end{equation*}
+
+The unknown variables are
+\begin{equation*}
+    \mathbf{x} = [L_1,c_1]
+\end{equation*}
+
+There is only one system state
+\begin{equation}
+\label{eq:single_leak:h1}
+    h_1 = h_L+\theta ( L - L_1) q_L^2
+\end{equation}
+
+and
+
+\begin{equation}
+\label{eq:single_leak:F}
+    F(\mathbf{x},\phi,\mu)=\begin{bmatrix}
+        h_1 - h_0 + \theta L_1 q_0\\
+        q_1 - q_0 + c_1\sqrt{h_1}
+    \end{bmatrix} = \mathbf{0}
+\end{equation}
+
+Inserting \cref{eq:single_leak:h1} into \cref{eq:single_leak:F} yields
+
+\begin{equation*}
+    F(\mathbf{x},\mu)=\begin{bmatrix}
+        h_L+\theta ( L - L_1) q_L^2 - h_0 + \theta L_1 q_0^2\\
+        q_1 - q_0 + c_1\sqrt{h_L+\theta ( L - L_1) q_L^2}
+    \end{bmatrix} = \mathbf{0}
+\end{equation*}
+
+Solving the first equation for $L_1$ yields
+
+\begin{equation*}
+L_1 =
+\frac{h_0 - h_L - L \theta q_L^2}
+{\theta (q_0^2 - q_L^2)}.
+\end{equation*}
+
+Which can then solve the second equation
+
+\begin{equation*}
+    c_1 = \frac{q_1-q_0}{\sqrt{h_L+\theta ( L - L_1) q_L^2}}.
+\end{equation*}
+
+
+\section{Two Leaks}
+Given 2 measurements of steady state operating points ($m=2$),
+
+\begin{equation*}
+    \mathcal{M} = \begin{bmatrix}
+        h_0^{(1)} & h_L^{(1)} & q_0^{(1)} & q_L^{(1)}\\
+        h_0^{(2)} & h_L^{(2)} & q_0^{(2)} & q_L^{(2)}\\
+    \end{bmatrix}
+\end{equation*}
+
+The unknown variables are
+\begin{equation*}
+    \mathbf{x} = [L_1,L_2,c_1,c_2]
+\end{equation*}
+and
+\begin{equation*}
+    L_3:=L - (L_1+L_2)
+\end{equation*}
+
+The system states are:
+\begin{equation*}
+    \phi=\{h_1^{(1)}, h_2^{(1)},q_1^{(1)},h_1^{(2)}, h_2^{(2)},q_1^{(2)}\}
+\end{equation*}
+following
+\begin{align*}
+    h_1^{(1)} &= h_2^{(1)}+\theta L_2 \left(q_1^{(1)}\right)^2 \\
+    h_2^{(1)} &= h_L^{(1)}+\theta L_3 \left(q_L^{(1)}\right)^2 \\
+    q_1^{(1)} &= q_L^{(1)}+c_2\sqrt{h_2^{(1)}} \\
+    h_1^{(2)} &= h_2^{(2)}+\theta L_2 \left(q_1^{(2)}\right)^2 \\
+    h_2^{(2)} &= h_L^{(2)}+\theta L_3 \left(q_L^{(2)}\right)^2 \\
+    q_1^{(2)} &= q_L^{(2)}+c_2\sqrt{h_2^{(2)}}
+\end{align*}
+
+The function $F$ is defined as
+
+\begin{equation}
+    F(\mathbf{x},\phi,\mathcal{M})=\begin{bmatrix}
+        h_1^{(1)}-h_0^{(1)} + \theta L_1 \left(q_0^{(1)}\right)^2\\
+        q_1^{(1)} - q_0^{(1)} + c_1\sqrt{h_1^{(1)}}\\
+        h_1^{(2)}-h_0^{(2)} + \theta L_1 \left(q_0^{(2)}\right)^2\\
+        q_1^{(2)} - q_0^{(2)} + c_1\sqrt{h_1^{(2)}}
+    \end{bmatrix} = \mathbf{0}
+\end{equation}
+

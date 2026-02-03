@@ -1,0 +1,61 @@
+\begin{tikzpicture}[
+  >=Latex,
+  block/.style={draw, rectangle, minimum height=7mm, minimum width=10mm, align=center},
+  sum/.style={draw, circle, inner sep=0pt, minimum size=6mm, font=\small},
+  line/.style={-Latex, thick},
+]
+
+% --- Key y-levels ---
+\def\yTop{0}
+\def\yBot{-3.6}
+
+\def\sumOne{3}
+\def\sumTwo{6}
+\def\lineEnd{9}
+
+\def\rowOne{-1.2}
+\def\rowTwo{-2.4}
+
+% --- Top path nodes ---
+\node (hprev) at (0,\yTop) {$h_{i-1}$};
+\node[sum] (sumH) at (\sumOne,\yTop) {$\sum$};
+\node (hi)   at (\lineEnd,\yTop) {$h_{i}$};
+
+% --- Bottom path nodes ---
+\node (qprev) at (0,\yBot) {$q_{i-1}$};
+\node[sum] (sumQ) at (\sumTwo,\yBot) {$\sum$};
+\node (qi)   at (\lineEnd,\yBot) {$q_{i}$};
+
+% --- Left vertical branch (kept ABOVE the q-line) ---
+%\node[block] (theta) at (\sumOne,-1) {$\theta$};
+\node[block] (Li)    at (\sumOne,\rowOne) {$\theta L_i$};
+\node[block] (sq)    at (\sumOne,\rowTwo) {$({\cdot})^2$}; % above yBot=-3.0
+\node (b1)   at (\sumOne,\yBot) {};
+
+% --- Right vertical branch from hi down into sumQ ---
+\node (b2)   at (\sumTwo,\yTop) {};
+\node[block] (sqrt) at (\sumTwo,\rowOne) {$\sqrt{\cdot\;}$};
+\node[block] (ci)   at (\sumTwo,\rowTwo) {$c_i$};
+
+% --- Connections: top line ---
+\draw[line] (hprev) -- (sumH);
+\draw[line] (sumH) -- (hi);
+
+% --- Connections: bottom line ---
+\draw[line] (qprev) -- (sumQ);
+\draw[line] (sumQ) -- (qi);
+
+% --- Left branch connections into sumH (minus on the INPUT, not inside the sum) ---
+\draw[line] (b1.center) -- (sq);
+\draw[line] (sq) -- (Li);
+\draw[line] (Li.north) -- (sumH.south);
+\node[font=\small, anchor=east] at ($(sumH.south)-(0,1.5mm)$) {$-$};
+
+
+% --- Right branch: hi -> sqrt -> c_i -> sumQ (minus on the INPUT, not inside the sum) ---
+\draw[line] (b2.center) -- (sqrt.north);
+\draw[line] (sqrt) -- (ci);
+\draw[line] (ci.south) -- (sumQ.north);
+\node[font=\small, anchor=west] at ($(sumQ.north)+(0,1.5mm)$) {$-$};
+
+\end{tikzpicture}

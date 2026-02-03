@@ -1,0 +1,298 @@
+\chapter{Derivations?}
+
+\section{Direct Solution Method?}
+
+Consider a pipe with $n$ leaks, where the length of the pipe, $L$, and the resistance coefficient, $\theta$, are assumed to be known. The goal is to identify the set of unknown leak parameters $\{z_i,c_i\},\;i\in[1,n]$ given a set of boundary measurements $\mathcal{M}\in\mathbb{R}^{4 \times m}$. The leak positions $z_i$ are uniquely defined by the length of the non-leaking pipe sections $L_i$ by 
+\begin{equation}
+    z_i=\sum_{k=1}^i L_k.
+\end{equation}
+Let
+\begin{equation}
+    \mathbf{x} := [L_1,...,L_n,c_1,...,c_n] \in \mathbb{R}^{2n}
+\end{equation}
+define the vector of unknown leak parameters, constrained to
+\begin{equation}
+    L_i>0,\quad c_i>0, \quad \sum_{i=1}^n L_i<L.
+\end{equation}
+
+A given measurement $\mu^{(j)}\in\mathcal{M}$ defines a steady-state operating point. For this operating point, the system states $h^{(j)}_i$, $q^{(j)}_i$ and $\tilde{q}^{(j)}_i$ are constant. Following the upstream equation for head, \cref{eq:upstream_head}, $n$ equations are defined as:
+\begin{equation}
+\label{eq:phi_h}
+    \phi_h^{(j)} = \begin{bmatrix}
+    h_1^{(j)}\\[0.4em]
+    h_2^{(j)}\\
+    \vdots\\
+    h_i^{(j)}\\
+    \vdots\\
+    h_{n-1}^{(j)}\\[0.4em]
+    h_n^{(j)}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+    h_0^{(j)}-\theta L_1 \left(q_0^{(j)}\right)^2\\
+    h_1^{(j)}-\theta L_2 \left(q_1^{(j)}\right)^2\\
+    \vdots\\
+    h_{i-1}^{(j)}-\theta L_{i} \left(q_{i-1}^{(j)}\right)^2\\
+    \vdots\\
+    h_{n-2}^{(j)}-\theta L_{n-1} \left(q_{n-2}^{(j)}\right)^2\\
+    h_{n-1}^{(j)}-\theta L_{n} \left(q_{n-1}^{(j)}\right)^2
+    \end{bmatrix}
+\end{equation}
+Similarly, $n-1$ equations are defined by the upstream equation for flow, \cref{eq:upstream_flow}, and by inserting \cref{eq:leak_flow}: 
+\begin{equation}
+\label{eq:phi_q}
+    \phi_q^{(j)} = \begin{bmatrix}
+    q_1^{(j)}\\[0.4em]
+    q_2^{(j)}\\
+    \vdots\\
+    q_i^{(j)}\\
+    \vdots\\
+    q_{n-2}^{(j)}\\[0.4em]
+    q_{n-1}^{(j)}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+    q_0^{(j)}-\tilde{q}^{(j)}_1\\[0.4em]
+    q_1^{(j)}-\tilde{q}^{(j)}_2\\
+    \vdots\\
+    q_{i-1}^{(j)}-\tilde{q}^{(j)}_{i}\\
+    \vdots\\
+    q_{n-3}^{(j)}-\tilde{q}^{(j)}_{n-2}\\[0.4em]
+    q_{n-2}^{(j)}-\tilde{q}^{(j)}_{n-1}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+    q_0^{(j)} - c_1 \sqrt{h_1^{(j)}}\\[0.4em]
+    q_1^{(j)} - c_2 \sqrt{h_2^{(j)}}\\
+    \vdots\\
+    q_{i-1}^{(j)} - c_{i} \sqrt{h_{i}^{(j)}}\\
+    \vdots\\
+    q_{n-3}^{(j)} - c_{n-2} \sqrt{h_{n-2}^{(j)}}\\[0.4em]
+    q_{n-2}^{(j)} - c_{n-1} \sqrt{h_{n-1}^{(j)}}
+    \end{bmatrix}
+\end{equation}
+From \cref{eq:phi_h,eq:phi_q}, it can be seen that the full set of system states
+\begin{equation*}
+    \phi^{(j)}=\{\phi_h^{(j)},\phi_q^{(j)}\}=\{h_1^{(j)},...,h_n^{(j)},q_1^{(j)},...,q_{n-1}^{(j)}\}\in\mathbb{R}^{2n-1}
+\end{equation*}
+are uniquely defined by $\mathbf{x}$ and the inlet measurements $q_0^{(j)}$ and $h_0^{(j)}$. This is shown by grouping the equations into an iterative forward pass, where each iteration is defined by $f_{fp}({\phi_{i-1}};\mathbf{x}_i): \{h_{i-1},q_{i-1}\}\mapsto\{h_{i},q_{i}\}$, illustrated by \cref{fig:single_forward_pass}. Where $\phi_{i-1}=\{h_{i-1},q_{i-1}\}$ and $\mathbf{x}_i=\{c_i,L_i\}$. As an extension of the forward pass, the estimate of outlet flow can be uniquely defined by
+\begin{equation}
+    \label{eq:ql_estimate}
+    \hat{q}_L^{(j)}:=q_{n-1}^{(j)}-c_n\sqrt{h_n^{(j)}}
+\end{equation}
+\cref{fig:complete_forward_pass} illustrates the chaining of each iteration into the full forward pass $\{h_{0},q_{0}\}\mapsto\{h_{n}, \hat{q}_L\}$.
+
+\begin{figure}[h!]
+    \centering
+    \input{figures/tikz_single_forward_pass}
+    \caption{Caption}
+    \label{fig:single_forward_pass}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \input{figures/tikz_complete_forward_pass}
+    \caption{Caption}
+    \label{fig:complete_forward_pass}
+\end{figure}
+
+An important observation is that $\phi_i$ is uniquely defined only by \\$\{q_0,h_0,L_1,...,L_i,c_1,...,c_i\}$, meaning that no downstream variables $\mathbf{x}_k,\,k>i$ affects the system states $\phi_i$.
+
+\newpage
+The estimate of head at the outlet is defined by
+\begin{equation}
+\label{eq:hl_estimate}
+    \hat{h}_L^{(j)} := h_n^{(j)} - \theta L_{n+1} \left(q_L^{(j)}\right)^2
+\end{equation}
+where $L_{n+1}:=L-\sum_{i=1}^nL_i$
+From \cref{eq:ql_estimate,eq:hl_estimate}, the estimation error is defined as
+\begin{equation}
+\label{eq:solve_j}
+    F^{(j)}(\mathbf{x},\phi^{(j)},\mu^{(j)}):=
+    \begin{bmatrix}
+        \hat{h}_L^{(j)}-h_L^{(j)}\\[0.4em]
+        \hat{q}_L^{(j)}- q_L^{(j)}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        h_n^{(j)}-h_L^{(j)} - \theta L_{n+1} \left(q_L^{(j)}\right)^2\\
+        q_{n-1}^{(j)} - q_L^{(j)} - c_n\sqrt{h_n^{(j)}}
+    \end{bmatrix}
+\end{equation}
+A solution of the system is determined by
+\begin{equation*}
+    F^{(j)}(\mathbf{x},\phi^{(j)},\mu^{(j)}) = \mathbf{0} \quad \forall \;j \in [1,m]
+\end{equation*}
+
+By eliminating the state variables in \cref{eq:phi_h,eq:phi_q}, each measurement $j$ yields two scalar equations by \cref{eq:solve_j} in the global unknown vector space $\mathbf{x}\in\mathbb{R}^{2n}$. To solve for all the unknowns, there must be enough measurements at different steady-state operating points. Since each operating point yields two equations, and there are $2n$ unknown variables, it is necessary that
+\begin{equation*}
+    m \geq n,
+\end{equation*}
+assuming all $m$ measurements provide independent equations, which is discussed in \cref{some chapter}.
+The complete set of equations is defined by
+\begin{equation}
+\label{eq:main_function}
+    F(\mathbf{x},\phi,\mathcal{M}) = \begin{bmatrix}
+        F^{(j)}(\mathbf{x},\phi^{(1)},\mu^{(1)})\\
+        \vdots\\
+        F^{(j)}(\mathbf{x},\phi^{(m)},\mu^{(m)})
+    \end{bmatrix}
+    \in \mathbb{R}^{2m}
+    = \mathbf{0}
+\end{equation}
+
+
+\newpage
+\section{Deriving the Derivative}
+
+To solve \cref{eq:main_function}, it is beneficial to find the Jacobian matrix
+\begin{equation*}
+    J(\mathbf{x}):=\frac{\partial F(\mathbf{x},\phi,\mathcal{M})}{\partial \mathbf{x}} \in \mathbb{R}^{2m\times 2n}.
+\end{equation*}
+To simplify the derivation, define $q_n:=\hat{q}_L$ and let
+\begin{equation*}
+    F_h:= h_n - h_L - \theta L_{n+1} q_L^2,\quad F_q := q_n - q_L
+\end{equation*}
+which are simplified terms of \cref{eq:solve_j}
+The Jacobian can then be constructed by solving 
+$\frac{\partial F_h}{\partial L_i}$, 
+$\frac{\partial F_h}{\partial c_i}$,
+$\frac{\partial F_q}{\partial L_i}$ and
+$\frac{\partial F_q}{\partial c_i}$
+for $i\in[1,n]$.
+Given that
+\begin{equation*}
+    \frac{\partial}{\partial L_i} L_{n+1} = \frac{\partial}{\partial L_i} \left(L-\sum_{i=1}^n L_i\right) = -1,
+\end{equation*}
+the derivatives equate to
+\begin{align}
+    \frac{\partial F_h}{\partial L_i} &= \frac{\partial h_n}{\partial L_i} +\theta q_L^2\\
+    \frac{\partial F_h}{\partial c_i} &= \frac{\partial h_n}{\partial c_i}\\
+    \frac{\partial F_q}{\partial L_i} &= \frac{\partial q_{n}}{\partial L_i}\\
+    \frac{\partial F_q}{\partial c_i} &= \frac{\partial q_{n}}{\partial c_i}
+\end{align}
+The remaining differential equations
+\begin{equation*}
+    \frac{\partial h_{n}}{\partial L_i},\; 
+    \frac{\partial h_{n}}{\partial c_i},\; 
+    \frac{\partial q_{n}}{\partial L_i},\; 
+    \frac{\partial q_{n}}{\partial c_i}
+\end{equation*}
+can be expressed in matrix form and solved using the chain rule by
+\begin{equation*}
+    \frac{\partial \phi_{n}}{\partial \mathbf{x}_i} = 
+    \frac{\partial \phi_{n}}{\partial \phi_{i}} \frac{\partial \phi_i}{\partial \mathbf{x}_i} =
+    \frac{\partial \phi_{n}}{\partial \phi_{n-1}} \cdots
+    \frac{\partial \phi_{i+1}}{\partial \phi_{i}}
+    \frac{\partial \phi_{i}}{\partial \mathbf{x}_i}
+\end{equation*}
+Let
+\begin{equation*}
+    A_i:=\frac{\partial \phi_i}{\partial \phi_{i-1}} = \frac{\partial f_{fp}(\phi_{i-1}; \mathbf{x}_i )}{\partial \phi_{i-1}} 
+\end{equation*}
+From the theorem about the forward pass relation to other variables (which will be defined), it follows that
+\begin{equation*}
+    \frac{\partial \phi_k}{\partial \phi_i} = 0,\; k<i
+\end{equation*}
+From \cref{eq:upstream_head}, the partial derivatives for $h_i$ are computed as
+\begin{align*}
+    \frac{\partial h_i}{\partial h_{i-1}} &= 1 \\
+    \frac{\partial h_i}{\partial q_{i-1}} &= -2 \theta L_i q_{i-1}
+\end{align*}
+From \cref{eq:upstream_flow}, the derivatives are
+\begin{align*}
+    \frac{\partial q_i}{\partial h_{i-1}} &= \frac{\partial q_i}{\partial h_{i}}\frac{\partial h_i}{\partial h_{i-1}} = -\frac{c_i}{2 \sqrt{h_{i}}} \\
+    \frac{\partial q_i}{\partial q_{i-1}} &= 1 - \frac{c_i}{2 \sqrt{h_i}}\frac{\partial h_i}{\partial q_{i-1}}
+    = 1+\frac{c_i \theta L_i q_{i-1}}{\sqrt{h_i}}
+\end{align*}
+Finally,
+\begin{equation}
+\label{eq:A_i}
+A_i=\begin{bmatrix}
+    1 & -2 \theta L_i q_{i-1} \\[0.4em]
+    \displaystyle
+    -\frac{c_i}{2 \sqrt{h_{i}}} & \displaystyle 1+\frac{c_i \theta L_i q_{i-1}}{\sqrt{h_i}}
+\end{bmatrix}
+\end{equation}
+The partial derivatives in $A_i$ can be chained for the backwards pass by defining
+\begin{equation*}
+    G_i := \frac{\partial \phi_n}{\partial \phi_i} = A_n A_{n-1} \cdots A_{i+1}
+\end{equation*}
+which can be solved through backward iteration by
+\begin{equation}
+    G_i = G_{i+1}A_{i+1}, \quad G_n:=\mathbf{I} 
+\end{equation}
+Let
+\begin{equation*}
+    B_i:=\frac{\partial \phi_i}{\partial \mathbf{x}_i}
+\end{equation*}
+From the theorem about the forward pass relation to other variables (which will be defined), it follows that
+\begin{equation*}
+    \frac{\partial \phi_k}{\partial \mathbf{x}_i} = 0,\; k<i
+\end{equation*}
+The differential equations of $B_i$ can then be solved from \cref{eq:downstream_head,eq:downstream_flow},
+\begin{align*}
+    \frac{\partial h_i}{\partial L_i} &= -\theta q_{i-1}^2 \\
+    \frac{\partial h_i}{\partial c_i} &= 0 \\
+    \frac{\partial q_i}{\partial L_i} &= - \frac{c_i}{2\sqrt{h_i}} \frac{\partial h_i}{\partial L_i} = 
+    \frac{c_i \theta q_{i-1}^2}{2 \sqrt{h_i}} \\
+    \frac{\partial q_i}{\partial c_i} &= -\sqrt{h_i} \\
+\end{align*}
+Which yields
+\begin{equation}
+\label{eq:B_i}
+B_i=\begin{bmatrix}
+    -\theta q_{i-1}^2 & 0 \\[0.4em]
+    \displaystyle
+    \frac{c_i \theta q_{i-1}^2}{2 \sqrt{h_i}} & -\sqrt{h_i}
+\end{bmatrix}
+\end{equation}
+To summarise, the derivatives can be derived by solving
+\begin{equation}
+    \label{eq:derivative_equation}
+    \frac{\partial \phi_{n}}{\partial \mathbf{x}_i} =
+     A_n A_{n-1} \cdots A_{i+1} B_i =
+    G_i B_i
+\end{equation}
+
+
+
+\begin{algorithm}[ht]
+\caption{Forward and Backwards Pass}
+\label{alg:forward_backwards_pass}
+\caption{hello}
+
+\DontPrintSemicolon
+
+\SetKwFunction{func}{ForwardBackwardPass}
+\SetKwFunction{Afunc}{CalcA}
+\SetKwFunction{Bfunc}{CalcB}
+\SetKwFunction{Reverse}{Reverse}
+\SetKwFunction{concat}{Concatinate}
+\SetKwFunction{return}{Return}
+\SetKwProg{Fn}{Function}{:}{}
+\SetKwInput{KwNote}{\normalfont Note}
+\Fn{\func{$L,c,h_0,q_0,n,\theta$}}{
+    \KwNote{\textit{$L[0]$ and $c[0]$ are dummy values to make indexing consistent with equations.}}
+    \;
+    $h \gets [h_0], \; q \gets [q_0]$\;
+    \tcp{Forward pass}
+    \For{$i \gets 1$ \KwTo n}{
+        $h.\mathrm{append}\!\left(h[i-1] - \theta \cdot L[i] \cdot q[i-1]^2\right)$ \tcp*[r]{\cref{eq:downstream_head}}
+
+        $q.\mathrm{append}\!\left(q[i-1] - c[i] \cdot \sqrt{h[i]}\right)$ \tcp*[r]{\cref{eq:downstream_flow}}
+    }
+    \tcp{Backward pass}
+    G $\gets I$,$\;$ J $\gets$ [ ] \;
+    \For{$i \gets n$ \KwTo $1$}{
+        B $\gets$ \Bfunc{$c[i],h[i],q[i-1],\theta$} \tcp*[r]{\cref{eq:B_i}}
+        $\text{J}.\mathrm{append}\!\left( G \cdot B\right)$ \;
+        \If{$i > 1$}{
+            A $\gets$ \Afunc{$L[i],c[i],h[i],q[i-1],\theta$} \tcp*[r]{\cref{eq:A_i}}
+            G $\gets$ G $\cdot$ A
+        }
+    }
+    J $\gets$ \concat{\Reverse{\normalfont J}} \tcp*[r]{\normalfont J $\in \mathbb{R}^{2\times2n}$ \qquad\quad \,} \;
+    \return $h$, $q$, J \; 
+}
+\end{algorithm}

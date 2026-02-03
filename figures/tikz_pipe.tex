@@ -1,0 +1,213 @@
+% Colors (edit palette here)
+\definecolor{PipeOuter}{HTML}{000000}
+\definecolor{PipeInner}{HTML}{006083}
+\definecolor{AxisColor}{HTML}{000000}
+\definecolor{FlowColor}{HTML}{FFFFFF}
+\definecolor{LeakColor}{HTML}{006083}
+\definecolor{BgColor}{HTML}{FFFFFF} % set to page/background color
+
+\begin{tikzpicture}[
+  font=\small,
+  >=Latex,
+  axis/.style={draw=AxisColor, line width=0.8pt, line cap=butt},
+  flow/.style={draw=FlowColor, line width=1.2pt},
+  leak/.style={draw=LeakColor, line width=2pt, line cap=round},
+  leakArrow/.style={draw=LeakColor, line width=1.2pt},
+  tick/.style={draw=AxisColor, line width=0.8pt, line cap=butt},
+  breakmark/.style={inner sep=0pt, text=PipeOuter, font=\normalsize},
+  crack/.style={draw=BgColor, line width=0.5pt, line join=butt, fill=BgColor, fill opacity=1},
+  pipe/.style={draw=PipeOuter, line width=1.5pt, line join=round, fill=PipeInner, fill opacity=1},
+  pipeEndLine/.style={draw=PipeOuter, line width=2pt, line cap=round},
+]
+
+% ---- Geometry ----
+\def\Lpipe{12}      % visual length representing [0, L]
+\def\yPipe{0}
+\def\yAxis{1.2}
+
+% Pipe break
+\def\pipeoffset{0.15}
+\def\zBreakA{3.35}
+\def\zBreakB{8.65}
+
+% ---- PIPE ----
+% ---- dimensions ----
+\def\Ro{0.35}   % outer half-height
+\def\s{0.25}    % x-slant
+\def\CapExtend{0.12} % how much the cap line extends beyond the pipe (in y)
+
+% Tunables for the S shape
+\def\ScurveA{0.18}  % horizontal control offset (amplitude)
+\def\ScurveB{0.28}  % vertical control bias (where the bend happens)
+
+% Draw an "S" between two points (top -> bottom), bowing left/right.
+% For a given end edge, the curve is drawn in the edge's local frame using x/y offsets.
+\newcommand{\DrawScurveEdge}[2]{%
+  \draw[pipeEndLine]
+    #1
+      .. controls
+        ($#1+(\ScurveA,-\ScurveB)$) and
+        ($#2+(-\ScurveA,\ScurveB)$)
+      .. #2;
+}
+
+\newcommand{\ScurveDown}[2]{%
+  .. controls ($#1+(\ScurveA,-\ScurveB)$) and ($#2+(-\ScurveA,\ScurveB)$) .. #2%
+}
+\newcommand{\ScurveUp}[2]{%
+  .. controls ($#1+(-\ScurveA,\ScurveB)$) and ($#2+(\ScurveA,-\ScurveB)$) .. #2%
+}
+
+% ---- one segment: fill between outer and inner contours ----
+\newcommand{\PipeSeg}[5]{%
+  % #1 xa, #2 xb, #3 y, #4 leftcap, #5 rightcap
+  \def\xa{#1}\def\xb{#2}\def\y{#3}%
+  \pgfmathsetmacro\Ltop{\xa}\pgfmathsetmacro\Lbot{\xa}%
+  \pgfmathsetmacro\Rtop{\xb}\pgfmathsetmacro\Rbot{\xb}%
+  \def\flat{flat}\def\slash{slash}%
+
+  \edef\tmp{#4}\ifx\tmp\slash
+    \pgfmathsetmacro\Ltop{\xa+\s}
+    \pgfmathsetmacro\Lbot{\xa}
+  \fi
+  \edef\tmp{#5}\ifx\tmp\slash
+    \pgfmathsetmacro\Rtop{\xb}
+    \pgfmathsetmacro\Rbot{\xb-\s}
+  \fi
+
+  % define corner coordinates
+  \coordinate (LT) at (\Ltop,{\y+\Ro});
+  \coordinate (LB) at (\Lbot,{\y-\Ro});
+  \coordinate (RT) at (\Rtop,{\y+\Ro});
+  \coordinate (RB) at (\Rbot,{\y-\Ro});
+
+  % flags (no conditionals inside the path)
+  \def\Lslashed{0}\def\Rslashed{0}
+  \edef\tmp{#4}\ifx\tmp\slash\def\Lslashed{1}\fi
+  \edef\tmp{#5}\ifx\tmp\slash\def\Rslashed{1}\fi
+
+  % draw + fill pipe (4 cases)
+  \ifnum\Lslashed=0\relax
+    \ifnum\Rslashed=0\relax
+      % flat ... flat
+      \draw[pipe] (LT) -- (RT) -- (RB) -- (LB) -- cycle;
+    \else
+      % flat ... slash
+      \draw[pipe] (LT) -- (RT) \ScurveDown{(RT)}{(RB)} -- (LB) -- cycle;
+    \fi
+  \else
+    \ifnum\Rslashed=0\relax
+      % slash ... flat
+      \draw[pipe] (LT) -- (RT) -- (RB) -- (LB) \ScurveUp{(LB)}{(LT)} -- cycle;
+    \else
+      % slash ... slash
+      \draw[pipe] (LT) -- (RT) \ScurveDown{(RT)}{(RB)} -- (LB) \ScurveUp{(LB)}{(LT)} -- cycle;
+    \fi
+  \fi
+
+  Draw S-shapes
+  \edef\tmp{#4}\ifx\tmp\slash
+    \DrawScurveEdge{(\Ltop,{\y+\Ro})}{(\Lbot,{\y-\Ro})}
+  \fi
+  \edef\tmp{#5}\ifx\tmp\slash
+    \DrawScurveEdge{(\Rtop,{\y+\Ro})}{(\Rbot,{\y-\Ro})}
+  \fi
+}
+
+% leak locations
+\def\zOne{1.5}      % z_1
+\def\zI{5.2}        % z_i
+\def\zIp{6.8}       % z_{i+1}
+\def\zN{10.5}       % z_n
+
+% constant flow arrow length (all equal)
+\def\flowlen{0.8}
+
+% ---- Pipe ----
+\pgfmathsetmacro\Y{\yPipe+\pipeoffset}
+\PipeSeg{0}{\zBreakA}{\Y}{flat}{slash}
+\PipeSeg{\zBreakA}{\zBreakB}{\Y}{slash}{slash}
+\PipeSeg{\zBreakB}{\Lpipe}{\Y}{slash}{flat}
+\draw[pipe] (0,\Y+\Ro+0.1) -- (0,\Y-\Ro-0.1);
+\draw[pipe] (\Lpipe,\Y+\Ro+0.1) -- (\Lpipe,\Y-\Ro-0.1);
+
+
+% ---- Z-axis above pipe ----
+\draw[axis,->] (0,\yAxis) -- (\Lpipe+0.6,\yAxis) node[right] {$z$-axis};
+
+% endpoints 0 and L
+\draw[tick] (0,\yAxis-0.10) -- (0,\yAxis+0.10) node[right=-7pt, yshift=8pt,text=AxisColor] {$0 \mapsto h_{0}$};
+\draw[tick] (\Lpipe,\yAxis-0.10) -- (\Lpipe,\yAxis+0.10) node[right=-7pt, yshift=8pt,text=AxisColor] {$L \mapsto h_{L}$};
+
+% optional break markers on axis
+\node[breakmark] at (\zBreakA+0.5*\s,\yAxis) {//};
+\node[breakmark] at (\zBreakB+0.5*\s,\yAxis) {//};
+
+% ---- Crack marker (polygon) at x = #1, centered on y = \yPipe ----
+% Usage: \CrackAt{xcoord}
+\newcommand{\CrackAt}[1]{%
+  \begin{scope}[shift={(#1,\yPipe+\pipeoffset-\Ro)}]
+    % crack as a closed polygon (edit points to taste)
+    \def\r{-0.05}
+    \filldraw[crack]
+      ( \r,  -0.1) --
+      ( \r-0.1,  0.15) --
+      ( \r,  0.2) --
+      ( \r-0.1,  0.4) --
+      ( \r+0.2,  0.15) --
+      ( \r+0.1,  0.1) --
+      ( \r+0.2,  -0.1)-- cycle;
+  \end{scope}%
+}
+
+% ---- Leak: gap + X marker + downward arrow + z-label on axis ----
+\newcommand{\LeakAt}[2]{%
+  \CrackAt{#1}
+  \def\offset{-0.1}
+  % downward leak arrow from pipe
+  \draw[leakArrow,->] (#1,\yPipe+\offset) -- (#1,\yPipe+\offset-\flowlen)
+    node[below=-6pt,right=3pt, text=AxisColor] {$\tilde{q}_{#2}$};
+  % tick + label on z-axis
+  \draw[tick] (#1,\yAxis-0.10) -- (#1,\yAxis+0.10)
+    node[right=-7pt, yshift=8pt, text=AxisColor] {$z_{#2} \mapsto h_{#2}$};
+}
+
+\LeakAt{\zOne}{1}
+\LeakAt{\zI}{i}
+\LeakAt{\zIp}{i+1}
+\LeakAt{\zN}{n}
+
+% ---- Equal-length flow arrows (placed centered in each segment) ----
+\newcommand{\FlowInSegment}[3]{%
+  % segment endpoints: x_a (#1) to x_b (#2), label (#3)
+  \path let \p1 = (#1,\yPipe), \p2 = (#2,\yPipe) in
+    coordinate (m) at ($(\p1)!.5!(\p2)$);
+  \draw[flow,->]
+    ($(m)+(-0.5*\flowlen,0)$) -- ($(m)+(0.5*\flowlen,0)$)
+    node[midway,above=0pt, text=FlowColor] {$#3$};
+}
+
+% segments defined by leak positions (break markers are only visual)
+\FlowInSegment{\zOne-2*\flowlen}{\zOne}{q_0}
+\FlowInSegment{\zOne}{\zOne+2*\flowlen}{q_1}
+\FlowInSegment{\zI-2*\flowlen}{\zI}{q_{i-1}}
+\FlowInSegment{\zI}{\zIp}{q_i}
+\FlowInSegment{\zIp}{\zIp+2*\flowlen}{q_{i+1}}
+\FlowInSegment{\zN-2*\flowlen}{\zN}{q_{n-1}}
+\FlowInSegment{\zN}{\zN+2*\flowlen}{q_L}
+
+% ---- Dimension line below z-axis: |---L---| ----
+\newcommand{\AxisLength}[4][]{%
+  % #1 optional extra TikZ options, #2 x_start, #3 x_end, #4 label
+  \def\yDim{\yAxis-0.28} % vertical offset below axis (tune)
+  \def\tickSize{0.06}
+  \draw[axis,#1] (#2,\yDim) -- (#3,\yDim)
+    node[midway, below=-7pt, fill=white, text=AxisColor] {$#4$};
+  \draw[tick,#1] (#2,\yDim-\tickSize) -- (#2,\yDim+\tickSize);
+  \draw[tick,#1] (#3,\yDim-\tickSize) -- (#3,\yDim+\tickSize);
+}
+% ---- Length annotations below the z-axis ----
+\AxisLength{0}{\zOne}{L_1}
+\AxisLength{\zI}{\zIp}{L_{i+1}}
+\AxisLength{\zN}{\Lpipe}{L_{n+1}}
+\end{tikzpicture}

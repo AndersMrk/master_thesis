@@ -1,0 +1,203 @@
+\chapter{Literature Study}
+
+% Briefly introduce what exists of literature.
+% Write about methods/instruments used to pracitacally detect leaks
+% Write something about limiting to only input-output data.
+% Deliminations of literature study! - describe what I will look into and why, make sure it covers from deductions. 
+
+This chapter presents the literature study conducted prior to the research described in this thesis. The published literature on leak detection in pipelines is extensive and addresses a wide range of aspects, approaches, and limitations. A large portion of the existing work focuses on leak detection in pipe networks consisting of multiple interconnected pipes. A smaller body of research addresses the detection of multiple leaks within a single pipeline. For completeness, \cref{sec:lit:pipe_network} presents an overview of research on leak detection in pipe networks.
+
+Some methods only support sequential leak detection. In such approaches, pipe monitoring starts when the pipeline is assumed to be healthy and free of defects. It is further assumed that leaks do not occur simultaneously. This allows the detection of multiple leaks to be treated as a sequence of single-leak detection problems, where the effect of each detected leak is accounted for before identifying the next one. An example of this approach is presented by \cite{verde2005}. These methods are not relevant for the scope of this research. The literature study is limited to methods that address concurrent leak detection.
+
+The detection of one or two leaks in a single pipeline using only endpoint sensors is well documented in the literature. Methods that extend beyond two concurrent leaks are rare. The reviewed research can be broadly classified based on whether the available measurements consist of time-varying transient data or steady state data. \cref{sec:lit:transients} presents an overview of relevant literature based on transient measurements. \cref{sec:lit:steadystate} reviews research based on steady state measurements, which most closely relates to the work in this thesis. This section further discusses whether existing methods for two leak detection are feasible and practical to extend to an arbitrary number of leaks.
+
+\section{Leak Identification in Pipe Networks}
+\label{sec:lit:pipe_network}
+
+Molno2 - foundation \cite{molno2024conditions}
+
+molno1 - parallel pipe network \cite{molno2024parallel}
+
+write about ML, NN methods/modern approaches.
+
+Write for completeness, start by writing about the other literature to see if needed or not.
+
+\section{Leak Identification in Pipeline with Transient Measurements}
+\label{sec:lit:transients}
+
+
+\textbf{EKF methods:}
+
+Besancon 2007 \cite{besancon2007}
+
+Torres 2009 - discretizised \cite{torres2009}
+
+Verde2001 - discretizised \cite{verde2001} \\
+
+\noindent
+\textbf{Ole Morten Research}\\
+--
+
+\noindent
+\textbf{ITA:}
+
+Diaz 2021 \cite{diaz2021}
+
+Nadian 2025 \cite{nadian2025}
+
+Cherif 2025 \cite{cherif2025}
+
+Hyun2018 \cite{hyun2018}
+
+Wang2018 \cite{wang2018}
+
+Wang2019 \cite{wang2019} \\
+
+\noindent
+\textbf{Dynamic data minimalization:}
+
+Verde 2004 \cite{verde2004}
+
+Verde 2007 - discretizised \cite{verde2007}
+
+Verde 2014 \cite{verde2014}
+
+
+
+\section{Leak Identification in Pipeline with Steady State Measurements}
+\label{sec:lit:steadystate}
+
+\subsection{Utilizing Multiple Pressure Sensors}
+
+The study by \cite{ostapkowicz2023} proposes a static model-based approach for identifying two leaks in a pipeline using steady state flow rate and pressure measurements at the inlet and outlet, complemented by pressure measurements at several intermediate locations along the pipeline. The framework introduces two identification methods.
+
+The first method is based on a steady-state hydraulic model of a pipeline with two leaks. The leak locations are treated as decision variables and are identified by minimizing an objective function defined as the squared deviation between measured pressures and model-predicted pressures at the intermediate sensor locations. The objective function can be written as
+\begin{equation*}
+J(z_{u1}, z_{u2})
+= \sum_{i=2}^{N-1} \left( p_i^{\text{meas}} - p_i^{\text{mod}}(z_{u1}, z_{u2}) \right)^2
+\end{equation*}
+where $p_i^{\text{meas}}$ denotes the measured pressure at sensor $i$, $p_i^{\text{mod}}$ is the pressure computed from the static model, and $z_{u1}$, $z_{u2}$ are the leak locations. Once the optimal leak positions are obtained, the corresponding leak magnitudes are computed from steady-state flow balance relations between the inlet, outlet, and intermediate pipeline sections.
+
+The second method also employs a static pipeline model but replaces global optimization with a pressure gradient-based procedure. Local pressure gradients between adjacent measurement points are first computed as
+\begin{equation*}
+g_k = z_{k+1} - z_k \frac{p_k}{p_{k+1}}
+\end{equation*}
+and gradient indicator functions are used to identify pipeline segments that contain leaks. After the leak containing segments are isolated, analytical expressions derived from the static pressure drop relations are applied to estimate both the leak locations and leak magnitudes within each segment.
+
+Both methods were validated experimentally for simultaneous double leak scenarios. A limitation of the proposed approach is its strong dependence on pressure measurements at multiple intermediate locations along the pipeline. The availability of several internal pressure sensors is essential for both the optimization-based and gradient-based procedures. As a result, the proposed methods are not feasible for pipeline configurations where only inlet and outlet measurements are available.
+
+\subsection{Exploiting Single-Leak Equivalent}
+
+\cite{verde2003} shows that input-output measurements obtained from a single steady-state operating point are not sufficient to detect two or more leaks in a pipeline. The method proposed in \cite{peralta2023} identifies two concurrent leaks in a single pipeline by using measurements of flow rate and pressure at the inlet and outlet of the pipe, collected at two different steady-state operating points.
+
+From a single operating point, a single-leak equivalent position $\ell_f$ is computed as
+\begin{equation*}
+\ell_f =
+\frac{h_0 - h_\ell - \ell \, \theta \, q_\ell^2}
+{\theta \left( q_0^2 - q_\ell^2 \right)},
+\end{equation*}
+where $h_0$ and $h_\ell$ denote the inlet and outlet pressure, $q_0$ and $q_\ell$ denote the inlet and outlet flow rates, $\ell$ is the known pipe lenght and $\theta$ is a known pipe parameter.
+
+For a pipe with two leaks located at positions $\ell_1$ and $\ell_1 + \ell_2$, the equivalent single-leak position satisfies the inequality
+\begin{equation}
+\label{eq:lit_ineq}
+0 < \ell_1 < \ell_f < \ell_1 + \ell_2 < \ell.
+\end{equation}
+The key idea is that the single-leak equivalent position can be estimated either from the upstream leak or from the downstream leak. For each operating point $i$, this redundant description is given by
+\begin{equation}
+\label{eq:lit_lf_estimate}
+\left.\hat{\ell}_f\right\vert_i =
+\begin{cases}
+\left.\hat{\ell}^{u}_{f}\right\vert_i
+\triangleq
+(\ell_1 + \ell_2)
+\left(
+\frac{q_m^2(\ell_1,\lambda_1) - q_{\ell}^2}
+{q_0^2 -  q_{\ell}^2}
+\right), \\[6pt]
+\left.\hat{\ell}^{d}_f\right\vert_i
+\triangleq
+(\ell_1 + \ell_2)
+\left(
+\frac{q_m^2(\ell_1,\ell_2,\lambda_2) -  q_{\ell}^2}
+{q_0^2 -  q_{\ell}^2}
+\right),
+\end{cases}
+\end{equation}
+where $q_m$ is the unknown flow between the two leaks, and $\lambda_1$ and $\lambda_2$ are the leak coefficients.
+
+This redundant formulation is used to define a cost function based on the difference between the estimated leak equivalents and the actual equivalent position. The cost function is defined as
+\begin{equation*}
+J(e^u,e^d) =
+\frac{1}{n}
+\sum_{i=1}^{n}
+\left(
+\left.e^u\right\vert_i^2 + \left.e^d\right\vert_i^2
+\right),
+\end{equation*}
+where $n$ is the number of measured operating points. The upstream and downstream estimation errors are defined as
+\begin{equation*}
+\left.e^u\right\vert_i = \left.\ell_f\right\vert_i - \left.\hat{\ell}^{u}_f\right\vert_i,
+%\quad \text{and}
+\quad \left.e^d\right\vert_i = \left.\ell_f\right\vert_i - \left.\hat{\ell}^{d}_f\right\vert_i
+\quad \forall i.
+\end{equation*}
+
+The cost function is minimized subject to the invariance of the parameters $\lambda_1$ and $\lambda_2$ and the constraint
+\begin{equation*}
+0 < \ell_1 < \left.\ell_f\right\vert_i < \ell_1 + \ell_2 < \ell.
+\end{equation*}
+
+In this publication, the minimization is performed using a gradient-based update law that adjusts only the upstream leak position,
+\begin{equation*}
+\ell_1(k+1) =
+\ell_1(k) -
+\alpha
+\frac{\partial J(k)}{\partial \ell_1(k)},
+\end{equation*}
+with the constraint $0 < \ell_1 < \ell_f$.
+
+\cite{peralta2024} extends this approach by simultaneously optimizing both leak locations and reducing the estimation errors for the same dataset. The new update law is given by
+\begin{equation*}
+\begin{bmatrix}
+\ell_{1}(k+1) \\
+\ell_{3}(k+1)
+\end{bmatrix}
+=
+\begin{bmatrix}
+\ell_{1}(k) \\
+\ell_{3}(k)
+\end{bmatrix}
++
+\begin{bmatrix}
+\alpha \, \dfrac{\partial J(k)}{\partial \ell_1(k)} \\
+\beta \, \dfrac{\partial J(k)}{\partial \ell_3(k)}
+\end{bmatrix},
+\end{equation*}
+with the constraints $0 < \ell_{1} < {\ell}_f$ and $0 < \ell_{3} < \ell - {\ell}_f$ where $\ell_3 = \ell- (\ell_1 + \ell_2)$.
+
+A case study of this method is presented in \cite{peralta2025} where both simulation and experimental results are shown with a relative leak location error of less than 7\%.
+
+This method has its foundation in the inequality shown in \cref{eq:lit_ineq}, where the single-leak equivalent will always lie between the two actual leaks. This allows for the consistent upstream and downstream estimates shown in \cref{eq:lit_lf_estimate}. To extend this method beyond two leaks, it seems necessary that a similar inequality holds, such that the single-leak equivalent has the same amount of real leaks both upstream and downstream for all steady state operating points. Otherwise, there will be no consistent algebraic upstream and downstream estimate for the single-leak equivalent across measurements. It can be shown (see \cref{app:3_leak_eq_proof}) that the single-leak equivalent in a pipe with three leaks can be located both upstream and downstream of the second leak by adjusting the steady state operating point. From that result, it seems difficult to extend the method proposed by \cite{peralta2023} to handle more than two leaks.  
+
+\subsection{Monte Carlo Simulation}
+
+The method proposed in \cite{torres2024} addresses the localization of two simultaneous leaks under steady-state conditions using only inlet and outlet measurements. The approach formulates the inverse problem as a constrained Monte Carlo identification procedure based on algebraic hydraulic models. Instead of enforcing a unique solution, the method characterizes the feasible parameter space through probability distributions.
+
+The algorithm consists of four steps:
+\begin{enumerate}
+    \item \textbf{Equivalent leak estimation:}  
+    An equivalent single-leak model is computed from steady-state inlet and outlet pressure and flow rate measurements, by a similar method as presented in \cite{peralta2023}. Similarly, the single-leak equivalent is used as spatial bounds for the real upstream and downstream leaks.
+
+    \item \textbf{Forward Monte Carlo sampling:}  
+    Candidate values for the downstream leak location and emitter coefficient are randomly generated from uniform distributions bounded by the pipe geometry and the equivalent leak parameters. For each realization, the corresponding upstream leak location and coefficient are computed analytically using steady-state flow and pressure relations. Realizations that violate spatial ordering or hydraulic feasibility constraints are discarded.
+
+    \item \textbf{Probability density estimation:}  
+    The retained samples of the upstream leak parameters are used to fit probability density functions via maximum likelihood estimation. These distributions provide a statistical description of the upstream leak location and magnitude consistent with the measurements and imposed constraints.
+
+    \item \textbf{Backward Monte Carlo refinement:}  
+    New samples of the upstream leak parameters are drawn from the estimated probability density functions, and the downstream leak parameters are reconstructed analytically. The resulting realizations are again filtered through the spatial and hydraulic constraints, yielding probability distributions for the locations and emitter coefficients of both leaks.
+\end{enumerate}
+
+This constrained Monte Carlo framework enables an approximate localization of two simultaneous leaks using steady-state boundary measurements. Scaling the method beyond two leaks quickly increases the complexity. To detect 3 leaks, a uniform sampling over 4 parameters is required instead of 2. Additionally, there is no spatial bound between the second leak and the single-leak equivalent, as shown in \cref{app:3_leak_eq_proof}. From these observations, it seems infeasible to expand the method beyond 2 leaks.
+

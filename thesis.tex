@@ -1,14 +1,15 @@
-\documentclass[american, titlepage]{ntnuthesis}
+\documentclass[american, titlepage, oneside]{ntnuthesis}
 
-\title{title}
-\shorttitle{Multi Leak Detection}
+% Front page
+\title{Identification of N Simultaneous Pipeline Leaks Using Inlet-Outlet Steady-State Measurements}
+\shorttitle{Multi Leak Identification}
 \author{Anders Mørk}
 \shortauthor{A. Mørk}
 \date{\today}
 
 \addbibresource{thesis.bib}
 
-\input{glossary.tex} % add glossary and acronym lists before document
+\input{glossary.tex} % add glossary and acronym lists
 
 \begin{document}
 
@@ -16,28 +17,36 @@
 %\includepdf[pages=-]{AI_declaration.pdf}
 
 \input{chapters/0a-abstract.tex}
-\input{chapters/0b-sammendrag.tex}
+% \input{chapters/0b-sammendrag.tex}
+% \input{chapters/0c-preface}
 
 \tableofcontents
-% \listoffigures
+\listoffigures
 % \listoftables
 % \lstlistoflistings
+% \listofalgorithms
 
-\chapter*{\acronymname}           % Create an unnumbered chapter for the acronyms
-\printglossary[type=\acronymtype] % Print acronyms
+% Acronyms
+% \chapter*{\acronymname}
+% \printglossary[type=\acronymtype]
 
-\chapter*{\glossaryname}          % Create an unnumbered chapter for the glossary
-\printglossary                    % Print glossary
+% glossary
+% \chapter*{\glossaryname}
+% \printglossary
 
 \input{chapters/1-introduction}
-% \input{chapters/2-usage.tex}
-% \input{chapters/3-structure.tex}
-\input{chapters/4-conclusion.tex}
+\input{chapters/2-literature}
+\input{chapters/3-theory}
+\input{chapters/4-model}
+\input{chapters/5-derivations}
+\input{chapters/6-results}
+\input{chapters/7-conclusion}
 
 \chapter*{\bibname}
 \printbibliography[heading=none]
 
 \appendix
-\input{appendices/a-appendix.tex}
+\input{appendices/inequality_proof}
+\input{appendices/leak_number_derivation}
 
 \end{document}

@@ -1,0 +1,150 @@
+\chapter{Pipe and Leak Model}
+\label{chap:model}
+
+\section{Modelling of Pipe With Leaks}
+
+Under the assumption that water in a closed straight pipe flows one-dimensionally, the velocity distribution is uniform over the cross-section of the pipe, and the material of the pipe is linearly elastic \footnote{Linearly elastic means that stress is proportional to strain and is true for most pipe materials such as metal, concrete, and wood \cite{chaudhry2013}.}, according to \cite{chaudhry2013}, transient hydraulic behavior is described by the momentum and continuity equations:
+\begin{equation}\label{eq:momentum}
+\frac{1}{gA}\frac{\partial q(z,t)}{\partial t}
++ \frac{\partial h(z,t)}{\partial z}
++ \theta q^{2}(z,t) = 0
+\end{equation}
+\begin{equation}\label{eq:continuity}
+\frac{\partial h(z,t)}{\partial t}
++ \frac{a^{2}}{gA}\frac{\partial q(z,t)}{\partial z} = 0
+\end{equation}
+$q(z,t)\;[m^3/s]$ is the volumetric discharge and $h(z,t)\;[m]$ is the piezometric head (form now regarded as flow and head for brevity), which is defined as
+\[
+h = \frac{P}{\rho g} + z_e,
+\]
+where $P$ is the fluid pressure, $\rho$ is the fluid density, and $z_e$ is the elevation above a chosen datum. It represents the mechanical energy per unit weight of fluid and corresponds to the height to which the fluid would rise in a piezometer connected to the pipe. Spatial and temporal variations of $h$ therefore describe pressure surges and depressions during hydraulic transients.
+
+Furthermore, $z$ is the spatial coordinate measured along the pipe axis, $t$ denotes time, $A$ is the pipe cross-sectional area, $g$ is gravitational acceleration, and $a$ is the pressure wave speed accounting for fluid compressibility and pipe wall elasticity. 
+The resistance coefficient $\theta$ accounts for quasi-steady friction losses and is given by
+\begin{equation*}
+\theta = \frac{f}{2 g D A^{2}},
+\end{equation*}
+with $f$ being the Darcy--Weisbach friction factor and $D$ the pipe diameter.
+
+A leak in the pipe is assumed to be modeled as a valve with a constant opening. Following \cite{chaudhry2013}, the flow through a valve, denoted by $\tilde{q}$, at location $z^*$,can be expressed as
+\begin{equation*}
+\tilde{q}(t) = C_d A_v \sqrt{2 g \, h(z^*,t)},
+\end{equation*}
+where $C_d$ is the discharge coefficient and $A_v$ is the effective area of the valve opening.  
+
+A leak located at position $z^*$ can therefore be modeled by evaluating the valve flow relation at that location, yielding
+\begin{equation}
+\tilde{q}(t) = c \sqrt{h(z^*,t)},
+\label{eq:leak_model}
+\end{equation}
+where $c = C_d A_v \sqrt{2 g}$ is a constant parameter that characterizes the size and hydraulic properties of the leak.
+
+A pipe with $n$ leaks can be modelled as $n+1$ sections of non-leaking pipes following \cref{eq:momentum,eq:continuity} with boundary conditions defined by considering the relation between head and flow both upstream and downstream of a leak at $z^*$:
+
+\begin{align}
+    \lim_{\epsilon \rightarrow0} h(z^*-\epsilon,t) &= \lim_{\epsilon \rightarrow0} h(z^*+\epsilon,t) \label{eq:head_boundary} \\
+    \lim_{\epsilon \rightarrow0} q(z^*-\epsilon,t) &= \lim_{\epsilon \rightarrow0} q(z^*+\epsilon,t) + \tilde{q}(t) \label{eq:flow_boundary}
+\end{align}
+
+\newpage
+\section{Notation}
+\label{sec:notation}
+
+In this section, the notation for a pipe with $n$ leaks is defined. \cref{fig:leak_notation} illustrates the variables and indexing used to describe the system.
+\begin{figure}[h!]
+    \centering
+    \input{figures/tikz_pipe}
+    \caption{Notation used for a pipe with $n$ leaks.}
+    \label{fig:leak_notation}
+\end{figure}
+
+\renewcommand{\descriptionlabel}[1]{\normalfont #1}
+\begin{description}[itemsep=2pt, topsep=0pt, parsep=0pt]
+    \item[$L$] is the length of the pipe.
+    
+    \item[$z \in \lbrack 0,L \rbrack$] is the spatial coordinate along the pipe.
+    
+    \item[$z_i, \; i\in \lbrack 1,n \rbrack$] is the location of the $i$-th leak downstream along the pipe such that $z_i < z_{i+1} \;\forall i$. Defining $z_0=0$ and $z_{n+1}=L$ simplifies equations.
+
+    \item[$\tilde{q}_i$] is the flow leaking out of the $i$-th leak.
+
+    \item[$h_i:=h(z_i)$] is the head at leak location $z_i$. $h_0$ and $h_L$ are defined as the head at the inlet and outlet of the pipe.
+
+    \item[$q_i:=q(z'), \; z'\in(z_i,z_{i+1})$] is the flow of the non-leaking pipe section after the $i$-th leak. $q_0$ and $q_L$ are defined as the inlet and outlet flow of the pipe.
+
+    \item[$L_i:=z_i-z_{i-1}$] is the length of the non-leaking pipe section between $z_{i-1}$ and $z_i$. Defining $L_{n+1}:=L-z_n$ yields $\sum_{k=1}^{n+1} L_k = L$.
+
+    \item[$\mu:=\{h_0,h_L,q_0,q_L\}$] is the set containing the head and flow at the inlet and outlet of the pipe, which can be measured.
+
+    \item[$\mu^{(j)}:=\{h_0^{(j)},h_L^{(j)},q_0^{(j)},q_L^{(j)}\},\;j\in(1,m)$] is the $j$-th measurement and $m$ is the total number of measurements.
+
+    \item[$\mathcal{M}:=\bigcup_{j=1}^{m} \mu^{(j)}$] is the combined set of all $m$ measurements.
+\end{description}
+
+\newpage
+\section{Derivation of Steady-State Equations}
+
+In a steady-state, time derivatives are zero:
+\begin{equation}\label{eq:zero_derivatives}
+    \frac{\partial q(z,t)}{\partial t}=0, \quad \frac{\partial h(z,t)}{\partial t}=0
+\end{equation}
+and the head and flow are no longer time varying.
+
+Combining \cref{eq:momentum,eq:continuity} with \cref{eq:zero_derivatives} gives the steady state equations for a non-leaking pipe segment:
+\begin{equation}\label{eq:momentum_ss}
+\frac{d h(z)}{d z}
+= -\theta q^{2}(z),
+\end{equation}
+\begin{equation}\label{eq:continuity_ss}
+\frac{d q(z)}{d z} = 0.
+\end{equation}
+Consider a non-leaking pipe section between the leaks $z_i$ and $z_{i+1}$. It follows from \cref{eq:continuity_ss} that the flow $q_i$ is constant along the entire section. Utilizing the fundamental theorem of calculus to solve \cref{eq:momentum},  the change of head along the non-leaking section is given by
+\begin{align}
+    \int_{z_i}^{z_{i+1}} \frac{d h(z)}{d z} dz &= \int_{z_i}^{z_{i+1}} -\theta q_i^{2} dz  \notag \\
+    h(z_{i+1}) - h(z_i) &= -\theta q_i^{2} (z_{i+1}-z_i) \notag \\ 
+    h_i &= h_{i+1} + \theta L_{i+1} q_i^{2} \label{eq:head_change}.
+\end{align}
+From \cref{eq:leak_model,eq:head_boundary}, it follow that the flow from a leak $\tilde{q}_i$ is given by
+\begin{equation*}
+    \tilde{q}_i = c_i\sqrt{h_i},
+\end{equation*}
+where $c_i$ is the leak constant for this specific leak. The change of flow in the pipe can be determined from \cref{eq:flow_boundary} and is
+\begin{equation} \label{eq:flow_change}
+    q_{i} = q_{i+1}+\tilde{q}_{i+1}.
+\end{equation}
+Using \cref{eq:head_change,eq:flow_change}, it can easily be seen that $h_i$ and $q_i$ can be expressed both by the upstream and downstream leak. This is shown in the summary below.
+
+\section{Summary}
+
+\noindent\fbox{
+\begin{minipage}{\textwidth}
+Given a pipe operating in steady state, and under the assumptions previously stated, the following equations and \cref{fig:leak_notation_summary} describe the system around a leak at location $z_i$:
+\begin{enumerate}
+    \item \textbf{Piezometric Head:}  
+    \begin{align}
+        h_i &= h_{i+1} + \theta L_{i+1} q_i^2 \label{eq:downstream_head} \\
+        h_i &= h_{i-1} - \theta L_{i} q_{i-1}^2 \label{eq:upstream_head}
+    \end{align}
+
+    \item \textbf{Leak Flow:}  
+    \begin{equation}
+        \tilde{q}_i = c_i\sqrt{h_i} \label{eq:leak_flow}
+    \end{equation}
+
+    \item \textbf{Flow in Non-Leaking Segment:}  
+    \begin{align}
+        q_{i} &= q_{i+1}+\tilde{q}_{i+1} \label{eq:downstream_flow} \\
+        q_{i} &= q_{i-1}-\tilde{q}_{i} \label{eq:upstream_flow}
+    \end{align}
+\end{enumerate}
+
+\medskip
+\centering
+\input{figures/tikz_small_pipe}
+\captionsetup{hypcap=false}
+\captionof{figure}{Notation used for an arbitrary section of a pipe with three leaks.}
+\label{fig:leak_notation_summary}
+\end{minipage}
+}
+
+\section{Extension to Non-Straight Pipes}
