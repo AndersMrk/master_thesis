@@ -38,15 +38,22 @@
 \input{chapters/2-literature}
 \input{chapters/3-theory}
 \input{chapters/4-model}
-\input{chapters/5-derivations}
-\input{chapters/6-results}
-\input{chapters/7-conclusion}
+
+\chapter{Derivations (not a great title)}
+\input{chapters/5_1-forward_pass}
+\input{chapters/5_2-backwards_pass}
+\input{chapters/5_3-solving_equation}
+
+\input{chapters/6-solver_performance}
+\input{chapters/7-many_leaks_analysis}
+\input{chapters/8-conclusion}
 
 \chapter*{\bibname}
 \printbibliography[heading=none]
 
 \appendix
 \input{appendices/inequality_proof}
-\input{appendices/leak_number_derivation}
+\input{appendices/calc_dydx}
+%\input{appendices/leak_number_derivation}
 
 \end{document}

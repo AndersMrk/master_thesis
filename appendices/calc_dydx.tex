@@ -1,0 +1,138 @@
+\chapter{Derivation of the Jacobian of the Re-Parametrization}
+\label{app:calc_dydx}
+
+Recall the re-parameterization
+\begin{equation*}
+\mathbf{y} = \bigl[ \lambda_1,\dots,\lambda_{n-1},\,s,\,\gamma_1,\dots,\gamma_n\bigr]
+\in \mathbb{R}^{2n},
+\qquad
+\mathbf{x} = g(\mathbf{y}) = \bigl[ L_1 , \dots , L_n, \, c_1 , \dots , c_n \bigr],
+\end{equation*}
+with
+\begin{equation*}
+c_i = e^{\gamma_i},
+\qquad
+\rho = \frac{1}{1+e^{-s}},
+\qquad
+L_i = L\,\rho\,\alpha_i,
+\end{equation*}
+and $\alpha_i$ defined by
+\begin{equation*}
+\alpha_i
+=\begin{cases}
+\dfrac{e^{\lambda_i}}{1+\sum_{k=1}^{n-1} e^{\lambda_k}}, & i\in\{1,2,\dots,n-1\},\\[16pt]
+\dfrac{1}{1+\sum_{k=1}^{n-1} e^{\lambda_k}}, & i=n.
+\end{cases}
+\end{equation*}
+
+For $i\in\{1,2,\dots,n\}$ and $j\in\{1,2,\dots,n-1\}$:
+
+\subsection*{Derivatives of $\alpha_i$}
+Let
+\begin{equation}
+D = 1 + \sum_{k=1}^{n-1} e^{\lambda_k},
+\end{equation}
+and note that
+\begin{equation}
+\frac{\partial D}{\partial \lambda_j} = e^{\lambda_j}.
+\end{equation}
+
+For $i\neq n$, $\alpha_i = \dfrac{e^{\lambda_i}}{D}$. Using the quotient rule,
+
+\begin{align*}
+\frac{\partial \alpha_i}{\partial \lambda_j}
+&=
+\dfrac{D \frac{\partial}{\partial \lambda_j}(e^{\lambda_i}) - e^{\lambda_i} \frac{\partial}{\partial \lambda_j}(D)}{D^2}
+=
+\frac{
+\delta_{ij} e^{\lambda_i} D -
+e^{\lambda_i} e^{\lambda_j}
+}{
+D^2
+}\\
+&= \delta_{ij} \frac{ e^{\lambda_i}}{D} - \frac{ e^{\lambda_i}}{D} \frac{ e^{\lambda_j}}{D} = \delta_{ij} \alpha_i - \alpha_i \alpha_j,
+\end{align*}
+where $\delta_{ij}$ is the kronecker delta function.
+
+For $i = n$, $\alpha_n = \dfrac{1}{D}$, so
+\begin{equation}
+\frac{\partial \alpha_n}{\partial \lambda_j}
+=
+-\frac{1}{D^2} \frac{\partial D}{\partial \lambda_j}
+=
+-\frac{e^{\lambda_j}}{D^2}
+=
+-\frac{1}{D}\frac{e^{\lambda_j}}{D}
+=
+-\alpha_n \alpha_j.
+\end{equation}
+
+To summarize,
+\begin{equation}
+\frac{\partial \alpha_i}{\partial \lambda_j}
+=
+\begin{cases}
+\alpha_i(1-\alpha_i), & i=j,\\[6pt]
+-\alpha_i \alpha_j, & i\neq j.
+\end{cases}
+\end{equation}
+
+\subsection*{Derivative of $\rho$}
+
+\begin{equation*}
+\frac{\partial \rho}{\partial s}
+=
+\rho(1-\rho)
+\end{equation*}
+
+\subsection*{Derivatives of $L_i$}
+
+\begin{align*}
+\frac{\partial L_i}{\partial \lambda_j}
+&=
+\frac{\partial L_i}{\partial \alpha_i} \frac{\partial \alpha_i}{\partial \lambda_j} =
+L\rho
+\begin{cases}
+\alpha_i(1-\alpha_i), & i=j\\[4pt]
+-\alpha_i \alpha_j, & i\neq j
+\end{cases}
+\\[6pt]
+\frac{\partial L_i}{\partial s}
+&=
+\frac{\partial L_i}{\partial \rho} \frac{\partial \rho}{\partial s} =
+L\,\alpha_i\,\rho(1-\rho)
+\\[6pt]
+\frac{\partial L_i}{\partial \gamma_j}
+&=0
+\end{align*}
+
+\subsection*{Derivatives of $c_i$}
+
+\begin{align*}
+\frac{\partial c_i}{\partial \gamma_j}
+&=
+\begin{cases}
+c_i, & i=j\\[4pt]
+0, & i\neq j
+\end{cases}
+\\[6pt]
+\frac{\partial c_i}{\partial \lambda_j} &=0\\
+\frac{\partial c_i}{\partial s} & = 0
+\end{align*}
+
+\subsection*{Final Structure of the Jacobian}
+
+Collecting all terms, the Jacobian of the re-parametrization has the block structure
+\begin{equation*}
+\frac{\partial \mathbf{x}}{\partial \mathbf{y}}
+=
+\begin{bmatrix}
+\displaystyle \frac{\partial \mathbf{L}}{\partial \boldsymbol{\lambda}} &
+\displaystyle \frac{\partial \mathbf{L}}{\partial s} &
+\mathbf{0}_{n\times n}
+\\[8pt]
+\mathbf{0}_{n\times (n-1)} &
+\mathbf{0}_{n\times 1} &
+\operatorname{diag}(c_1,\dots,c_n)
+\end{bmatrix} \in \mathbb{R}^{2n\times 2n}.
+\end{equation*}

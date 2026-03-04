@@ -1,0 +1,139 @@
+
+This section investigates why the proposed formulation and solver, which perform reliably for $n=2$ and $n=3$, fail to consistently identify correct leak parameters when $n \geq 4$. The analysis is based on a systematic simulation study of the Jacobian matrix, solver convergence behaviour, and the effect of scaling and measurement design. The results indicate that the limitation is not primarily algorithmic, but structural and numerical, rooted in severe ill-conditioning of the nonlinear least-squares problem.
+
+\subsection*{Data Generation and Evaluation Procedure}
+
+All results presented in this section are obtained from synthetic simulations of the steady-state model derived in Chapter~4 and the Jacobian derived in Section~5.2.
+
+For each $n \in \{2,\dots,8\}$:
+
+\begin{itemize}
+    \item The total pipe length $L$ and resistance coefficient $\theta$ are fixed.
+    \item Leak positions are generated as evenly spaced points in $[0.15L,\,0.85L]$.
+    \item Leak coefficients are linearly spaced in a moderate range.
+    \item $m = 2n$ steady-state operating points are simulated.
+    \item For each operating point, inlet conditions $(h_0^{(j)}, q_0^{(j)})$ are selected on a grid over a physically reasonable range.
+\end{itemize}
+
+For each configuration, the following quantities are computed:
+
+\begin{enumerate}
+    \item The residual Jacobian $J(x^\ast) \in \mathbb{R}^{2m \times 2n}$ evaluated at the true parameter vector $x^\ast$.
+    \item The singular value decomposition
+    \[
+    J = U \Sigma V^\top.
+    \]
+    \item The condition number
+    \[
+    \kappa(J) = \frac{\sigma_{\max}}{\sigma_{\min}}.
+    \]
+    \item Convergence statistics from repeated Levenberg--Marquardt runs with random initial guesses.
+\end{enumerate}
+
+The condition number is particularly relevant due to the normal equations (Section~3.2.3), where the Gauss--Newton step solves
+\[
+(J^\top J)\Delta x = -J^\top r.
+\]
+If $J$ is ill-conditioned, then $J^\top J$ is approximately squared in condition number, which directly amplifies numerical errors and weakens descent directions.
+
+\subsection*{Growth of the Jacobian Condition Number}
+
+Table~\ref{tab:cond_growth} summarizes the condition number of the Jacobian evaluated at the true solution for increasing $n$.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{c c c c}
+\hline
+$n$ & Unknowns ($2n$) & $\kappa(J)$ & $\log_{10}\kappa(J)$ \\
+\hline
+2 & 4  & $3.09 \times 10^{3}$  & 3.5 \\
+3 & 6  & $4.63 \times 10^{5}$  & 5.7 \\
+4 & 8  & $3.58 \times 10^{7}$  & 7.6 \\
+5 & 10 & $8.97 \times 10^{10}$ & 11.0 \\
+6 & 12 & $2.20 \times 10^{12}$ & 12.3 \\
+7 & 14 & $2.18 \times 10^{14}$ & 14.3 \\
+8 & 16 & $2.80 \times 10^{16}$ & 16.4 \\
+\hline
+\end{tabular}
+\caption{Growth of the Jacobian condition number with number of leaks.}
+\label{tab:cond_growth}
+\end{table}
+
+The condition number increases by approximately two orders of magnitude per additional leak. For $n=4$, $\kappa(J) \approx 3.6 \cdot 10^7$, implying that directions in parameter space differ in sensitivity by more than seven orders of magnitude.
+
+In double precision arithmetic (machine epsilon $\varepsilon \approx 10^{-16}$), reliable inversion typically requires
+\[
+\kappa(J) \ll \frac{1}{\varepsilon} \approx 10^{16}.
+\]
+Already at $n=5$, $\kappa(J) \approx 10^{11}$, meaning that numerical perturbations are amplified by eleven orders of magnitude. For $n \geq 7$, the problem approaches numerical singularity.
+
+\subsection*{Singular Value Spectrum and Near-Null Directions}
+
+For $n=4$, the singular values span approximately eight orders of magnitude. The smallest singular values correspond to directions in parameter space along which the residual function changes extremely weakly.
+
+Inspection of the corresponding right singular vectors shows that these near-null directions are dominated by alternating combinations of adjacent segment lengths $L_i$. Physically, this corresponds to shifting neighbouring leak positions in opposite directions while compensating through small adjustments in coefficients $c_i$, producing almost identical inlet–outlet measurements.
+
+This behaviour is consistent with the recursive structure derived in Section~5.2. The global sensitivity
+\[
+\frac{\partial \phi_n}{\partial x_i}
+=
+A_n A_{n-1} \dots A_{i+1} B_i
+\]
+is obtained as a product of local Jacobians. Products of matrices generically exhibit exponential separation of singular values, which explains the observed exponential growth of $\kappa(J)$.
+
+\subsection*{Convergence Experiments}
+
+To assess practical impact, repeated solver runs were performed with random initial guesses.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{c c c}
+\hline
+$n$ & Measurements ($m$) & Convergence rate \\
+\hline
+3 & 3  & 100\% \\
+4 & 4  & 2/3 (often wrong solution) \\
+4 & 8  & 0/3 \\
+4 & 12 & 0/3 \\
+\hline
+\end{tabular}
+\caption{Observed convergence behaviour for increasing $n$.}
+\end{table}
+
+For $n=4$, the solver typically exhibits rapid initial reduction of the residual, followed by stagnation at levels around $10^{-8}$--$10^{-6}$. This behaviour is characteristic of optimization in flat valleys, where the gradient component along near-null singular directions is extremely small.
+
+According to the theory in Section~3.2.4, the Levenberg--Marquardt method interpolates between gradient descent and Gauss--Newton steps. However, if $J$ has singular values near machine precision, both directions become numerically unreliable. The damping term stabilizes the system but cannot create curvature in directions where the model provides none.
+
+\subsection*{Effect of Scaling}
+
+Several scaling strategies were evaluated, including column scaling, row scaling, combined scaling, and iterative equilibration. For $n \geq 4$, the improvement in condition number was at most a factor of $1.6$.
+
+Since diagonal scaling changes vector norms but not angles, this result indicates that the ill-conditioning is geometric rather than scale-induced. Pairwise angles between Jacobian columns decrease with $n$, falling below $2^\circ$ for $n=4$. Nearly collinear columns imply near-linear dependence and therefore small singular values, independent of scaling.
+
+\subsection*{Discussion and Consequences}
+
+The results demonstrate that the transition from $n=3$ to $n=4$ marks a qualitative change in numerical behaviour. While the system remains formally determined for $m \geq n$, the Jacobian becomes severely ill-conditioned.
+
+From nonlinear least-squares theory (Section~3.1), local identifiability requires that $J(x^\ast)$ has full column rank and that the smallest singular value is bounded away from zero. Although full rank is maintained numerically for $n=4$, the smallest singular value becomes so small that the problem is practically unidentifiable in finite precision arithmetic.
+
+The underlying cause is structural:
+
+\begin{itemize}
+    \item The forward model propagates information sequentially along the pipe.
+    \item Upstream parameter changes influence all downstream states.
+    \item Adjacent leaks produce highly correlated effects in inlet–outlet measurements.
+\end{itemize}
+
+As $n$ increases, additional leaks introduce new directions in parameter space that are almost indistinguishable from combinations of existing ones. The effective dimension of the identifiable subspace therefore grows much slower than $2n$.
+
+Consequently:
+
+\begin{itemize}
+    \item The solver becomes highly sensitive to initialization.
+    \item Residual reduction stalls in flat valleys.
+    \item Small measurement noise would dominate the weakest singular directions.
+\end{itemize}
+
+The failure for $n \geq 4$ should therefore not be interpreted as a defect of the chosen optimization method. Rather, it reflects a fundamental limitation of identifying many simultaneous leaks using inlet and outlet steady-state measurements only.
+
+To overcome this limitation, additional independent information (e.g., intermediate sensors, transient measurements, or strong regularization) would be required to increase the smallest singular values and restore numerical robustness.

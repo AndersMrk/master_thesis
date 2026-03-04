@@ -1,2 +1,89 @@
 \chapter{Theory}
-hello
+\label{chap:theory}
+\section{Nonlinear Residual Problems}
+
+Let 
+\[
+r : \mathbb{R}^n \to \mathbb{R}^m
+\]
+be a continuously differentiable residual function. We consider the nonlinear system
+\[
+r(x) = 0,
+\quad x \in \mathbb{R}^n.
+\]
+A solution is any point \(x^\ast \in \mathbb{R}^n\) such that \(r(x^\ast) = 0\).
+
+\subsection{The Jacobian Matrix}
+
+The Jacobian of \(r\) at a point \(x \in \mathbb{R}^n\) is the matrix
+\[
+J(x) = \frac{\partial r(x)}{\partial x}
+=
+\begin{bmatrix}
+\frac{\partial r_1}{\partial x_1} & \cdots & \frac{\partial r_1}{\partial x_n} \\
+\vdots & \ddots & \vdots \\
+\frac{\partial r_m}{\partial x_1} & \cdots & \frac{\partial r_m}{\partial x_n}
+\end{bmatrix}
+\in \mathbb{R}^{m \times n}.
+\]
+
+The Jacobian represents the best linear approximation of \(r\) near \(x\):
+\[
+r(x + \Delta x) \approx r(x) + J(x)\,\Delta x.
+\]
+
+Thus, \(J(x)\) describes the local sensitivity of the residual with respect to perturbations in the variables.
+
+\subsection{Existence and Number of Local Solutions}
+
+Let $x^\ast \in \mathbb{R}^n$ satisfy $r(x^\ast)=0$, and assume that $r$ is continuously differentiable in a neighborhood of $x^\ast$.
+Then it follows from the Implicit Function Theorem that the local structure of solutions is determined by the rank of the Jacobian $J(x^\ast)$. 
+
+\paragraph{Case $m = n$ (square system).}
+
+If $J(x^\ast)$ is nonsingular ($\det J(x^\ast) \neq 0$), then $x^\ast$ is a locally unique solution.
+In this case, the system is locally well-posed, and there exists a neighborhood of $x^\ast$ in which no other solutions exist.
+
+If $J(x^\ast)$ is singular, local uniqueness is not guaranteed.
+
+\paragraph{Case $m < n$ (underdetermined system).}
+
+If $J(x^\ast)$ has full row rank $m$, then the solution set near $x^\ast$ is not isolated. Instead, it forms a smooth manifold of dimension $n - m$.
+Hence, there are infinitely many nearby solutions, parameterized by $n-m$ free variables.
+
+\paragraph{Case $m > n$ (overdetermined system).}
+
+In general, an overdetermined system has no solution.
+A necessary condition for a local solution is that the equations are compatible at $x^\ast$.
+
+\paragraph{Global Solution.}
+
+The Jacobian $J(x^\ast)$ characterizes only the \emph{local} structure of the solution set. Even if $J(x^\ast)$ is nonsingular and $x^\ast$ is locally unique, the nonlinear system may possess additional isolated solutions elsewhere in $\mathbb{R}^n$. Consequently, local invertibility of the Jacobian does not imply global uniqueness.
+
+Global existence or uniqueness of a solution to $r(x)=0$ requires additional structural assumptions on $r$, such as global injectivity or strong monotonicity. In the absence of such global properties, the existence and uniqueness of a solution can not be guaranteed from an analysis of the Jacobian.
+
+\section{Sensetivity Analysis of a Solution}
+
+\subsection{SVD-decomposition and singular values}
+\[
+J = U \Sigma V^\top
+\]
+
+\subsection{Condition Number}
+
+\[
+\kappa(J) = \frac{\sigma_1}{\sigma_p}.
+\]
+
+A large condition number indicates that small perturbations in the residual may cause large changes in the solution.
+
+\subsection{Scaling to improve condition number}
+Ruiz method ++
+
+\input{chapters/3-1-optmet}
+
+
+
+
+
+

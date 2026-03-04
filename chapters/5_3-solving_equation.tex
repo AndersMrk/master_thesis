@@ -1,0 +1,162 @@
+\newpage
+\newpage
+\section{Solving the Equations}
+\label{sec:solving_eq}
+
+Given a set of measurements $\mathcal{M}$ and using \cref{eq:main_function}, a residual function can be defined by
+\begin{equation}
+    \label{eq:residual}
+    r(\mathbf{x}) := F(\mathbf{x},\mathcal{M}_0) - \mathcal{M}_L.
+\end{equation}
+
+Note that
+\begin{equation*}
+    \frac{\partial r(\mathbf{x})}{\partial \mathbf{x}} =\frac{\partial F(\mathbf{x},\mathcal{M}_0)}{\partial \mathbf{x}} = J(\mathbf{x}).
+\end{equation*}
+
+The problem to solve can then be formulated as
+\begin{equation*}
+    r(\mathbf{x})=0
+\end{equation*}
+following the constraints in \cref{eq:constraints}.\\
+
+\subsection{Re-Parametrization}
+To enforce the constraints, the problem is re-parametrized by introducing an unconstrained variable
+\begin{equation*}
+\mathbf{y}
+=
+\bigl[
+\lambda_1,\dots,\lambda_{n-1},\,
+s,\,
+\gamma_1,\dots,\gamma_n
+\bigr]
+\in \mathbb{R}^{2n},
+\end{equation*}
+
+and defining a smooth mapping $\mathbf{x} = g(\mathbf{y})$ into the feasible set.
+
+The positivity constraint $c_i > 0$ is enforced by
+\begin{equation}
+\label{eq:re_param_c}
+c_i = e^{\gamma_i}
+\end{equation}
+
+For the lengths $L_i$, both positivity and the inequality constraint
+\begin{equation*}
+\sum_{i=1}^n L_i < L
+\end{equation*}
+must be satisfied. This is achieved in two steps.
+
+First, using a softmax-type normalization, define weights $\alpha_i > 0$ by
+\begin{equation}
+\label{eq:a_i_softmax}
+\alpha_i
+=\begin{cases}
+\dfrac{e^{\lambda_i}}{1+\sum_{k=1}^{n-1} e^{\lambda_k}}, & i\in\{1,2,\dots,n-1\},\\[16pt]
+\dfrac{1}{1+\sum_{k=1}^{n-1} e^{\lambda_k}}, & i=n.
+\end{cases}
+\end{equation}
+By construction,
+\begin{equation*}
+\alpha_i > 0,
+\qquad
+\sum_{i=1}^n \alpha_i = 1.
+\end{equation*}
+
+Second, introduce a scalar $s$ and define the logistic function,
+\begin{equation}
+\label{eq:rho}
+\rho = \frac{1}{1 + e^{-s}}.
+\end{equation}
+This ensures
+\begin{equation*}
+0 < \rho < 1.
+\end{equation*}
+
+The length parameters are then given by
+\begin{equation}
+L_i = L \rho \alpha_i.
+\end{equation}
+Since $\alpha_i > 0$ and $0 < \rho < 1$, it follows that
+\begin{equation*}
+L_i > 0,
+\qquad
+\sum_{i=1}^n L_i
+= L \rho \sum_{i=1}^n \alpha_i
+= L \rho < L.
+\end{equation*}
+
+In summary, the mapping $g : \mathbb{R}^{2n} \to \mathbb{R}^{2n}$ is defined by
+\begin{equation}
+\label{eq:g_func}
+\mathbf{x}=g(\mathbf{y})
+=
+\begin{bmatrix}
+L \rho \alpha_1 & \cdots & L \rho \alpha_n & e^{\gamma_1} & \cdots & e^{\gamma_n}\\
+\end{bmatrix},
+\end{equation}
+where $\alpha_i$ and $\rho$ are defined by \cref{eq:a_i_softmax,eq:rho}.\\
+
+This re-parametrization yields a smooth, unconstrained formulation in $\mathbf{y}$ that automatically satisfies all constraints and is therefore suitable for unconstrained optimization methods, such as the methods presented in \autoref{sec:theory_optmet}.\\
+
+The residual function from \cref{eq:residual} can simply be expressed in terms of $\mathbf{y}$ by
+\begin{equation}
+\label{eq:ry}
+    r_y(\mathbf{y}):=r(g(\mathbf{y})).
+\end{equation}
+The new Jacobian Matrix can be calculated using the chain rule,
+\begin{equation}
+\label{eq:Jy}
+    J_y(\mathbf{y}):=\frac{\partial r_y(\mathbf{y})}{\partial\mathbf{y}} 
+    = \frac{\partial r(g(\mathbf{y}))}{\partial\mathbf{y}} 
+    = \frac{\partial r(g(\mathbf{y}))}{\partial\mathbf{x}} \frac{\partial \mathbf{x}}{\partial\mathbf{y}}
+    = J(\mathbf{x}) \frac{\partial \mathbf{x}}{\partial\mathbf{y}},
+\end{equation}
+where the derivation of $\frac{\partial \mathbf{x}}{\partial\mathbf{y}}$ is presented in \autoref{app:calc_dydx}. 
+
+\subsection{Solver Design}
+
+Present how the solver is designed, illustrated by a flow-chart, referencing to Theory.
+\begin{figure}[ht]
+    \centering
+    \input{figures/tikz_solver_flow_chart}    
+    \caption{Hello}
+    \label{fig:solver_flow_chart}
+\end{figure}
+
+
+
+\section{Discussion on Solutions (not a great title)}
+
+Something something about ...
+To solve for all the unknowns, there must be enough measurements at different steady-state operating points. Since each operating point yields two equations, and there are $2n$ unknown variables, it is necessary that
+\begin{equation*}
+    m \geq n,
+\end{equation*}
+assuming all $m$ measurements provide independent equations.
+
+Assuming $n$, $\theta$, and $L$ are known, $m \geq n$, and $\mathcal{M}$ provides sufficiently independent equations $r(\mathbf{x})$. It should be an easy argument to make that a solution $\mathbf{x^*}$, that solves $r(\mathbf{x^*})=0$, will be a true solution of leak parameters for the mapping $\mathcal{M}_0 \mapsto \mathcal{M}_L$ (Since this is all we have to base our solution on). Knowing if $\mathbf{x^*}$ is the true solution to the pipe where $\mathcal{M}$ was obtained is a different question.\\
+
+***\\
+
+Results presented in \autoref{sec:result_multiple_solutions} strongly suggest that there are two unique solutions to the equation $r_y(\mathbf{y})=0$ for three leaks ($n=3$). This result suggests that the leak problem does not have a unique solution for $n>2$. For this reason, this work will not try to prove that the problem has a globally unique solution. There will also not be presented a proof that there is no unique solution, as the simulation results that follow are considered sufficient. \\
+
+***\\
+
+Something something about the uniqueness of the solution, global space etc.
+Under which conditions does
+\begin{equation}
+\label{eq:fx}
+    r(\mathbf{x}) = 0
+\end{equation}
+have a unique solution, no solution or many solutions?\\
+
+Lets define the problem of identifying $n$ leaks in a pipe as
+\begin{equation*}
+    \mathcal{PL}_n: \mathcal{M} \in \mathbb{R}^{m\times 4} \mapsto \mathbf{x} \in \mathbb{R}^{2n}
+\end{equation*}
+Given a unique solution $\mathbf{x}^*$ of \cref{eq:fx}, can we prove that
+\begin{enumerate}
+    \item $\mathbf{x}^*$ is a solution to  $\mathcal{PL}_n(\mathcal{M})$
+    \item $\mathbf{x}^*$ is a \emph{unique} solution to $\mathcal{PL}_n(\mathcal{M})$
+\end{enumerate}

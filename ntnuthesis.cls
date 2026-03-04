@@ -24,6 +24,7 @@
 \RequirePackage{tikz}
 \usetikzlibrary{arrows.meta}
 \usetikzlibrary{calc,positioning}
+\usetikzlibrary{shapes.geometric}
 
 % One or twosided paging
 \newcommand{\paging}{twoside}
@@ -54,6 +55,7 @@
         \renewcommand{\lstlistlistingname}{Code Listings}
         \crefname{listing}{Code listing}{Code listings}
         \crefname{paper}{Paper}{Papers}
+        \crefname{lemma}{Lemma}{Lemmas}
         \addto\captionsamerican{
             \renewcommand{\contentsname}{Contents}
             \renewcommand{\listfigurename}{Figures}
@@ -71,16 +73,26 @@
 
 \LoadClass[a4paper,11pt,openright,\paging]{report}
 
+%% Custom style
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+
 %% CUSTOM PACKAGE LOADING
 
 \RequirePackage{amsmath}
+\RequirePackage{amsthm}
+\RequirePackage[most]{tcolorbox}
+\tcbuselibrary{theorems}
+
+\RequirePackage{multirow}
+
 
 \RequirePackage[ruled,vlined]{algorithm2e}
 \AtBeginDocument{
   \renewcommand{\algorithmautorefname}{Algorithm}
 }
 \providecommand{\algorithmautorefname}{Algorithm}
-
 
 %% PACKAGE LOADING
 
@@ -99,7 +111,7 @@
 \RequirePackage[                            % subfigures with captions within figures
     font=small,                             % and customisation of captions
     labelfont=bf,
-    margin=\parindent
+    margin=1.5em
 ]{caption}
 \RequirePackage[                           % and subfigures with captions within figures
     font=small,
@@ -131,7 +143,31 @@
 \fi
 \RequirePackage[acronym]{glossaries}        % create a glossary and acronym list
 
+% Autoref naming
+\renewcommand{\chapterautorefname}{Chapter}
+\renewcommand{\sectionautorefname}{Section}
+\renewcommand{\subsectionautorefname}{Subsection}
+\renewcommand{\subsubsectionautorefname}{Subsubsection}
+\AtBeginDocument{%
+  \makeatletter
+  \providecommand*{\tcb@cnt@lemmaautorefname}{Lemma}%
+  \makeatother
+}
+
 %% CUSTOMISATION
+\definecolor{lemmablue}{HTML}{006083}
+\newtcbtheorem[number within=chapter]{lemma}{Lemma}%
+{
+  colback=white,
+  colframe=lemmablue,
+  boxrule=0.5pt,
+  arc=2mm,
+  %sharp corners,
+  fonttitle=\bfseries,
+  breakable,
+  label type=lemma
+}%
+{lem}
 
 % Page geometry and spacing (same for even and odd pages)
 \geometry{left=4cm, right=4cm, top=4cm, bottom=4.5cm}

@@ -1,0 +1,146 @@
+\section{Deriving the System States (Forward Pass)}
+
+In this section, the equations that hold between measurements $\mathcal{M}$ and leak parameters $\mathbf{x}$ will be derived.
+
+Consider a pipe with $n$ leaks, where the length of the pipe, $L$, and the resistance coefficient, $\theta$, are assumed to be known. The goal is to identify the set of unknown leak parameters $\{z_i,c_i\},\;i\in\{1,2,\dots,n\}$ given a set of boundary measurements $\mathcal{M}\in\mathbb{R}^{4 \times m}$. The leak positions $z_i$ are uniquely defined by the length of the non-leaking pipe sections $L_i$ by 
+\begin{equation*}
+    z_i=\sum_{k=1}^i L_k.
+\end{equation*}
+Let
+\begin{equation*}
+    \mathbf{x} := [L_1,\dots,L_n,c_1,\dots,c_n] \in \mathbb{R}^{2n}
+\end{equation*}
+define the vector of unknown leak parameters, constrained to
+\begin{equation}
+\label{eq:constraints}
+    L_i>0,\quad c_i>0, \quad \sum_{i=1}^n L_i<L.
+\end{equation}
+
+A given measurement $\mu^{(j)}\in\mathcal{M}$ defines a steady-state operating point. For this operating point, the system states $h^{(j)}_i$, $q^{(j)}_i$ and $\tilde{q}^{(j)}_i$ are constant. Following the upstream equation for head, \cref{eq:upstream_head}, $n+1$ equations are defined as
+\begin{equation}
+\label{eq:phi_h}
+    \begin{bmatrix}
+    h_1^{(j)}\\[0.4em]
+    \vdots\\
+    h_i^{(j)}\\
+    \vdots\\
+    h_{n+1}^{(j)}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+    h_0^{(j)}-\theta L_1 \left(q_0^{(j)}\right)^2\\
+    \vdots\\
+    h_{i-1}^{(j)}-\theta L_{i} \left(q_{i-1}^{(j)}\right)^2\\
+    \vdots\\
+    h_{n}^{(j)}-\theta L_{n+1} \left(q_{n}^{(j)}\right)^2
+    \end{bmatrix},
+\end{equation}
+where $L_{n+1}:=L-\sum_{i=1}^n L_i$.
+
+\newpage
+Similarly, $n$ equations are defined by the upstream equation for flow, \cref{eq:upstream_flow}, by
+\begin{equation}
+\label{eq:phi_q}
+    \begin{bmatrix}
+    q_1^{(j)}\\[0.4em]
+    \vdots\\
+    q_i^{(j)}\\
+    \vdots\\
+    q_{n}^{(j)}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+    q_0^{(j)}-\tilde{q}^{(j)}_1\\[0.4em]
+    %q_1^{(j)}-\tilde{q}^{(j)}_2\\
+    \vdots\\
+    q_{i-1}^{(j)}-\tilde{q}^{(j)}_{i}\\
+    \vdots\\
+    q_{n-1}^{(j)}-\tilde{q}^{(j)}_{n}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+    q_0^{(j)} - c_1 \sqrt{h_1^{(j)}}\\[0.4em]
+    \vdots\\
+    q_{i-1}^{(j)} - c_{i} \sqrt{h_{i}^{(j)}}\\
+    \vdots\\
+    q_{n-1}^{(j)} - c_{n} \sqrt{h_{n}^{(j)}}
+    \end{bmatrix}.
+\end{equation}
+
+
+From \cref{eq:phi_h,eq:phi_q}, it can be seen that the full set of system states,
+\begin{equation*}
+    \phi^{(j)}=\{h_1^{(j)},\dots,h_{n+1}^{(j)},q_1^{(j)},\dots,q_{n}^{(j)}\}\in\mathbb{R}^{2n+1},
+\end{equation*}
+can be structured into an iterative forward pass. Each iteration is defined by $f_{fp}({\phi_{i-1}};\mathbf{x}_i): \{h_{i-1},q_{i-1}\}\mapsto\{h_{i},q_{i}\}$, illustrated by \autoref{fig:single_forward_pass}. Where $\phi_{i-1}=\{h_{i-1},q_{i-1}\}$ and $\mathbf{x}_i=\{c_i,L_i\}$. 
+
+\begin{figure}[h!]
+    \centering
+    \input{figures/tikz_single_forward_pass}
+    \caption{Block diagram of a single iteration in the forward pass, $f_{fp}({\phi_{i-1}};\mathbf{x}_i)$.}
+    \label{fig:single_forward_pass}
+\end{figure}
+
+\autoref{fig:complete_forward_pass} illustrates how each iteration can be chained to obtain the forward pass $\{h_{0},q_{0}\}\mapsto\{h_{n}, q_n\}$. 
+
+\begin{figure}[h!]
+    \centering
+    \input{figures/tikz_complete_forward_pass}
+    \caption{Chaining of forward pass iterations. Mapping $\{h_{0},q_{0}\}\mapsto\{h_{n}, q_n\}$}.
+    \label{fig:complete_forward_pass}
+\end{figure}
+
+An important observation from the structure of the forward pass is that the system states $\phi^{(j)}$ are uniquely defined by $\mathbf{x}$ and the inlet measurements $h_0^{(j)}$ and $q_0^{(j)}$. A stronger observation is that $\phi_i^{(j)}$ is uniquely defined by $\phi_{i-1}^{(j)}$ and $\mathbf{x}_i$ which is formalized in \autoref{lem:forwardpass}.
+
+\begin{lemma}{}{forwardpass}
+The system states $\phi_i^{(j)}=\{h_i^{(j)},q_i^{(j)}\}$ are uniquely defined by $\{q_0,h_0,L_1,\dots,L_i,c_1,\dots,c_i\}$, and is not affected by any downstream variabeles: $\mathbf{x}_k,\, \phi_k^{(j)},\,k>i$.
+\end{lemma}
+
+The resulting head and flow at the outlet from the forward pass calculation are defined by
+\begin{equation}
+\label{eq:F_estimate}
+F^{(j)}(\mathbf{x}, h_0^{(j)},q_0^{(j)})
+= \begin{bmatrix}
+    h_{n+1}^{(j)} \\[0.4em]
+    q_n^{(j)}
+\end{bmatrix}
+= \begin{bmatrix}
+    h_n^{(j)} - \theta L_{n+1} \left(q_n^{(j)}\right)^2 \\[0.4em]
+    q_n^{(j)}
+\end{bmatrix}
+\end{equation}
+
+For a given measurement $\mu^{(j)}$, the forward pass calculation of outlet flow and head must equate the outlet measurements:
+\begin{equation}
+    \label{eq:solve_j}
+    F^{(j)}(\mathbf{x}, h_0^{(j)},q_0^{(j)}) = \begin{bmatrix}
+        h_L^{(j)}\\[0.4em]
+        q_L^{(j)}
+    \end{bmatrix}.
+\end{equation}
+
+
+
+
+
+By eliminating the state variables, $\phi^{(j)}$, through the forward pass, each measurement $j$ yields two scalar equations by \cref{eq:solve_j} in the global unknown vector space $\mathbf{x}\in\mathbb{R}^{2n}$. For $m$ different measurements, $2m$ equations is obtained by stacking \cref{eq:solve_j}. Let $\mathcal{M}_0$ and $\mathcal{M}_L$ be the input and output measurements. The complete set of equations is then defined by
+\begin{equation}
+\label{eq:main_function}
+    F(\mathbf{x},\mathcal{M}_0) := 
+    \begin{bmatrix}
+        F^{(j)}(\mathbf{x}, h_0^{(1)},q_0^{(1)})\\
+        \vdots\\
+        F^{(j)}(\mathbf{x}, h_0^{(m)},q_0^{(m)})
+    \end{bmatrix}
+    = \mathcal{M}_L :=
+        \begin{bmatrix}
+        h_L^{(1)}\\[0.4em]
+        q_L^{(1)}\\
+        \vdots\\
+        h_L^{(m)}\\[0.4em]
+        q_L^{(m)}\\
+    \end{bmatrix}.
+\end{equation}
+
+
+\newpage

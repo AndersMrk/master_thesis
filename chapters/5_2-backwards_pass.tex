@@ -1,0 +1,196 @@
+\section{Deriving the Derivatives (Backward Pass)}
+
+In this section, the analytical expression for the Jacobian Matrix,
+\begin{equation*}
+    J(\mathbf{x}):=\frac{\partial F(\mathbf{x},\mathcal{M}_0)}{\partial \mathbf{x}} \in \mathbb{R}^{2m\times 2n},
+\end{equation*}
+will be derived. The Jacobian Matrix will be later used to solve \cref{eq:main_function}, as discusses in \autoref{sec:solving_eq}.\\
+
+To simplify notation, let
+\begin{equation*}
+    F_h:= h_n - \theta L_{n+1} q_n^2,\quad F_q := q_n,
+\end{equation*}
+which are simplified terms of \cref{eq:F_estimate}.
+
+The Jacobian can then be constructed by solving 
+$\frac{\partial F_h}{\partial L_i}$, 
+$\frac{\partial F_h}{\partial c_i}$,
+$\frac{\partial F_q}{\partial L_i}$ and
+$\frac{\partial F_q}{\partial c_i}$
+for $i\in \{1,2,\dots,n\}$.
+Given that
+\begin{equation*}
+    \frac{\partial}{\partial L_i} L_{n+1} = \frac{\partial}{\partial L_i} \left(L-\sum_{i=1}^n L_i\right) = -1,
+\end{equation*}
+the derivatives equate to
+\begin{align}
+    \frac{\partial F_h}{\partial L_i} &= \frac{\partial h_n}{\partial L_i} 
+    - 2 \theta L_{n+1} q_n \frac{\partial q_{n}}{\partial L_i} 
+    + \theta q_n^2 \label{eq:partial_fh}\\
+    \frac{\partial F_h}{\partial c_i} &= \frac{\partial h_n}{\partial c_i}
+     - 2 \theta L_{n+1} q_n \frac{\partial q_{n}}{\partial c_i}\\
+    \frac{\partial F_q}{\partial L_i} &= \frac{\partial q_{n}}{\partial L_i}\\
+    \frac{\partial F_q}{\partial c_i} &= \frac{\partial q_{n}}{\partial c_i} \label{eq:partial_fq}
+\end{align}
+The remaining differential equations,
+\begin{equation*}
+    \frac{\partial h_{n}}{\partial L_i},\; 
+    \frac{\partial h_{n}}{\partial c_i},\; 
+    \frac{\partial q_{n}}{\partial L_i},\; 
+    \frac{\partial q_{n}}{\partial c_i},
+\end{equation*}
+can be expressed in matrix form,
+\begin{equation*}
+\frac{\partial \phi_{n}}{\partial \mathbf{x}_i} = 
+    \begin{bmatrix}
+        \frac{\partial h_n}{\partial L_i} & \frac{\partial h_n}{\partial c_i} \\
+        \frac{\partial q_n}{\partial L_i} & \frac{\partial q_n}{\partial c_i}
+    \end{bmatrix},
+\end{equation*}
+and solved using the chain rule by
+\begin{equation*}
+    \frac{\partial \phi_{n}}{\partial \mathbf{x}_i} = 
+    \frac{\partial \phi_{n}}{\partial \phi_{i}} \frac{\partial \phi_i}{\partial \mathbf{x}_i} =
+    \frac{\partial \phi_{n}}{\partial \phi_{n-1}} \cdots
+    \frac{\partial \phi_{i+1}}{\partial \phi_{i}}
+    \frac{\partial \phi_{i}}{\partial \mathbf{x}_i}.
+\end{equation*}
+Let
+\begin{equation*}
+    A_i:=\frac{\partial \phi_i}{\partial \phi_{i-1}} = \frac{\partial f_{fp}(\phi_{i-1}; \mathbf{x}_i )}{\partial \phi_{i-1}},
+\end{equation*}
+be the local Jacobian for a single forward pass iteration, where $\phi_{i-1}$ are treated as independent state variables 
+\footnote{Treating $\phi_{i-1}$ as independent state variables means that $\frac{\partial q_{i-1}}{\partial h_{i-1}}=0$ even though $q_{i-1}$ is a function of $h_{i-1}$ in the global view.}. From \autoref{lem:forwardpass}, it follows that
+\begin{equation*}
+    \frac{\partial \phi_k}{\partial \phi_i}=\mathbf{0}, k<i.
+\end{equation*}
+
+From \cref{eq:upstream_head}, the partial derivatives for $h_i$ in $A_i$ are computed as
+\begin{align*}
+    \frac{\partial h_i}{\partial h_{i-1}} &= 1, \\
+    \frac{\partial h_i}{\partial q_{i-1}} &= -2 \theta L_i q_{i-1}.
+\end{align*}
+From \cref{eq:upstream_flow}, the partial derivatives of $q_i$ are
+\begin{align*}
+    \frac{\partial q_i}{\partial h_{i-1}} &= \frac{\partial q_i}{\partial h_{i}}\frac{\partial h_i}{\partial h_{i-1}} = -\frac{c_i}{2 \sqrt{h_{i}}}, \\
+    \frac{\partial q_i}{\partial q_{i-1}} &= 1 - \frac{c_i}{2 \sqrt{h_i}}\frac{\partial h_i}{\partial q_{i-1}}
+    = 1+\frac{c_i \theta L_i q_{i-1}}{\sqrt{h_i}}.
+\end{align*}
+Put in matrix form, $\frac{\partial \phi_i}{\partial \phi_{i-1}}$, is expressed as 
+\begin{equation}
+\label{eq:A_i}
+A_i=\begin{bmatrix}
+    1 & -2 \theta L_i q_{i-1} \\[0.4em]
+    \displaystyle
+    -\frac{c_i}{2 \sqrt{h_{i}}} & \displaystyle 1+\frac{c_i \theta L_i q_{i-1}}{\sqrt{h_i}}
+\end{bmatrix}.
+\end{equation}
+
+The partial derivatives in $A_i$ can be chained for the backwards pass by defining
+\begin{equation*}
+    G_i := \frac{\partial \phi_n}{\partial \phi_i} = A_n A_{n-1} \cdots A_{i+1},
+\end{equation*}
+which can be solved through backward iteration by
+\begin{equation*}
+    G_i = G_{i+1}A_{i+1}, \quad G_n:=\mathbf{I}.
+\end{equation*}
+
+Let
+\begin{equation*}
+    B_i:=\frac{\partial \phi_i}{\partial \mathbf{x}_i}.
+\end{equation*}
+From \autoref{lem:forwardpass}, it follows that
+\begin{equation*}
+    \frac{\partial \phi_k}{\partial \mathbf{x}_i} = \mathbf{0},\; k<i.
+\end{equation*}
+The differential equations of $B_i$ can then be solved from \cref{eq:upstream_head,eq:upstream_flow},
+\begin{align*}
+    \frac{\partial h_i}{\partial L_i} &= -\theta q_{i-1}^2,\\
+    \frac{\partial h_i}{\partial c_i} &= 0, \\
+    \frac{\partial q_i}{\partial L_i} &= - \frac{c_i}{2\sqrt{h_i}} \frac{\partial h_i}{\partial L_i} = 
+    \frac{c_i \theta q_{i-1}^2}{2 \sqrt{h_i}}, \\
+    \frac{\partial q_i}{\partial c_i} &= -\sqrt{h_i}, \\
+\end{align*}
+which yields
+\begin{equation}
+\label{eq:B_i}
+B_i=\begin{bmatrix}
+    -\theta q_{i-1}^2 & 0 \\[0.4em]
+    \displaystyle
+    \frac{c_i \theta q_{i-1}^2}{2 \sqrt{h_i}} & -\sqrt{h_i}
+\end{bmatrix}.
+\end{equation}
+To summarise, the partial derivatives are derived by solving
+\begin{equation}
+    \label{eq:derivative_equation}
+    \frac{\partial \phi_{n}}{\partial \mathbf{x}_i} =
+     A_n A_{n-1} \cdots A_{i+1} B_i =
+    G_i B_i.
+\end{equation}
+
+A proposed method for calculating $\phi_i$ and $\frac{\partial \phi_n}{\partial \mathbf{x}_i}$ for all $i\in\{1,2,\dots,n\}$ in $O(n)$ time is given by \autoref{alg:forward_backwards_pass}. The returned list $D$ takes the form
+
+\begin{equation*}
+    D = \left\{\frac{\partial \phi_n}{\partial \mathbf{x}_1}, \cdots ,\frac{\partial \phi_n}{\partial \mathbf{x}_n} \right\}
+\end{equation*}
+
+\begin{algorithm}[ht]
+\caption{Forward and Backwards Pass}
+\label{alg:forward_backwards_pass}
+%\caption{hello}
+
+\DontPrintSemicolon
+\SetKwFunction{func}{ForwardBackwardPass}
+\SetKwFunction{Afunc}{CalcA}
+\SetKwFunction{Bfunc}{CalcB}
+\SetKwFunction{Reverse}{Reverse}
+\SetKwFunction{return}{Return}
+\SetKwProg{Fn}{Function}{:}{}
+\SetKwInput{KwNote}{\normalfont Note}
+\Fn{\func{$L,c,h_0,q_0,n,\theta$}}{
+    \KwNote{\textit{$L[0]$ and $c[0]$ are dummy values to make indexing consistent with equations: ($L_i:=L[i], c_i:=c[i]$).}}
+    \;
+    $h \gets [h_0], \; q \gets [q_0]$\;
+    \tcp{Forward pass}
+    \For{$i \gets 1$ \KwTo n}{
+        $h.\mathrm{append}\!\left(h[i-1] - \theta \cdot L[i] \cdot q[i-1]^2\right)$ \tcp*[r]{\cref{eq:upstream_head}}
+
+        $q.\mathrm{append}\!\left(q[i-1] - c[i] \cdot \sqrt{h[i]}\right)$ \tcp*[r]{\cref{eq:upstream_flow}}
+    }
+    \tcp{Backward pass}
+    G $\gets I^{2\times2}$,$\;$ D $\gets$ [ ] \;
+    \For{$i \gets n$ \KwTo $1$}{
+        B $\gets$ \Bfunc{$c[i],h[i],q[i-1],\theta$} \tcp*[r]{\cref{eq:B_i}}
+        $\text{D}.\mathrm{append}\!\left( G\, @\, B\right)$ \;
+        \If{$i > 1$}{
+            A $\gets$ \Afunc{$L[i],c[i],h[i],q[i-1],\theta$} \tcp*[r]{\cref{eq:A_i}}
+            G $\gets$ G $@$ A
+        }
+    }
+    D $\gets$ \Reverse{\normalfont D} \;
+    \return $h$, $q$, D \; 
+}
+\end{algorithm}
+
+The full Jacobian Matrix can be constructed by some simple rearranging. Let 
+\begin{align*}
+    J^{(j)}(\mathbf{x)} :=& \frac{\partial F(\mathbf{x},\mu_0^{(j)})}{\partial \mathbf{x}} \in \mathbb{R}^{2\times 2n}\\[0.2em]
+    =& \begin{bmatrix}
+    \frac{\partial F_h^{(j)}}{\partial L_1} & \cdots & \frac{\partial F_h^{(j)}}{\partial L_n} & 
+    \frac{\partial F_h^{(j)}}{\partial c_1} & \cdots & \frac{\partial F_h^{(j)}}{\partial c_n} \\[0.4em]
+    \frac{\partial F_q^{(j)}}{\partial L_1} & \cdots & \frac{\partial F_q^{(j)}}{\partial L_n} & 
+    \frac{\partial F_q^{(j)}}{\partial c_1} & \cdots & \frac{\partial F_q^{(j)}}{\partial c_n}
+    \end{bmatrix},
+\end{align*}
+where all partial derivatives are defined by adding the superscript $(j)$ to Equations (\ref{eq:partial_fh} $-$ \ref{eq:partial_fq}) and solved by the elements in $D^{(j)}$.
+
+Finally,
+\begin{equation}
+\label{eq:jacobian}
+    J(\mathbf{x}) = \begin{bmatrix}
+        J^{(1)}\\
+        \vdots\\
+        J^{(m)}
+    \end{bmatrix}
+    \in \mathbb{R}^{2m\times2n}.
+\end{equation}
