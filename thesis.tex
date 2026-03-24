@@ -17,7 +17,7 @@
 %\includepdf[pages=-]{AI_declaration.pdf}
 
 \input{chapters/0a-abstract.tex}
-% \input{chapters/0b-sammendrag.tex}
+\input{chapters/0b-sammendrag.tex}
 % \input{chapters/0c-preface}
 
 \tableofcontents
@@ -38,14 +38,12 @@
 \input{chapters/2-literature}
 \input{chapters/3-theory}
 \input{chapters/4-model}
+\input{chapters/5-derivations}
 
-\chapter{Derivations (not a great title)}
-\input{chapters/5_1-forward_pass}
-\input{chapters/5_2-backwards_pass}
-\input{chapters/5_3-solving_equation}
-
+\chapter{Solver Performance}\label{chap:results_performance}
 \input{chapters/6-solver_performance}
-\input{chapters/7-many_leaks_analysis}
+\chapter{Numerical Analysis of Many Leaks}\label{chap:results_issues_gt_3}
+%\input{chapters/7-many_leaks_analysis}
 \input{chapters/8-conclusion}
 
 \chapter*{\bibname}

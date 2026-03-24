@@ -1,9 +1,6 @@
-\section{Numerical Analysis of Many Leaks}
-\label{sec:results_issues_gt_3}
-
 This section investigates why the proposed formulation and solver, which perform reliably for $n=2$ and $n=3$, fail to consistently identify correct leak parameters when $n \geq 4$. The analysis is based on a systematic simulation study of the Jacobian matrix, solver convergence behaviour, and the effect of scaling and measurement design. The results indicate that the limitation is not primarily algorithmic, but structural and numerical, rooted in severe ill-conditioning of the nonlinear least-squares problem.
 
-\subsection{Method}\label{sec:cond-method}
+\section{Method}\label{sec:cond-method}
 
 The analysis is based on the Jacobian matrix $J(x^*) \in \mathbb{R}^{2m \times 2n}$ evaluated at the true parameter vector $x^* = [L_1, \dots, L_n, c_1, \dots, c_n]^T$.
 Since $F(x^*) = 0$ by construction (the measurements are generated from the true parameters), the Jacobian at $x^*$ fully characterises the local sensitivity of the residual to parameter perturbations.
@@ -18,7 +15,7 @@ A high condition number can arise from two distinct causes.
 To distinguish the two, the \emph{minimum pairwise column angle} is computed: each column of $J$ is normalised to unit length, and the smallest angle between any two normalised columns is reported.
 If the column angles are small, no diagonal scaling can improve the condition number, because scaling changes column lengths but not their directions.
 
-\subsubsection{Experimental Setup}
+\subsection{Experimental Setup}
 
 For each number of leaks $n \in \{1, 2, \dots, 8\}$, ten random leak configurations were generated.
 In each configuration, positions $z_i$ were drawn uniformly from $[0.05,\, 0.95]$ with a minimum spacing of $0.05$ between consecutive leaks, and coefficients $c_i$ were drawn uniformly from $[0.01,\, 0.2]$.
@@ -34,9 +31,9 @@ The effect of measurement diversity was tested for $n = 4$ by varying the inlet 
 The effect of measurement count was tested for $n \in \{3, 4, 5\}$ with $m$ ranging from $n{+}1$ to $6n$.
 
 
-\subsection{Results}\label{sec:cond-results}
+\section{Results}\label{sec:cond-results}
 
-\subsubsection{Jacobian Conditioning versus Number of Leaks}
+\subsection{Jacobian Conditioning versus Number of Leaks}
 
 Table~\ref{tab:jacobian-cond} presents the condition number, smallest singular value, and minimum column angle of the Jacobian at the true solution, averaged over ten random configurations per~$n$.
 
@@ -69,7 +66,7 @@ The minimum column angle decreases simultaneously: from $56.5^\circ$ at $n = 1$ 
 This indicates that the Jacobian columns for adjacent pipe segments become nearly parallel, and the system loses the ability to distinguish perturbations to neighbouring leak parameters from outlet measurements alone.
 
 
-\subsubsection{Effect of Scaling}
+\subsection{Effect of Scaling}
 
 Table~\ref{tab:scaling} compares the condition number (in $\log_{10}$) under five scaling strategies, averaged over ten configurations per $n$.
 
@@ -98,7 +95,7 @@ For $n \geq 3$, no strategy reduces $\log_{10} \kappa$ by more than $0.3$, and t
 This confirms that the ill-conditioning for $n \geq 3$ is \emph{geometric}: the Jacobian columns are nearly collinear, and scaling cannot change column directions.
 
 
-\subsubsection{Effect of Measurement Diversity}
+\subsection{Effect of Measurement Diversity}
 
 Table~\ref{tab:diversity} shows how the range of inlet conditions affects conditioning for $n = 4$ with $m = 8$ measurements.
 
@@ -123,7 +120,7 @@ However, widening the range beyond ``Medium'' gives diminishing returns: the con
 This plateau reflects the intrinsic ill-conditioning of the problem---once measurements provide sufficient excitation to probe the system, additional diversity cannot resolve the near-parallel Jacobian columns.
 
 
-\subsubsection{Effect of Number of Measurements}
+\subsection{Effect of Number of Measurements}
 
 Table~\ref{tab:more-meas} shows how the condition number changes with the number of measurements $m$ for $n \in \{3, 4, 5\}$.
 
@@ -164,7 +161,7 @@ The largest improvement occurs in the first doubling (from $m \approx n$ to $m \
 Additional measurements increase $\sigma_{\max}$ (more signal) but cannot lift $\sigma_{\min}$, because the near-null directions of the Jacobian are inherent to the physics: no linear combination of outlet measurements can resolve the compound effect of shifting adjacent leak positions in opposite directions.
 
 
-\subsection{Discussion}\label{sec:cond-discussion}
+\section{Discussion}\label{sec:cond-discussion}
 
 The results show that the inverse problem of identifying $n$ leaks from inlet/outlet measurements is fundamentally limited by the conditioning of the Jacobian.
 Each additional leak increases $\log_{10} \kappa$ by approximately two units, meaning the condition number grows by roughly two orders of magnitude per leak.

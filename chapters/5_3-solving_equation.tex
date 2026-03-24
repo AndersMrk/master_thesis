@@ -14,14 +14,92 @@ Note that
     \frac{\partial r(\mathbf{x})}{\partial \mathbf{x}} =\frac{\partial F(\mathbf{x},\mathcal{M}_0)}{\partial \mathbf{x}} = J(\mathbf{x}).
 \end{equation*}
 
-The problem to solve can then be formulated as
+The problem to solve can then be formulated as the residual problem,
 \begin{equation*}
-    r(\mathbf{x})=0
+    r(\mathbf{x})=0.
 \end{equation*}
-following the constraints in \cref{eq:constraints}.\\
+As discussed in \autoref{sec:theory_optmet}, it is often more practical to solve the residual problem as a least squares optimization problem by solving
+\begin{equation}
+\label{eq:min_prob}
+    \mathbf{x}^* = \underset{\mathbf{x}\in \mathcal{C}}{\text{argmin}} \frac{1}{2}\|r(\mathbf{x})\|^2,
+\end{equation}
+where $\mathcal{C} \subset \mathbb{R}^{2n}$ is the feasible set defined by the constraints in \cref{eq:constraints}.\\ 
 
 \subsection{Re-Parametrization}
-To enforce the constraints, the problem is re-parametrized by introducing an unconstrained variable
+To enforce the constraints, the constrained variable $\mathbf{x}$ can be re-parameterized by an unconstrained variable, $\mathbf{y} \in \mathbb{R}^{2n}$, by defining $\mathbf{x}=g(\mathbf{y})$ as a smooth mapping $g : \mathbb{R}^{2n} \to \mathcal{C}$.\\
+
+The minimization problem in \cref{eq:min_prob} can then be solved via the unconstrained optimization problem by
+\begin{equation}
+\label{eq:min_prob_via_y}
+\begin{aligned}
+    \mathbf{y}^* &= \underset{\mathbf{y}}{\text{argmin}}\ \frac{1}{2}\| r(g(\mathbf{y}))\|^2, \\
+    \mathbf{x}^* &= g(\mathbf{y}^*).
+\end{aligned}
+\end{equation}
+
+Following the re-parametrization method in \cite{leplat2025}, the positivity constraint for the leak coefficients, $c_i > 0$, is enforced by
+\begin{equation}
+\label{eq:re_param_c}
+c_i = e^{\gamma_i}.
+\end{equation}
+
+For the lengths $L_i$, both positivity and the inequality constraint
+\begin{equation*}
+\sum_{i=1}^n L_i < L
+\end{equation*}
+must be satisfied. This is achieved by combining the simplex and box constraints as presented in \cite{leplat2025}. The simplex constraint is enforced by defining the weights $\alpha_i(\lambda)$ through a softmax-type normalization,
+\begin{equation}
+\label{eq:a_i_softmax}
+\alpha_i(\lambda)
+=\begin{cases}
+\dfrac{e^{\lambda_i}}{1+\sum_{k=1}^{n-1} e^{\lambda_k}}, & i\in\{1,2,\dots,n-1\},\\[16pt]
+\dfrac{1}{1+\sum_{k=1}^{n-1} e^{\lambda_k}}, & i=n,
+\end{cases}
+\end{equation}
+where $\lambda=[\lambda_1,\dots,\lambda_{n-1}]$.
+By construction,
+\begin{equation*}
+\alpha_i(\lambda) > 0,
+\quad
+\sum_{i=1}^n \alpha_i(\lambda) = 1,
+\quad \forall  \lambda \in \mathbb{R}^{n-1}.
+\end{equation*}
+
+The box constraint is enforced by the sigmoid function,
+\begin{equation}
+\label{eq:sigmoid}
+\sigma(s) = \frac{1}{1 + e^{-s}},
+\end{equation}
+which has the property
+\begin{equation*}
+\sigma(s) \in (0,1) \quad \forall s \in \mathbb{R}.
+\end{equation*}
+
+By combining the simplex and box constraints, the length parameters, $L_i$, can be defined by
+\begin{equation}
+L_i = L \sigma(s) \alpha_i(\lambda).
+\end{equation}
+Since $\alpha_i(\lambda) > 0$ and $0 < \sigma(s) < 1$, it follows that
+\begin{equation*}
+L_i > 0,
+\qquad
+\sum_{i=1}^n L_i
+= L \sigma(s) \sum_{i=1}^n \alpha_i(\lambda)
+= L \sigma(s) < L.
+\end{equation*}
+
+In summary, the mapping $g : \mathbb{R}^{2n} \to \mathcal{C}$ is defined by
+\begin{equation}
+\label{eq:g_func}
+\mathbf{x}=g(\mathbf{y})
+=
+\bigl[
+L \sigma(s) \alpha_1(\lambda), \dots, L \sigma(s) \alpha_n(\lambda),
+e^{\gamma_1}, \dots, e^{\gamma_n}
+\bigr],
+\end{equation}
+where $\alpha_i(\lambda)$ and $\sigma(s)$ are defined by \cref{eq:a_i_softmax,eq:sigmoid}, and
+
 \begin{equation*}
 \mathbf{y}
 =
@@ -30,103 +108,39 @@ To enforce the constraints, the problem is re-parametrized by introducing an unc
 s,\,
 \gamma_1,\dots,\gamma_n
 \bigr]
-\in \mathbb{R}^{2n},
+\in \mathbb{R}^{2n}.
 \end{equation*}
-
-and defining a smooth mapping $\mathbf{x} = g(\mathbf{y})$ into the feasible set.
-
-The positivity constraint $c_i > 0$ is enforced by
-\begin{equation}
-\label{eq:re_param_c}
-c_i = e^{\gamma_i}
-\end{equation}
-
-For the lengths $L_i$, both positivity and the inequality constraint
-\begin{equation*}
-\sum_{i=1}^n L_i < L
-\end{equation*}
-must be satisfied. This is achieved in two steps.
-
-First, using a softmax-type normalization, define weights $\alpha_i > 0$ by
-\begin{equation}
-\label{eq:a_i_softmax}
-\alpha_i
-=\begin{cases}
-\dfrac{e^{\lambda_i}}{1+\sum_{k=1}^{n-1} e^{\lambda_k}}, & i\in\{1,2,\dots,n-1\},\\[16pt]
-\dfrac{1}{1+\sum_{k=1}^{n-1} e^{\lambda_k}}, & i=n.
-\end{cases}
-\end{equation}
-By construction,
-\begin{equation*}
-\alpha_i > 0,
-\qquad
-\sum_{i=1}^n \alpha_i = 1.
-\end{equation*}
-
-Second, introduce a scalar $s$ and define the logistic function,
-\begin{equation}
-\label{eq:rho}
-\rho = \frac{1}{1 + e^{-s}}.
-\end{equation}
-This ensures
-\begin{equation*}
-0 < \rho < 1.
-\end{equation*}
-
-The length parameters are then given by
-\begin{equation}
-L_i = L \rho \alpha_i.
-\end{equation}
-Since $\alpha_i > 0$ and $0 < \rho < 1$, it follows that
-\begin{equation*}
-L_i > 0,
-\qquad
-\sum_{i=1}^n L_i
-= L \rho \sum_{i=1}^n \alpha_i
-= L \rho < L.
-\end{equation*}
-
-In summary, the mapping $g : \mathbb{R}^{2n} \to \mathbb{R}^{2n}$ is defined by
-\begin{equation}
-\label{eq:g_func}
-\mathbf{x}=g(\mathbf{y})
-=
-\begin{bmatrix}
-L \rho \alpha_1 & \cdots & L \rho \alpha_n & e^{\gamma_1} & \cdots & e^{\gamma_n}\\
-\end{bmatrix},
-\end{equation}
-where $\alpha_i$ and $\rho$ are defined by \cref{eq:a_i_softmax,eq:rho}.\\
 
 This re-parametrization yields a smooth, unconstrained formulation in $\mathbf{y}$ that automatically satisfies all constraints and is therefore suitable for unconstrained optimization methods, such as the methods presented in \autoref{sec:theory_optmet}.\\
 
-The residual function from \cref{eq:residual} can simply be expressed in terms of $\mathbf{y}$ by
-\begin{equation}
-\label{eq:ry}
-    r_y(\mathbf{y}):=r(g(\mathbf{y})).
-\end{equation}
 The new Jacobian Matrix can be calculated using the chain rule,
 \begin{equation}
 \label{eq:Jy}
-    J_y(\mathbf{y}):=\frac{\partial r_y(\mathbf{y})}{\partial\mathbf{y}} 
-    = \frac{\partial r(g(\mathbf{y}))}{\partial\mathbf{y}} 
+    J_y(\mathbf{y}):= \frac{\partial r(g(\mathbf{y}))}{\partial\mathbf{y}} 
     = \frac{\partial r(g(\mathbf{y}))}{\partial\mathbf{x}} \frac{\partial \mathbf{x}}{\partial\mathbf{y}}
     = J(\mathbf{x}) \frac{\partial \mathbf{x}}{\partial\mathbf{y}},
 \end{equation}
 where the derivation of $\frac{\partial \mathbf{x}}{\partial\mathbf{y}}$ is presented in \autoref{app:calc_dydx}. 
 
+\newpage
 \subsection{Solver Design}
 
-Present how the solver is designed, illustrated by a flow-chart, referencing to Theory.
+To solve the optimization problem in \cref{eq:min_prob_via_y}, a Levenberg--Marquardt solver has been designed as described in \autoref{sec:levenberg_marquardt}. The problem definition requires the pipe parameters and the number of leaks in the system ($L$, $\theta$, $n$) to be known. Additionally, a set of measurements ($\mathcal{M}$), where the number of measurements is greater than the number of leaks ($m\geq n$), is also required. The solver requires an additional parameter, which is the initial guess and starting point for the iterative algorithm, $\mathbf{x}_0$. From these parameters, the solver operates as described in \autoref{fig:solver_flow_chart}.
+
 \begin{figure}[ht]
     \centering
     \input{figures/tikz_solver_flow_chart}    
-    \caption{Hello}
+    \caption{Flow chart describing the design of the Levenberg--Marquardt solver used to solve \cref{eq:min_prob_via_y}.}
     \label{fig:solver_flow_chart}
 \end{figure}
 
+The starting point $\mathbf{x}_0$ is translated into the $y$-space through the inverse function $g^{-1}$, which can be derived from \cref{eq:g_func}.\\
+
+Since the problem to solve is $r(\mathbf{x})=0$, the stopping criterion $\|r\|< \text{tol}$ is used, where tol is a sufficiently small number to be confident in the solution. Additionally, a maximal iteration stopping criterion ($k \geq k_{\max}$) is implemented to safeguard against an infinite loop. If the solver stops before $\|r\|< \text{tol}$, the solution is likely not correct and is not of interest. However, if the solver gets "stuck", other stopping criteria could be implemented in order to abort early without having to wait for the maximum iterations to be reached. Such a criterion could be based on a minimum required step size $\|s_k\|$, since very small steps do not improve the solution sufficiently. Additionally, if the largest gradient, $\|J(\mathbf{x}_k)^\top r(\mathbf{x}_k)\|_\infty$, is very small, then the solver has reached a local minima, and will likely not converge to another solution.
 
 
-\section{Discussion on Solutions (not a great title)}
+
+\section{(WIP) Discussion on Solutions (not a great title)}
 
 Something something about ...
 To solve for all the unknowns, there must be enough measurements at different steady-state operating points. Since each operating point yields two equations, and there are $2n$ unknown variables, it is necessary that
@@ -135,28 +149,21 @@ To solve for all the unknowns, there must be enough measurements at different st
 \end{equation*}
 assuming all $m$ measurements provide independent equations.
 
+***\\
+
 Assuming $n$, $\theta$, and $L$ are known, $m \geq n$, and $\mathcal{M}$ provides sufficiently independent equations $r(\mathbf{x})$. It should be an easy argument to make that a solution $\mathbf{x^*}$, that solves $r(\mathbf{x^*})=0$, will be a true solution of leak parameters for the mapping $\mathcal{M}_0 \mapsto \mathcal{M}_L$ (Since this is all we have to base our solution on). Knowing if $\mathbf{x^*}$ is the true solution to the pipe where $\mathcal{M}$ was obtained is a different question.\\
 
 ***\\
 
-Results presented in \autoref{sec:result_multiple_solutions} strongly suggest that there are two unique solutions to the equation $r_y(\mathbf{y})=0$ for three leaks ($n=3$). This result suggests that the leak problem does not have a unique solution for $n>2$. For this reason, this work will not try to prove that the problem has a globally unique solution. There will also not be presented a proof that there is no unique solution, as the simulation results that follow are considered sufficient. \\
+The input-output relationship of a pipe with leaks is modelled by the forward pass defined by \cref{eq:forward_pass}. Given a pipe with resistance coefficient $\theta$, length $L$, and $n$ leaks, an important question is whether there exist multiple distinct sets of leak parameters ($z_i,c_i$) that yield the same input-output relationship. If multiple leak parameters provide the same input-output relationship, it will not be possible to distinguish one configuration from the other solely from measuring flow and head at the inlet and outlet of the pipe. For the leak identification problem in this work, it implies that the true leak configuration can not be distinguished from other configurations that yield the same input-output relationship. This is formalised in \autoref{lem:unique_solution}. 
 
-***\\
-
-Something something about the uniqueness of the solution, global space etc.
-Under which conditions does
-\begin{equation}
-\label{eq:fx}
-    r(\mathbf{x}) = 0
-\end{equation}
-have a unique solution, no solution or many solutions?\\
-
-Lets define the problem of identifying $n$ leaks in a pipe as
+\begin{lemma}{}{unique_solution}
+Let $\mathbf{x}^*$ be the true leak parameters and the solution to the leak identification problem. If there exist some leak parameters $\mathbf{x}^\dagger$, where $\mathbf{x}^* \ne \mathbf{x}^\dagger$ and 
 \begin{equation*}
-    \mathcal{PL}_n: \mathcal{M} \in \mathbb{R}^{m\times 4} \mapsto \mathbf{x} \in \mathbb{R}^{2n}
+    F_{fp}(\mathbf{x}^*, h_0,q_0) = F_{fp}(\mathbf{x}^\dagger, h_0,q_0),\quad \forall \ h_0,q_0,
 \end{equation*}
-Given a unique solution $\mathbf{x}^*$ of \cref{eq:fx}, can we prove that
-\begin{enumerate}
-    \item $\mathbf{x}^*$ is a solution to  $\mathcal{PL}_n(\mathcal{M})$
-    \item $\mathbf{x}^*$ is a \emph{unique} solution to $\mathcal{PL}_n(\mathcal{M})$
-\end{enumerate}
+then $\mathbf{x}^\dagger$ is considered a false solution, and it is impossible to uniquely find the true solution to the leak identification problem.
+\end{lemma}
+
+Results presented in \autoref{sec:result_multiple_solutions} strongly suggest that there exists at least one false solution for some leak configurations of both two and three leaks. 
+This result suggests that the leak identification problem does not have a unique solution for $n \geq 2$. For this reason, this work will not try to prove that the problem has a globally unique solution. There will also not be presented a proof that there is no unique solution, as the simulation results that follow are considered sufficient.

@@ -25,6 +25,8 @@
 \usetikzlibrary{arrows.meta}
 \usetikzlibrary{calc,positioning}
 \usetikzlibrary{shapes.geometric}
+\usetikzlibrary{svg.path}
+\usetikzlibrary{matrix}
 
 % One or twosided paging
 \newcommand{\paging}{twoside}
@@ -64,6 +66,12 @@
             \renewcommand{\acronymname}{Acronyms}
             \renewcommand{\listalgorithmcfname}{Algorithms}
         }
+        \addto\extrasamerican{%
+            \def\chapterautorefname{Chapter}%
+            \def\sectionautorefname{Section}%
+            \def\subsectionautorefname{Subsection}%
+            \def\subsubsectionautorefname{Subsubsection}%
+        }
     }
 }
 
@@ -85,8 +93,12 @@
 \RequirePackage[most]{tcolorbox}
 \tcbuselibrary{theorems}
 
+\RequirePackage{refcount}
+
+
 \RequirePackage{multirow}
 
+\RequirePackage{siunitx}
 
 \RequirePackage[ruled,vlined]{algorithm2e}
 \AtBeginDocument{

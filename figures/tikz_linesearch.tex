@@ -1,0 +1,24 @@
+% TikZ figure file: input with \input{<thisfile>.tex}
+\begin{tikzpicture}[x=1.0cm,y=1.0cm,>=Latex,thick]
+
+  % Axes
+  \draw[->] (0,0) -- (10,0) node[below] {$\alpha$};
+  \draw[->] (0,0) -- (0,4) node[left] {$\phi(\alpha)$};
+
+  % Horizontal dotted line at phi(0)
+  \def\phizero{3}
+  \draw[dotted] (0,\phizero) -- (10,\phizero);
+  \node[left] at (0,\phizero) {$\phi(0)$};
+
+  % Key points (for labels/markers)
+  \coordinate (P0) at (0.0,\phizero); % phi(0)
+  \coordinate (m1) at (2.3,1.8);     % first local minimum
+  \coordinate (mx) at (5,3.5);     % local maximum between minima
+  \coordinate (m2) at (7.5,0.8);     % second local minimum
+  \coordinate (Pend) at (10.0,4);   % right end rising
+
+  % Polynomial-like smooth curve with two minima (Bezier chain)
+  \draw plot [smooth, tension=0.8] coordinates {(P0) (m1) (mx) (m2) (Pend)};
+
+
+\end{tikzpicture}

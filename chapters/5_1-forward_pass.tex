@@ -1,3 +1,5 @@
+*** Introduce the chapter here ***
+
 \section{Deriving the System States (Forward Pass)}
 
 In this section, the equations that hold between measurements $\mathcal{M}$ and leak parameters $\mathbf{x}$ will be derived.
@@ -37,7 +39,6 @@ A given measurement $\mu^{(j)}\in\mathcal{M}$ defines a steady-state operating p
 \end{equation}
 where $L_{n+1}:=L-\sum_{i=1}^n L_i$.
 
-\newpage
 Similarly, $n$ equations are defined by the upstream equation for flow, \cref{eq:upstream_flow}, by
 \begin{equation}
 \label{eq:phi_q}
@@ -96,41 +97,31 @@ An important observation from the structure of the forward pass is that the syst
 The system states $\phi_i^{(j)}=\{h_i^{(j)},q_i^{(j)}\}$ are uniquely defined by $\{q_0,h_0,L_1,\dots,L_i,c_1,\dots,c_i\}$, and is not affected by any downstream variabeles: $\mathbf{x}_k,\, \phi_k^{(j)},\,k>i$.
 \end{lemma}
 
-The resulting head and flow at the outlet from the forward pass calculation are defined by
+From \cref{eq:phi_h,eq:phi_q}, the full forward pass, $\{h_{0},q_{0}\}\mapsto\{h_{n+1}, q_n\}$, is defined by the function, 
+\begin{equation*}
+    F_{fp}(\mathbf{x}, h_0^{(j)},q_0^{(j)}) := \begin{bmatrix}
+        h^{(j)}_{n+1}\\[0.4em]
+        q^{(j)}_n
+    \end{bmatrix}.
+\end{equation*}
+For a given measurement $\mu^{(j)}$, the calculated outlet head and flow must equate the outlet measurements by
 \begin{equation}
-\label{eq:F_estimate}
-F^{(j)}(\mathbf{x}, h_0^{(j)},q_0^{(j)})
-= \begin{bmatrix}
-    h_{n+1}^{(j)} \\[0.4em]
-    q_n^{(j)}
-\end{bmatrix}
-= \begin{bmatrix}
-    h_n^{(j)} - \theta L_{n+1} \left(q_n^{(j)}\right)^2 \\[0.4em]
-    q_n^{(j)}
-\end{bmatrix}
-\end{equation}
-
-For a given measurement $\mu^{(j)}$, the forward pass calculation of outlet flow and head must equate the outlet measurements:
-\begin{equation}
-    \label{eq:solve_j}
-    F^{(j)}(\mathbf{x}, h_0^{(j)},q_0^{(j)}) = \begin{bmatrix}
+    \label{eq:forward_pass}
+    F_{fp}(\mathbf{x}, h_0^{(j)},q_0^{(j)}) = \begin{bmatrix}
         h_L^{(j)}\\[0.4em]
         q_L^{(j)}
     \end{bmatrix}.
 \end{equation}
 
 
-
-
-
-By eliminating the state variables, $\phi^{(j)}$, through the forward pass, each measurement $j$ yields two scalar equations by \cref{eq:solve_j} in the global unknown vector space $\mathbf{x}\in\mathbb{R}^{2n}$. For $m$ different measurements, $2m$ equations is obtained by stacking \cref{eq:solve_j}. Let $\mathcal{M}_0$ and $\mathcal{M}_L$ be the input and output measurements. The complete set of equations is then defined by
+By eliminating the state variables, $\phi^{(j)}$, through the forward pass, each measurement $j$ yields two scalar equations by \cref{eq:forward_pass} in the global unknown vector space $\mathbf{x}\in\mathbb{R}^{2n}$. For $m$ different measurements, $2m$ equations is obtained by stacking \cref{eq:forward_pass}. Let $\mathcal{M}_0$ and $\mathcal{M}_L$ be the input and output measurements. The complete set of equations is then defined by
 \begin{equation}
 \label{eq:main_function}
     F(\mathbf{x},\mathcal{M}_0) := 
     \begin{bmatrix}
-        F^{(j)}(\mathbf{x}, h_0^{(1)},q_0^{(1)})\\
+        F_{fp}(\mathbf{x}, h_0^{(1)},q_0^{(1)})\\
         \vdots\\
-        F^{(j)}(\mathbf{x}, h_0^{(m)},q_0^{(m)})
+        F_{fp}(\mathbf{x}, h_0^{(m)},q_0^{(m)})
     \end{bmatrix}
     = \mathcal{M}_L :=
         \begin{bmatrix}

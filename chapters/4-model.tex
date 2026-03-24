@@ -23,9 +23,10 @@ where $P$ is the fluid pressure, $\rho$ is the fluid density, and $z_e$ is the e
 
 Furthermore, $z$ is the spatial coordinate measured along the pipe axis, $t$ denotes time, $A$ is the pipe cross-sectional area, $g$ is gravitational acceleration, and $a$ is the pressure wave speed accounting for fluid compressibility and pipe wall elasticity. 
 The resistance coefficient $\theta$ accounts for quasi-steady friction losses and is given by
-\begin{equation*}
+\begin{equation}
+\label{eq:theta_defined}
 \theta = \frac{f}{2 g D A^{2}},
-\end{equation*}
+\end{equation}
 with $f$ being the Darcy--Weisbach friction factor and $D$ the pipe diameter.\\
 
 A leak in the pipe is assumed to be modeled as a valve with a constant opening. Following \cite[pp.~54]{chaudhry2013}, the flow through a valve, denoted by $\tilde{q}$, at location $z^*$,can be expressed as
@@ -147,3 +148,4 @@ Given a pipe operating in steady state, and under the assumptions previously sta
 }
 
 \section{Extension to Non-Straight Pipes}
+*** TODO

@@ -13,9 +13,13 @@ Solving the minimization problem,
 \end{equation}
 satisfies $r(x^*) = 0$ if an exact solution exists. If no exact solution exists, or if the system is overdetermined, the formulation yields a solution that minimizes the residual norm.\\
 
-Solving \cref{eq:min_problem} is very hard to solve in general \cite{madsen2004}, since there might exist local minima that are larger than a global minima. \cite{nielsen1999}
+Solving \cref{eq:min_problem} is generally very hard \cite{madsen2004}, since there might exist local minima that are larger than a global minima. Instead, many methods aim to solve the local problem of finding a local solution for a region around the solution,
+\begin{equation*}
+    f(x^*) \leq f(x) \ \text{for} \ \|x-x^*\|<\delta,
+\end{equation*}
+where $\delta$ is some small positive number.\\
 
-A group of methods used to solve the optimization problem operates by iteratively evaluating the objective function at the current iterate $x_k$ and determining a step $s_k$ that decreases the cost function. The next iterate is computed as
+A group of methods used to solve the local optimization problem operates by iteratively evaluating the objective function at the current iterate $x_k$ and determining a step $s_k$ that decreases the cost function. The next iterate is computed as
 \begin{equation}
 \label{eq:step_update_rule}
     x_{k+1} = x_k + s_k,
@@ -27,13 +31,36 @@ with the goal of choosing $s_k$ so that
 There are two main frameworks for controlling how the step $s_k$ is chosen, called \textit{Line Search} and \textit{Trust Region} methods. This section will introduce these frameworks along with common algorithms used to solve the minimization problem.
 
 \subsection{Line Search Methods}
+
+Line search methods determine the step $s_k$ by selecting a search direction $p_k$ and a scalar step length $\alpha > 0$. The step is written as
+\begin{equation*}
+s_k = \alpha p_k.
+\end{equation*}
+
+At each iteration, a direction $p_k$ is first computed using a chosen optimization method. The step length $\alpha$ is then selected such that the objective function decreases,
+\[
+f(x_k + \alpha p_k) < f(x_k).
+\]
+
+To analyze the choice of $\alpha$, the multivariate objective function is reduced to a one-dimensional function along the search direction,
 \begin{equation}
-    s_k = \alpha_k p_k
+\phi(\alpha) = f(x_k + \alpha p_k).
 \end{equation}
-\begin{itemize}
-    \item Armijo Backtracking\\
-    \item Wolfe Conditions
-\end{itemize}
+The step length selection then corresponds to minimizing $\phi(\alpha)$ for $\alpha > 0$ \cite{madsen2004}. In principle, the optimal step length is given by
+\[
+\alpha^\ast = \underset{\alpha > 0}{\operatorname{argmin}} \ \phi(\alpha).
+\]
+
+In practice, computing the exact minimizer of $\phi(\alpha)$ is rarely feasible. The function may contain multiple local minima, and evaluating $\phi(\alpha)$ requires computing the objective function itself. \autoref{fig:line_search} shows an example of a situation where finding the global minimizer is difficult. As a result, determining $\alpha^\ast$ would require solving a separate optimization problem at each iteration. Line search, therefore, becomes an iterative procedure, where candidate values of $\alpha$ are evaluated until a step length that sufficiently reduces the objective function is found.\\
+
+Practical line search algorithms aim to find a step length that provides a sufficient decrease rather than the exact minimizer. Common strategies include Armijo backtracking and step selection based on Wolfe conditions. These methods impose conditions on the decrease of the objective function and on the gradient along the search direction. A detailed introduction to these techniques is not required for the work presented in this report and is therefore omitted.
+
+\begin{figure}[ht]
+    \centering
+    \input{figures/tikz_linesearch}
+    \caption{Example of a cost function along a search direction $p_k$, where $\alpha$ is the step lenght along the search direction.}
+    \label{fig:line_search}
+\end{figure}
 
 \subsection{Gradient Descent}
 Gradient descent is a simple method that is based on moving in the direction of the negative gradient of the objective function. 
@@ -68,7 +95,7 @@ At iteration $k$, the Newton search direction is obtained by solving the linear 
 
 By incorporating curvature information, Newton's method typically achieves quadratic convergence in a neighborhood of a solution, provided that the Hessian is nonsingular. This represents a significant improvement over gradient descent in terms of local convergence speed.
 
-However, the method requires computation and factorization of the Hessian matrix, which can be expensive for large-scale problems. Moreover, if the Hessian is indefinite or poorly conditioned, the method may fail to produce a descent direction without additional safeguards.
+However, the method requires computing the Hessian matrix, which can be computationally expensive or infeasible for some problems. Moreover, if the Hessian is indefinite or poorly conditioned, the method may fail to produce a descent direction without additional safeguards.
 
 \subsection{Gauss--Newton Method}
 
@@ -85,14 +112,14 @@ The search direction is therefore computed by solving
     J(x_k)^\top J(x_k) p_k = - J(x_k)^\top r(x_k).
 \end{equation}
 
-This approximation avoids explicit computation of second derivatives and reduces computational cost compared to full Newton's method. When the residual is small near the solution, the neglected term becomes insignificant, and the method exhibits fast local convergence.
+This approximation avoids explicit computation of second derivatives and reduces computational cost compared to full Newton's method. When the residual is small and near the solution, the neglected term becomes insignificant, and the method exhibits fast local convergence.
 
 The Gauss--Newton method may perform poorly when the residual is large or when $J(x_k)^\top J(x_k)$ is rank deficient. In such cases, the approximation of the Hessian can be inaccurate, and additional regularization techniques may be required to ensure robustness.
 
 \subsection{Trust Region Methods}
 \label{sec:trust_region_methods}
 
-Trust region methods determine the step $s_k$\footnote{The step $s_k$ is the same as the search direction $p_k$ with $\alpha=1$.} by minimizing a local model of the objective function within a restricted neighborhood around the current iterate. From \cite{madsen2004}, a typical model is the second order taylor expansion, using the Gauss--Newton approximation of the Hessian, 
+Trust region methods determine the step $s_k$ by minimizing a local model, $m_k$, of the objective function within a restricted neighborhood around the current iterate. From \cite{madsen2004}, a typical model is the second order taylor expansion, using the Gauss--Newton approximation of the Hessian, 
 \begin{equation}
 \label{eq:mk}
 f(x_k+s) \simeq m_k(s) = f(x_k) + r(x_k)^\top J(x_k) \, s + \frac{1}{2} s^\top J(x_k)^\top J(x_k) \, s
@@ -124,13 +151,15 @@ At iteration $k$, the LM step is obtained by solving the linear system
     =
     - J(x_k)^\top r(x_k),
 \end{equation}
-As $\lambda \to 0$, the system approaches the Gauss--Newton equations, \cref{eq:gauss_newton}. For large $\lambda$, the step approaches,
+which is obtained by substituting the quadratic model $m_k(s)$ in \cref{eq:mk} into the minimization problem in \cref{eq:damped_problem}, and setting the gradient with respect to $s$ to 0.\\
+
+As $\lambda \to 0$, the system approaches the Gauss--Newton equations, with $\alpha = 1$, \cref{eq:gauss_newton}. For large $\lambda$, the step approaches,
 \begin{equation*}
     s_k \simeq -\frac{1}{\lambda}J(x_k)^\top r(x_k),
 \end{equation*}
-which is the steepest descent direciton, \cref{eq:steepest_descent}, with a small step lenght, $\alpha=\lambda^{-1}$.
+which is the steepest descent direciton, \cref{eq:steepest_descent}, with a small step lenght of $\alpha=\lambda^{-1}$.
 
-The damping parameter must be initialized before the iterations begin. \cite{nielsen1999} states that the initial value should relate to the magnitude of the eigenvalues, and proposes
+The damping parameter must be initialized for the first iteration. \cite{nielsen1999} states that the initial value should relate to the magnitude of the eigenvalues, and proposes
 \begin{equation} \label{eq:init_lambda}
 \lambda_0 = \tau \max \left( \operatorname{diag}(J(x_0)^\top J(x_0)) \right),
 \end{equation}
@@ -147,7 +176,10 @@ To evaluate the quality of a proposed step $s_k$, the LM method uses the gain ra
 The denominator can be computed from \cref{eq:mk},
 \begin{align}
     m_k(0)-m_k(s_k) &= -s_k^\top J(x_k)^\top r(x_k) \,  - \frac{1}{2} s_k^\top J(x_k)^\top J(x_k) \, s_k \notag \\
-    &= -\frac{1}{2} s_k^\top(2 J(x_k)^\top r(x_k) + (J(x_k)^\top J(x_k) + \lambda I-\lambda I)s_k) \notag \\
+    &= -\frac{1}{2} s_k^\top \Big(
+    2 J(x_k)^\top r(x_k) + 
+    \underbrace{(J(x_k)^\top J(x_k)+\lambda I)s_k}_{-J(x_k)^\top r(x_k)} 
+    -\lambda s_k \Big)\notag \\
     &= \frac{1}{2} s_k^\top (\lambda s_k-J(x_k)^\top r(x_k)) \label{eq:mk_solve}.
 \end{align}
 
@@ -188,10 +220,10 @@ Intuitively, when $\varrho$ is positive, the quadratic model $m_k(s)$ provides a
 and performing some algebraic manipulation, the step can be computed as
 \begin{equation}
 \label{eq:sk_lm_solve}
-    s_k = -V_k \, \text{diag}(d_i) \, U_k^\top r(x_k), 
+    s_k = -V_k \, \text{diag}\left(\dfrac{\sigma_i}{\sigma_i^2 + \lambda} \right) \, U_k^\top r(x_k), 
 \end{equation}
-Where $d_i=\dfrac{\sigma_i}{\sigma_i^2 + \lambda}$, and $\sigma_i$ are the singular values from $\Sigma_k$.\\
+Where $\sigma_i$ are the singular values from $\Sigma_k$.\\
 
-\cref{eq:sk_lm_solve} computes the LM step without computing $J^\top J$, which can be numerically unstable when $J$ is ill-conditioned.
+\cref{eq:sk_lm_solve} computes the LM step without computing $J^\top J$, which can be numerically unstable when the Jacobian is ill-conditioned.
 
 

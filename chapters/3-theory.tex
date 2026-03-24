@@ -6,12 +6,11 @@ Let
 \[
 r : \mathbb{R}^n \to \mathbb{R}^m
 \]
-be a continuously differentiable residual function. We consider the nonlinear system
-\[
-r(x) = 0,
-\quad x \in \mathbb{R}^n.
-\]
-A solution is any point \(x^\ast \in \mathbb{R}^n\) such that \(r(x^\ast) = 0\).
+be a nonlinear and continuously differentiable residual function. The nonlinear residual problem is to find any
+\begin{equation*}
+     x^\ast \in \mathbb{R}^n \quad \text{such that} \quad r(x^*) = 0.
+\end{equation*}
+The function $r(x)$ is referred to as the \emph{residual} function.
 
 \subsection{The Jacobian Matrix}
 
@@ -20,9 +19,9 @@ The Jacobian of \(r\) at a point \(x \in \mathbb{R}^n\) is the matrix
 J(x) = \frac{\partial r(x)}{\partial x}
 =
 \begin{bmatrix}
-\frac{\partial r_1}{\partial x_1} & \cdots & \frac{\partial r_1}{\partial x_n} \\
+\dfrac{\partial r_1}{\partial x_1} & \cdots & \dfrac{\partial r_1}{\partial x_n} \\
 \vdots & \ddots & \vdots \\
-\frac{\partial r_m}{\partial x_1} & \cdots & \frac{\partial r_m}{\partial x_n}
+\dfrac{\partial r_m}{\partial x_1} & \cdots & \dfrac{\partial r_m}{\partial x_n}
 \end{bmatrix}
 \in \mathbb{R}^{m \times n}.
 \]
@@ -42,7 +41,7 @@ Then it follows from the Implicit Function Theorem that the local structure of s
 \paragraph{Case $m = n$ (square system).}
 
 If $J(x^\ast)$ is nonsingular ($\det J(x^\ast) \neq 0$), then $x^\ast$ is a locally unique solution.
-In this case, the system is locally well-posed, and there exists a neighborhood of $x^\ast$ in which no other solutions exist.
+In this case, the system is locally well-posed, and there exists a neighborhood around $x^\ast$ in which no other solutions exist.
 
 If $J(x^\ast)$ is singular, local uniqueness is not guaranteed.
 
@@ -62,7 +61,7 @@ The Jacobian $J(x^\ast)$ characterizes only the \emph{local} structure of the so
 
 Global existence or uniqueness of a solution to $r(x)=0$ requires additional structural assumptions on $r$, such as global injectivity or strong monotonicity. In the absence of such global properties, the existence and uniqueness of a solution can not be guaranteed from an analysis of the Jacobian.
 
-\section{Sensetivity Analysis of a Solution}
+\section{(WIP) Sensitivity Analysis of a Solution}
 
 \subsection{SVD-decomposition and singular values}
 \[
@@ -78,7 +77,7 @@ J = U \Sigma V^\top
 A large condition number indicates that small perturbations in the residual may cause large changes in the solution.
 
 \subsection{Scaling to improve condition number}
-Ruiz method ++
+Ruiz method, van der Sluis lower bound ++
 
 \input{chapters/3-1-optmet}
 
