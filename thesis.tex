@@ -9,7 +9,7 @@
 
 \addbibresource{thesis.bib}
 
-\input{glossary.tex} % add glossary and acronym lists
+%\input{glossary.tex} % add glossary and acronym lists
 
 \begin{document}
 
@@ -22,9 +22,9 @@
 
 \tableofcontents
 \listoffigures
-% \listoftables
+\listoftables
 % \lstlistoflistings
-% \listofalgorithms
+\listofalgorithms
 
 % Acronyms
 % \chapter*{\acronymname}
@@ -39,11 +39,8 @@
 \input{chapters/3-theory}
 \input{chapters/4-model}
 \input{chapters/5-derivations}
-
-\chapter{Solver Performance}\label{chap:results_performance}
-\input{chapters/6-solver_performance}
-\chapter{Numerical Analysis of Many Leaks}\label{chap:results_issues_gt_3}
-%\input{chapters/7-many_leaks_analysis}
+\input{chapters/6-analysis_of_solution_space}
+\input{chapters/7-solver_performance}
 \input{chapters/8-conclusion}
 
 \chapter*{\bibname}

@@ -90,94 +90,95 @@ and gradient indicator functions are used to identify pipeline segments that con
 Both methods were validated experimentally for simultaneous double leak scenarios. A limitation of the proposed approach is its strong dependence on pressure measurements at multiple intermediate locations along the pipeline. The availability of several internal pressure sensors is essential for both the optimization-based and gradient-based procedures. As a result, the proposed methods are not feasible for pipeline configurations where only inlet and outlet measurements are available.
 
 \subsection{Exploiting Single-Leak Equivalent}
+\label{sec:peralta_study}
 
 \cite{verde2003} shows that input-output measurements obtained from a single steady-state operating point are not sufficient to detect two or more leaks in a pipeline. The method proposed in \cite{peralta2023} identifies two concurrent leaks in a single pipeline by using measurements of flow rate and pressure at the inlet and outlet of the pipe, collected at two different steady-state operating points.\\
 
-From a single operating point, a single-leak equivalent position $\ell_f$ is computed as
+From a single operating point, a single-leak equivalent position $L_{eq}$ is computed as
 \begin{equation*}
-\ell_f =
+L_{eq} =
 \frac{h_0 - h_\ell - \ell \, \theta \, q_\ell^2}
 {\theta \left( q_0^2 - q_\ell^2 \right)},
 \end{equation*}
 where $h_0$ and $h_\ell$ denote the inlet and outlet pressure, $q_0$ and $q_\ell$ denote the inlet and outlet flow rates, $\ell$ is the known pipe lenght and $\theta$ is a known pipe parameter.
 
-For a pipe with two leaks located at positions $\ell_1$ and $\ell_1 + \ell_2$, the equivalent single-leak position satisfies the inequality
+For a pipe with two leaks located at positions $L_1$ and $L_1 + L_2$, the equivalent single-leak position satisfies the inequality
 \begin{equation}
 \label{eq:lit_ineq}
-0 < \ell_1 < \ell_f < \ell_1 + \ell_2 < \ell.
+0 < L_1 < L_{eq} < L_1 + L_2 < \ell.
 \end{equation}
 The key idea is that the single-leak equivalent position can be estimated either from the upstream leak or from the downstream leak. For each operating point $i$, this redundant description is given by
 \begin{equation}
 \label{eq:lit_lf_estimate}
-\left.\hat{\ell}_f\right\vert_i =
+\left.\hat{L}_{eq}\right\vert_i =
 \begin{cases}
-\left.\hat{\ell}^{u}_{f}\right\vert_i
-\triangleq
-(\ell_1 + \ell_2)
+\left.\hat{L}^u_{eq}\right\vert_i
+:=
+L_1 + L_2
 \left(
-\frac{q_m^2(\ell_1,\lambda_1) - q_{\ell}^2}
+\dfrac{q_m^2(L_1,\ c_1) - q_{\ell}^2}
 {q_0^2 -  q_{\ell}^2}
 \right), \\[6pt]
-\left.\hat{\ell}^{d}_f\right\vert_i
-\triangleq
-(\ell_1 + \ell_2)
+\left.\hat{L}^{d}_{eq}\right\vert_i
+:=
+L_1 + L_2
 \left(
-\frac{q_m^2(\ell_1,\ell_2,\lambda_2) -  q_{\ell}^2}
+\dfrac{q_m^2(L_1,L_2,c_2) -  q_{\ell}^2}
 {q_0^2 -  q_{\ell}^2}
 \right),
 \end{cases}
 \end{equation}
-where $q_m$ is the unknown flow between the two leaks, and $\lambda_1$ and $\lambda_2$ are the leak coefficients.\\
+where $q_m$ is the unknown flow between the two leaks, and $c_1$ and $c_2$ are the leak coefficients.\\
 
 This redundant formulation is used to define a cost function based on the difference between the estimated leak equivalents and the actual equivalent position. The cost function is defined as
 \begin{equation*}
 J(e^u,e^d) =
-\frac{1}{n}
-\sum_{i=1}^{n}
+\frac{1}{m}
+\sum_{i=1}^{m}
 \left(
 \left.e^u\right\vert_i^2 + \left.e^d\right\vert_i^2
 \right),
 \end{equation*}
-where $n$ is the number of measured operating points. The upstream and downstream estimation errors are defined as
+where $m$ is the number of measured operating points. The upstream and downstream estimation errors are defined as
 \begin{equation*}
-\left.e^u\right\vert_i = \left.\ell_f\right\vert_i - \left.\hat{\ell}^{u}_f\right\vert_i,
+\left.e^u\right\vert_i = \left.L_{eq}\right\vert_i - \left.\hat{L}^{u}_{eq}\right\vert_i,
 %\quad \text{and}
-\quad \left.e^d\right\vert_i = \left.\ell_f\right\vert_i - \left.\hat{\ell}^{d}_f\right\vert_i
+\quad \left.e^d\right\vert_i = \left.L_{eq}\right\vert_i - \left.\hat{L}^{d}_{eq}\right\vert_i
 \quad \forall i.
 \end{equation*}
 
-The cost function is minimized subject to the invariance of the parameters $\lambda_1$ and $\lambda_2$ and the constraint
+The cost function is minimized subject to the invariance of the parameters $c_1$ and $c_2$ and the constraint
 \begin{equation*}
-0 < \ell_1 < \left.\ell_f\right\vert_i < \ell_1 + \ell_2 < \ell.
+0 < L_1 < \left.L_{eq}\right\vert_i < L_1 + L_2 < \ell.
 \end{equation*}
 
 In this publication, the minimization is performed using a gradient-based update law that adjusts only the upstream leak position,
 \begin{equation*}
-\ell_1(k+1) =
-\ell_1(k) -
+L_1(k+1) =
+L_1(k) -
 \alpha
-\frac{\partial J(k)}{\partial \ell_1(k)},
+\frac{\partial J(k)}{\partial L_1(k)},
 \end{equation*}
-with the constraint $0 < \ell_1 < \ell_f$. \\
+with the constraint $0 < L_1 < L_{eq}$. \\
 
 \cite{peralta2024} extends this approach by simultaneously optimizing both leak locations and reducing the estimation errors for the same dataset. The new update law is given by
 \begin{equation*}
 \begin{bmatrix}
-\ell_{1}(k+1) \\
-\ell_{3}(k+1)
+L_{1}(k+1) \\
+L_{3}(k+1)
 \end{bmatrix}
 =
 \begin{bmatrix}
-\ell_{1}(k) \\
-\ell_{3}(k)
+L_{1}(k) \\
+L_{3}(k)
 \end{bmatrix}
 +
 \begin{bmatrix}
-\alpha \, \dfrac{\partial J(k)}{\partial \ell_1(k)} \\
-\beta \, \dfrac{\partial J(k)}{\partial \ell_3(k)}
+\alpha \, \dfrac{\partial J(k)}{\partial L_1(k)} \\
+\beta \, \dfrac{\partial J(k)}{\partial L_3(k)}
 \end{bmatrix},
 \end{equation*}
-with the constraints $0 < \ell_{1} < {\ell}_f$ and $0 < \ell_{3} < \ell - {\ell}_f$ where $\ell_3 = \ell- (\ell_1 + \ell_2)$. A case study of this method is presented in \cite{peralta2025} where both simulation and experimental results are shown with a relative leak location error of less than 7\%.\\
+with the constraints $0 < L_{1} < {L}_{eq}$ and $0 < L_{3} < \ell - {L}_{eq}$ where $L_3 = \ell- (L_1 + L_2)$. A case study of this method is presented in \cite{peralta2025} where both simulation and experimental results are shown with a relative leak location error of less than 7\%.\\
 
 This method has its foundation in the inequality shown in \cref{eq:lit_ineq}, where the single-leak equivalent will always lie between the two actual leaks. This allows for the consistent upstream and downstream estimates shown in \cref{eq:lit_lf_estimate}. To extend this method beyond two leaks, it seems necessary that a similar inequality holds, such that the single-leak equivalent has the same amount of real leaks both upstream and downstream for all steady state operating points. Otherwise, there will be no consistent algebraic upstream and downstream estimate for the single-leak equivalent across measurements. It can be shown (see \autoref{app:3_leak_eq_proof}) that the single-leak equivalent in a pipe with three leaks can be located both upstream and downstream of the second leak by adjusting the steady state operating point. From that result, it seems difficult to extend the method proposed by \cite{peralta2023} to handle more than two leaks.  
 

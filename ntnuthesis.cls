@@ -95,8 +95,13 @@
 
 \RequirePackage{refcount}
 
-
+\RequirePackage{svg}
 \RequirePackage{multirow}
+
+\RequirePackage{makecell}
+
+\RequirePackage{threeparttable}
+
 
 \RequirePackage{siunitx}
 
@@ -135,14 +140,14 @@
 \RequirePackage{csquotes}                   % recommended for biblatex
 \RequirePackage[
     backend=biber,
-    style=ieee,
+    %style=ieee,
     maxbibnames=99,
     minbibnames=3,
     maxcitenames=2,
     mincitenames=1,
     citestyle=numeric-comp,
     sorting=none,
-    dashed=false
+    %dashed=false
 ]{biblatex}                                 % for bibliography
 \RequirePackage{csvsimple}                  % tables from csv files
 \RequirePackage{booktabs}                   % better formatting of tables

@@ -46,7 +46,7 @@
 
 % Main loop
 \node[decision, below=of b0] (d1)
-{$\lVert r_k\rVert > \mathrm{tol}$ \\ $k < k_{\max}$};
+{$\lVert r_k\rVert > \mathrm{\tau_\text{conv}}$ \\ $k < k_{\max}$};
 \draw[line] (b0) -- node[right,pos=0.7]{$k=0$} (d1);
 
 % Return x

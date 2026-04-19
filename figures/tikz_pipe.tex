@@ -137,7 +137,7 @@
 
 % endpoints 0 and L
 \draw[tick] (0,\yAxis-0.10) -- (0,\yAxis+0.10) node[right=-7pt, yshift=8pt,text=AxisColor] {$0 \mapsto h_{0}$};
-\draw[tick] (\Lpipe,\yAxis-0.10) -- (\Lpipe,\yAxis+0.10) node[right=-7pt, yshift=8pt,text=AxisColor] {$L \mapsto h_{L}$};
+\draw[tick] (\Lpipe,\yAxis-0.10) -- (\Lpipe,\yAxis+0.10) node[right=-7pt, yshift=8pt,text=AxisColor] {$\ell \mapsto h_{\ell}$};
 
 % optional break markers on axis
 \node[breakmark] at (\zBreakA+0.5*\s,\yAxis) {//};
@@ -194,7 +194,7 @@
 \FlowInSegment{\zI}{\zIp}{q_i}
 \FlowInSegment{\zIp}{\zIp+2*\flowlen}{q_{i+1}}
 \FlowInSegment{\zN-2*\flowlen}{\zN}{q_{n-1}}
-\FlowInSegment{\zN}{\zN+2*\flowlen}{q_L}
+\FlowInSegment{\zN}{\zN+2*\flowlen}{q_{\ell}}
 
 % ---- Dimension line below z-axis: |---L---| ----
 \newcommand{\AxisLength}[4][]{%

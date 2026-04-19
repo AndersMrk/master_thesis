@@ -1,0 +1,278 @@
+\chapter{Solver Performance}\label{chap:results_performance}
+
+\section{Validation Against Peralta et al. (2023)}
+
+In \autoref{sec:peralta_study}, a method presented by \cite{peralta2023} for identifying two leaks was studied. The publication also includes simulation results for five test cases and provides sufficient information to allow for the test cases to be replicated by the method proposed in this work. The paper simulates synthetic data at three different operating points for a pipe with the parameters
+\begin{equation*}
+    \ell=160.76, \quad \theta = 583.32.
+\end{equation*}
+The publication only provides measurements for a single test case. Using the provided inlet head and flow,
+\begin{align*}
+    h_0^{(1)} = 21.27, &\quad q_0^{(1)} = 13.97\times10^{-3},\\
+    h_0^{(2)} = 21.77, &\quad q_0^{(2)} = 14.16\times10^{-3},\\ 
+    h_0^{(3)} = 22.26, &\quad q_0^{(3)} = 14.35\times10^{-3},
+\end{align*}
+the outlet head and flow can be simulated with the provided pipe parameters. The resulting outlet head and flow are in agreement with the outlet measurements reported in the publication.\\
+
+Based on the provided pipe parameters and simulated measurements, the solver presented in \autoref{sec:solver_design} is tested on the different test cases, using a simple initial value,
+\begin{equation*}
+    \mathbf{x}_0=\begin{bmatrix}
+        \ell/3 & \ell/3 & 5\times10^{-4} & 5\times10^{-4}
+    \end{bmatrix},
+\end{equation*}
+and a convergence tolerance of $\tau_{\text{conv}}=10^{-12}$.\\
+
+The test cases and results are presented in \autoref{tab:mork_vs_peralta}. It can be seen that the solver proposed in this work has no error\footnote{Zero error holds at the two significant digit precision reported in \cite{peralta2023}.} across all test cases and outperforms the results presented in \cite{peralta2023}. Most cases are solved with relatively few iterations, where only case D requires a larger number of iterations. 
+
+\begin{table}[ht]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+
+\begin{threeparttable}
+
+
+\begin{tabular}{c|c|c|cc|ccc}
+\hline
+\textbf{Case} &
+\textbf{Param.} &
+\textbf{True value} &
+\textbf{\makecell{Results \\ from \cite{peralta2023}}} &
+\textbf{Error} &
+\textbf{\makecell{Results from \\ this work}} &
+\textbf{Error} &
+\textbf{\makecell{Solver\\ iter.}} \\
+\hline
+
+\multirow{4}{*}{A}
+& $L_1$ & 5.97 & 5.85 & 0.12 & 5.97 & 0.00 
+& \multirow{4}{*}{1490} \\
+& $L_2$ & 148.85 & 148.95 & 0.10 & 148.85 & 0.00 & \\
+& $c_1^*$ & $1.60$ & $1.60$ & 0.00 & $1.60$ & 0.00 & \\
+& $c_2^*$ & $2.30$ & $2.30$ & 0.00 & $2.30$ & 0.00 & \\
+\hline
+
+\multirow{4}{*}{B}
+& $L_1$ & 41.05 & 40.18 & 0.87 & 41.05 & 0.00
+& \multirow{4}{*}{7788} \\
+& $L_2$ & 78.89 & 78.45 & 0.44 & 78.89 & 0.00 & \\
+& $c_1^*$ & $2.20$ & $2.15$ & $0.05$ & $2.20$ & 0.00 & \\
+& $c_2^*$ & $1.15$ & $1.20$ & $0.05$ & $1.15$ & 0.00 & \\
+\hline
+
+\multirow{4}{*}{C}
+& $L_1$ & 63.01 & 62.16 & 0.85 & 63.01 & 0.00 
+& \multirow{4}{*}{9022} \\
+& $L_2$ & 34.88 & 34.70 & 0.18 & 34.88 & 0.00 & \\
+& $c_1^*$ & $2.09$ & $1.98$ & $0.11$ & $2.09$ & 0.00 & \\
+& $c_2^*$ & $2.09$ & $2.20$ & $0.11$ & $2.09$ & 0.00 & \\
+\hline
+
+\multirow{4}{*}{D}
+& $L_1$ & 5.97 & 5.20 & 0.77 & 5.97 & 0.00 
+& \multirow{4}{*}{82977} \\
+& $L_2$ & 57.04 & 56.85 & 0.19 & 57.04 & 0.00 & \\
+& $c_1^*$ & $1.50$ & $1.46$ & $0.04$ & $1.50$ & 0.00 & \\
+& $c_2^*$ & $1.00$ & $1.04$ & $0.04$ & $1.00$ & 0.00 & \\
+\hline
+
+\multirow{4}{*}{E}
+& $L_1$ & 97.89 & 98.52 & 0.63 & 97.89 & 0.00 
+& \multirow{4}{*}{7555} \\
+& $L_2$ & 56.93 & 57.11 & 0.18 & 56.93 & 0.00 & \\
+& $c_1^*$ & $2.10$ & $2.14$ & $0.04$ & $2.10$ & 0.00 & \\
+& $c_2^*$ & $1.10$ & $1.06$ & $0.04$ & $1.10$ & 0.00 & \\
+\hline
+
+\end{tabular}
+
+\begin{tablenotes}
+\footnotesize
+\item *$c_1$ and $c_2$ are reported in units of $10^{-4}$.
+\end{tablenotes}
+
+\end{threeparttable}
+\caption{Comparison between the reference results reported in \cite{peralta2023} and the estimates obtained with the proposed solver for the five benchmark test cases.}
+\label{tab:mork_vs_peralta}
+\end{table}
+
+It should be noted that more recent publications of the same authors with a revised method and new simulation results are presented in \cite{peralta2024} and \cite{peralta2025}. The publications, unfortunately, do not provide enough data to allow for the experiments to be replicated in this work.
+
+\section{Simulation Results}
+
+An extensive test framework is designed to test the performance of the proposed solution method. The goal is to provide empirical results on the solver's performance across a wide range of leak configurations and pipe characteristics. For a given number of leaks, the test framework consists of running many test cases as presented in \autoref{alg:test_suite}.\\
+
+By running many different, randomly generated test cases, the entire test suite will cover a wide range of configurations and provide a good picture of the methods' performance on simulated measurements. For simplicity, the pipe is normalized to unit length ($\ell=1$) and kept constant across test cases.\\
+
+\begin{algorithm}[ht]
+\caption{Test Suite for $n$ Leaks}
+\label{alg:test_suite}
+
+\DontPrintSemicolon
+\SetKwFunction{samplelc}{SampleLeakConfiguration}
+\SetKwFunction{sampleig}{SampleInitialGuess}
+\SetKwFunction{genmes}{GenerateMeasurements}
+\SetKwFunction{lmsolve}{Solve}
+\SetKwFunction{append}{Append}
+\SetKwFunction{keys}{Keys}
+\SetKwFunction{store}{Store}
+\SetKwProg{Fn}{Function}{:}{}
+\SetKwInput{KwNote}{\normalfont Note}
+\SetKwRepeat{Try}{try}{until}
+% $\ell \gets1,\ \delta \gets 0.05,\ c_{\min} \gets 0.01,\ c_{\max} \gets0.20$ \;
+% $m \gets 2n,\ R_{\Delta h} \gets 0.7,\ h_0 \gets 10$ \;
+% $N_\text{trials} \gets 50$ \;
+\For{$c \gets 1$ \KwTo $N_\text{cases}$}{
+    $S_c \gets \{\}$ \tcp*[r]{map: solution $\mapsto$ count}
+    $\mathbf{x}_c^* \gets$ \samplelc{$n,\ell,\delta,c_{\min},c_{\max}$} \tcp*[r]{\autoref{alg:SampleLeakConfiguration}}
+    $\theta \gets \mathcal{U}(\theta_{\min},\ \theta_{\max})$ \;
+    $\mathcal{M} \gets$ \genmes{$\mathbf{x}_c^*, \theta,m,R_{\Delta h},h_0$} \tcp*[r]{\autoref{alg:generate_measurements}}
+    \For{$t \gets 1$ \KwTo $N_{\text{trials}}$}{
+        $\mathbf{x}_0 \gets$ \samplelc{$n,\ell,\delta,c_{\min},c_{\max}$} \tcp*[r]{\autoref{alg:SampleLeakConfiguration}}
+        $\mathbf{x} \gets$ \lmsolve{$\mathcal{M},\mathbf{x}_0$} \tcp*[r]{\autoref{sec:solver_design}}
+        \eIf{$\exists\mathbf{x}' \in S_c$ \text{such that} $\|\mathbf{x}-\mathbf{x}'\|_\infty < \varepsilon$}{
+            increment count of $S_c(\mathbf{x}')$\;
+        }{
+            add $\mathbf{x}$ to $S_c$ with count $1$\;
+        }
+    }
+    \store{$\mathbf{x}_c^\ast, S_c$}
+}
+\end{algorithm}
+
+For each test case, the solver is executed multiple times from independently sampled initial guesses. This allows the sensitivity of the solver to the initial value to be assessed. If the solver consistently converges to the same solution across trials, the problem instance can be considered well-conditioned with respect to initialization. Conversely, if different solutions are obtained depending on the initial guess, the test case may exhibit multiple local optima or an ill-conditioned solution space.\\
+
+During each test case, all distinct solutions returned by the solver are stored in a map $S_c$, which records how often each solution is obtained. Two solutions are considered identical if they differ by less than a small tolerance $\varepsilon$ in the infinity norm,
+\begin{equation}
+\mathbf{x}_1 \sim \mathbf{x}_2
+\ \Leftrightarrow \ 
+\|\mathbf{x}_1 - \mathbf{x}_2\|_\infty < \varepsilon.
+\end{equation}
+
+The experiment is limited to testing pipe systems with $n=\{2,3,4,5\}$ leaks. The test suite for two leaks consisted of $N_\text{cases}=3000$ test cases, while the remaining test suites consisted of $N_\text{cases}=1000$. The remaining parameters were constant across all test suites and summarized in \autoref{tab:sim_params}.
+
+\begin{table}[ht]
+\centering
+\setlength{\tabcolsep}{8pt}      % default is 6pt
+\renewcommand{\arraystretch}{1.3} % default is 1.0
+\begin{tabular}{
+r@{\,$=$\,}l
+r@{\,$=$\,}l
+r@{\,$=$\,}l
+r@{\,$=$\,}l
+}
+$\ell$ & $1$ &
+$m$ & $2n$ &
+$\delta$ & $0.05$ &
+$N_\text{trials}$ & $50$\\
+
+$c_{\min}$ & $0.01$ &
+$\theta_{\min}$ & $0.1$ &
+$h_0$ & $10$ &
+$R_{\Delta h}$ & $0.7$ \\
+
+$c_{\max}$ & $0.20$ &
+$\theta_{\max}$ & $0.5$ &
+$\varepsilon$ & $0.01$ &
+$\tau_\text{conv}$ & $10^{-10}$
+\end{tabular}
+\caption{Parameters used for the simulation experiment.}
+\label{tab:sim_params}
+\end{table}
+
+
+\subsection{Solve Rate per Test Suite}
+
+\autoref{fig:solve_rate_all_leaks} presents the number of distinct solutions identified across 50 trials for each test case, together with the number of test cases in which the true solution was obtained. For the test suite with two leaks, 3000 test cases were evaluated. In 98.6\% of the cases, all trials converged to exactly one solution, which corresponded to the true leak configuration. The remaining 1.4\% of test cases produced no solution. These results indicate that the solver accurately and consistently identifies leak locations in pipe systems with two leaks.\\
+
+\begin{figure}[ht]
+    \centering
+    \includesvg[width=\linewidth]{plots/solve_rate_all_leaks}
+    \caption{Distribution of distinct solutions across 50 trials per test case and proportion of cases where the true leak configuration was identified.}
+    \label{fig:solve_rate_all_leaks}
+\end{figure}
+
+A similar level of performance is observed for the test suite with three leaks, where 93.7\% of test cases produced exactly one solution across all trials. A small fraction of the test cases produced more than one solution, and in most of these cases, the true solution was included. In total, the solver identified the true solution in 94.2\% of the test cases, which indicates strong robustness with respect to the initial values.\\
+
+For four leaks, the performance decreases. In 23.0\% of the test cases, no solution was found across the trials. In 63.8\% of the cases, exactly one solution was identified, and most of these corresponded to the true solution. A larger share of test cases, 13.2\%, produced multiple solutions across the trials, and the majority of these sets contained the true solution. Overall, the solver identified the true solution in 69.7\% of the test cases.\\
+
+For five leaks, the solver no longer performs reliably. In 35.7\% of the test cases, no solution was found, and only 22.5\% of the test cases produced exactly one solution, where only a small portion corresponded to the true solution. A substantial fraction of the test cases, 41.8\%, produced multiple solutions, and only a minority of these included the true leak configuration. In total, the solver identified the true solution in 16.7\% of the test cases, which indicates a significant reduction in performance as the number of leaks increases.\\
+
+
+
+\subsection{False Detection Rate}
+For a given test case, $c$, $\mathbf{x}^*_c$ is the true solution and $S_c$ is the stored solution counts. Let the number of true positives (TP) and false positives (FP) for a given test case be defined as the number of trials that converged to the true solution or a false solution. Specifically,
+\begin{align*}
+    TP_c &:= S_c(\mathbf{x}_c^*), \\
+    FP_c &:= \sum_{\tilde{\mathbf{x}}\in \{S_c \setminus \mathbf{x}_c^*\} } S_c(\tilde{\mathbf{x}}).
+\end{align*}
+The false detection rate (FDR) can then be defined as
+\begin{equation*}
+    FDR:=\dfrac{\sum_{c} FP_c}{\sum_{c} (TP_c + FP_c)},
+\end{equation*}
+which is a metric that indicates how often the solver delivers a wrong result. \autoref{tab:fdr} shows the FDR from the test suites for different numbers of leaks. It can be seen that for pipe systems with two or three leaks, the solver rarely produces a wrong solution. For four leaks, the majority of solutions are correct, and the results from the solver are still useful in identifying leaks. For five leaks, the majority of solutions are incorrect, and the solutions can't be reliably trusted.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{ c | c }
+n & FDR \\
+\hline
+2 & 0.0\% \\
+3 & 0.1\% \\
+4 & 10.8\% \\
+5 & 83.2\%\\
+\hline
+\end{tabular}
+\caption{False Detection Rate when solving for a different number of leaks.}
+\label{tab:fdr}
+\end{table}
+
+\subsection{Solve Rate per Test Case}
+
+For each test case, the solver is executed $N_{\text{trials}}$ times using different random initializations. Across these trials, the solver converges to the true solution, $\mathbf{x}_c^*$, a total of $S_c(\mathbf{x}_c^*)$ times. The ratio $S_c(\mathbf{x}_c^*)/N_{\text{trials}}$ therefore defines the empirical solve rate for that test case. \autoref{fig:sol_rate_across_trials} shows the distribution of the empirical solve rate over test cases for which the true solution is recovered at least once, i.e., $S_c(\mathbf{x}_c^*) > 0$, grouped by the number of leaks. Each box plot summarizes the variability in solve rate among test cases with the same value of $n$.
+
+\begin{figure}[ht]
+    \centering
+    \includesvg[width=\linewidth]{plots/plt_sol_rate_across_trials}
+    \caption{Distribution of the empirical solve rate $S_c(\mathbf{x}_c^*)/N_{\text{trials}}$ for test cases with $S_c(\mathbf{x}_c^*) > 0$.}    
+    \label{fig:sol_rate_across_trials}
+\end{figure}
+
+From the plot, it can be seen that for two leaks, 75\% of the test cases found the true solution in more than 85\% of the trials, and at least 50\% of the test cases found the true solution every time. This indicates that for two leaks, the solver is highly robust to different initial values. \\
+
+For three leaks, the distribution becomes substantially wider. More than 50\% of the test cases exhibit solve rates between 15\% and 85\%, suggesting considerable variability in difficulty across leak configurations. Some configurations remain relatively robust to initialization, while others are significantly harder to solve. The median solve rate also decreases to approximately 43\%.\\
+
+Performance decreases further for four leaks, with roughly 75\% of test cases showing solve rates below 35\%. Still, 5\% of test cases achieve solve rates above 85\%, indicating that certain leak configurations remain comparatively well conditioned and easier to solve than the majority.\\
+
+For five leaks, the distribution is heavily concentrated near zero, with 95\% of test cases exhibiting solve rates below 10\%. Recall that the true solution is identified in only 16.7\% of all five-leak test cases. Together with the results in this section, it is apparent that the solver only rarely converges to the correct solution when the number of leaks increases to five.\\
+
+\subsection{Error Magnitude}
+
+The results in the previous sections quantify how often the solver converges to the correct solution. However, when the solver converges to an incorrect solution, it is also important to understand how far this solution deviates from the true leak configuration. This section therefore investigates the magnitude of the error for all solutions ($\tilde{\mathbf{x}} \nsim \mathbf{x}^*$), in order to assess how inaccurate an incorrect estimate may be in practice.\\
+
+Let $z_i$ denote the location of the $i$-th leak obtained from a solution vector $\mathbf{x}$. Two error metrics are introduced to quantify the deviation between an incorrect solution ($\tilde{\mathbf{x}}$) and the true solution ($\mathbf{x}^*$). The first metric is the mean absolute error across all leak locations,
+\begin{equation*}
+e^{z}_{\text{mean}} := \frac{1}{n}\sum_{i=1}^{n} |\tilde z_i - z_i^*|,
+\end{equation*}
+which measures the average positional deviation of the estimated leaks. The second metric is the maximum absolute error across leak locations,
+\begin{equation}
+e^{z}_{\max} := \max_{i} |\tilde z_i - z_i^*|,
+\end{equation}
+which measures the largest deviation among the estimated leak positions. Together, these metrics provide information about both the overall accuracy of an incorrect solution and the worst-case deviation in leak location.\\
+
+\autoref{fig:z_error} shows the distribution of ( $e^{z}_{\text{mean}}$) and ( $e^{z}_{\max}$ ) for all incorrect solutions obtained across all test cases. The figure only includes results for $n=4$ and $n=5$, since the test suites with two and three leaks produced too few incorrect solutions to yield meaningful statistical insight.\\
+
+\begin{figure}[ht]
+    \centering
+    \includesvg[width=\linewidth]{plots/plot_z_error}
+    \caption{Distribution of the mean leak error $e^{z}_{\text{mean}}$ and maximum leak error $e^{z}_{\max}$ for all incorrect solutions $\tilde{\mathbf{x}} \nsim \mathbf{x}^*$ obtained across test cases with $n=4$ and $n=5$ leaks.}    
+    \label{fig:z_error}
+\end{figure}
+
+From the figure, it can be seen that the average mean error is approximately $0.015$ for four leaks and $0.020$ for five leaks. Recall that the pipe length is normalized to one, which implies that the typical deviation in leak position is only slightly larger than the solution tolerance of ( $\varepsilon = 0.01$ ). This indicates that many incorrect solutions are relatively close to the true configuration.\\
+
+Some test cases produce substantially larger errors for individual leaks. The maximum observed leak error reaches approximately $0.2$ for four leaks and $0.4$ for five leaks. Such deviations correspond to a significant fraction of the pipe length and would in practice lead to inaccurate localization of the leak. These results indicate that while many incorrect solutions remain close to the true configuration, a subset of the solutions deviates considerably and may provide limited practical value.\\
+
+\subsection{Summary}
+
+What have we learned???

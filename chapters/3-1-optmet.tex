@@ -13,7 +13,7 @@ Solving the minimization problem,
 \end{equation}
 satisfies $r(x^*) = 0$ if an exact solution exists. If no exact solution exists, or if the system is overdetermined, the formulation yields a solution that minimizes the residual norm.\\
 
-Solving \cref{eq:min_problem} is generally very hard \cite{madsen2004}, since there might exist local minima that are larger than a global minima. Instead, many methods aim to solve the local problem of finding a local solution for a region around the solution,
+Solving \cref{eq:min_problem} is generally very hard \cite{madsen2004}, since there might exist local minima that are larger than a global minima. Instead, many methods aim to solve the local problem of finding $x^\ast \in \mathbb{R}^n$ such that
 \begin{equation*}
     f(x^*) \leq f(x) \ \text{for} \ \|x-x^*\|<\delta,
 \end{equation*}
@@ -32,7 +32,7 @@ There are two main frameworks for controlling how the step $s_k$ is chosen, call
 
 \subsection{Line Search Methods}
 
-Line search methods determine the step $s_k$ by selecting a search direction $p_k$ and a scalar step length $\alpha > 0$. The step is written as
+Line search methods \cite{madsen2004} determine the step $s_k$ by selecting a search direction $p_k$ and a scalar step length $\alpha > 0$. The step is written as
 \begin{equation*}
 s_k = \alpha p_k.
 \end{equation*}
@@ -63,7 +63,7 @@ Practical line search algorithms aim to find a step length that provides a suffi
 \end{figure}
 
 \subsection{Gradient Descent}
-Gradient descent is a simple method that is based on moving in the direction of the negative gradient of the objective function. 
+Gradient descent \cite{madsen2004} is a simple method that is based on moving in the direction of the negative gradient of the objective function. 
 Using the chain rule, the gradient of $f$ is given by
 \begin{equation}
 \label{eq:gradient_f}
@@ -81,7 +81,7 @@ Gradient descent is simple to implement and requires only first-order derivative
 
 \subsection{Newton's Method}
 
-Newton's method incorporates second-order information of the objective function. 
+Newton's method \cite{madsen2004} incorporates second-order information of the objective function. 
 The gradient of $f$ is given by \cref{eq:gradient_f} and the Hessian is given by
 \begin{equation}
 \label{eq:hessian}
@@ -93,18 +93,18 @@ At iteration $k$, the Newton search direction is obtained by solving the linear 
     \nabla^2 f(x_k) p_k = - \nabla f(x_k).
 \end{equation*}
 
-By incorporating curvature information, Newton's method typically achieves quadratic convergence in a neighborhood of a solution, provided that the Hessian is nonsingular. This represents a significant improvement over gradient descent in terms of local convergence speed.
+By incorporating curvature information, Newton's method typically achieves quadratic convergence in a neighborhood of a solution, provided that the Hessian is nonsingular. This represents a significant improvement over gradient descent in terms of local convergence speed.\\
 
 However, the method requires computing the Hessian matrix, which can be computationally expensive or infeasible for some problems. Moreover, if the Hessian is indefinite or poorly conditioned, the method may fail to produce a descent direction without additional safeguards.
 
 \subsection{Gauss--Newton Method}
 
-The Gauss--Newton method is tailored specifically to nonlinear least squares problems. 
+The Gauss--Newton method \cite{madsen2004} is tailored specifically to nonlinear least squares problems. 
 It is based on an approximation of \cref{eq:hessian},
 \begin{equation*}
     \nabla^2 f(x) \simeq J(x)^\top J(x),
 \end{equation*}
-which neglects the second-order term involving $\nabla^2 r_i(x)$.
+which neglects the second-order term involving $\nabla^2 r_i(x)$.\\
 
 The search direction is therefore computed by solving
 \begin{equation}
@@ -112,7 +112,7 @@ The search direction is therefore computed by solving
     J(x_k)^\top J(x_k) p_k = - J(x_k)^\top r(x_k).
 \end{equation}
 
-This approximation avoids explicit computation of second derivatives and reduces computational cost compared to full Newton's method. When the residual is small and near the solution, the neglected term becomes insignificant, and the method exhibits fast local convergence.
+This approximation avoids explicit computation of second derivatives and reduces computational cost compared to full Newton's method. When the residual is small and near the solution, the neglected term becomes insignificant, and the method exhibits fast local convergence.\\
 
 The Gauss--Newton method may perform poorly when the residual is large or when $J(x_k)^\top J(x_k)$ is rank deficient. In such cases, the approximation of the Hessian can be inaccurate, and additional regularization techniques may be required to ensure robustness.
 
@@ -137,13 +137,13 @@ In practice, this is solved through solving a damped problem, where the step is 
 \label{eq:damped_problem}
     s_k = \underset{s}{\text{argmin}} \ \left(m_k(s) + \frac{1}{2} \ \lambda \ s^\top s\right),
 \end{equation}
-where $\lambda \geq 0$ is the damping parameter, and $\lambda \ s^\top s$ penalizes large steps. 
+where $\lambda \geq 0$ is the damping parameter, and $\lambda \ s^\top s$ penalizes large steps. \\
 
 For a given $\Delta$ or $\lambda$, if no sufficient step $s_k$ is found such that $f(x_k+s_k)<f(x_k)$ (assuming $x_k$ is not a solution), the parameters ($\Delta,\lambda$) must be tuned such that a sufficient step is found. Since $m_k(s)$ is assumed to be a sufficient approximation for $f(x_k+s)$ when $s$ is sufficiently small, the trust region should be decreased ($\lambda$ increased) for the next iteration. When a sufficient step is found, it indicates that $m_k(s)$ is a good approximation, and the trust region can be increased ($\lambda$ decreased), aiming for faster convergence.
 
 \subsection{Levenberg--Marquardt Method} \label{sec:levenberg_marquardt}
 
-The Levenberg--Marquardt (LM) method is a damped Gauss--Newton method designed for solving nonlinear least--squares problems. It can be interpreted as a trust region method where the step is computed from a regularized Gauss--Newton system. The damping parameter, $\lambda$, controls the transition between the Gauss--Newton and steepest descent method.
+The Levenberg--Marquardt (LM) method \cite{madsen2004} is a damped Gauss--Newton method designed for solving nonlinear least--squares problems. It can be interpreted as a trust region method where the step is computed from a regularized Gauss--Newton system. The damping parameter, $\lambda$, controls the transition between the Gauss--Newton and steepest descent method.\\
 
 At iteration $k$, the LM step is obtained by solving the linear system
 \begin{equation} \label{eq:lm_system}
@@ -157,13 +157,13 @@ As $\lambda \to 0$, the system approaches the Gauss--Newton equations, with $\al
 \begin{equation*}
     s_k \simeq -\frac{1}{\lambda}J(x_k)^\top r(x_k),
 \end{equation*}
-which is the steepest descent direciton, \cref{eq:steepest_descent}, with a small step lenght of $\alpha=\lambda^{-1}$.
+which is the steepest descent direction, \cref{eq:steepest_descent}, with a small step lenght of $\alpha=\lambda^{-1}$.\\
 
 The damping parameter must be initialized for the first iteration. \cite{nielsen1999} states that the initial value should relate to the magnitude of the eigenvalues, and proposes
 \begin{equation} \label{eq:init_lambda}
 \lambda_0 = \tau \max \left( \operatorname{diag}(J(x_0)^\top J(x_0)) \right),
 \end{equation}
-where $\tau > 0$ is a small constant.
+where $\tau > 0$ is a small constant.\\
 
 To evaluate the quality of a proposed step $s_k$, the LM method uses the gain ratio, defined as the ratio between the actual reduction in the objective function and the reduction predicted by the quadratic model,
 \begin{equation}
@@ -189,7 +189,7 @@ Combining \cref{eq:gain_ratio,eq:mk_solve} yields a computationally easier expre
     \varrho = \frac{\|r(x_k)\|^2 - \|r(x_k+s_k)\|^2}
     {s_k^\top (\lambda s_k-J(x_k)^\top r(x_k))}.
 \end{equation}
-Note that $s_k^\top s_k$ and $-s_k^\top J(x_k)^\top r(x_k)$ are positive, such that the denominator is always positive.
+Note that $s_k^\top s_k$ and $-s_k^\top J(x_k)^\top r(x_k)$ are positive, such that the denominator is always positive.\\
 
 If $\varrho > 0$, the step is accepted and the iterate is updated,
 \[

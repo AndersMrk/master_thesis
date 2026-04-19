@@ -7,7 +7,7 @@
 
 In this section, the equations that hold between measurements $\mathcal{M}$ and leak parameters $\mathbf{x}$ will be derived.
 
-Consider a pipe with $n$ leaks, where the length of the pipe, $L$, and the resistance coefficient, $\theta$, are assumed to be known. The goal is to identify the set of unknown leak parameters $\{z_i,c_i\},\;i\in\{1,2,\dots,n\}$ given a set of boundary measurements $\mathcal{M}\in\mathbb{R}^{4 \times m}$. The leak positions $z_i$ are uniquely defined by the length of the non-leaking pipe sections $L_i$ by 
+Consider a pipe with $n$ leaks, where the length of the pipe, $\ell$, and the resistance coefficient, $\theta$, are assumed to be known. The goal is to identify the set of unknown leak parameters $\{z_i,c_i\},\;i\in\{1,2,\dots,n\}$ given a set of boundary measurements $\mathcal{M}\in\mathbb{R}^{4 \times m}$. The leak positions $z_i$ are uniquely defined by the length of the non-leaking pipe sections $L_i$ by 
 \begin{equation*}
     z_i=\sum_{k=1}^i L_k.
 \end{equation*}
@@ -18,7 +18,7 @@ Let
 define the vector of unknown leak parameters, constrained to
 \begin{equation}
 \label{eq:constraints}
-    L_i>0,\quad c_i>0, \quad \sum_{i=1}^n L_i<L.
+    L_i>0,\quad c_i>0, \quad \sum_{i=1}^n L_i<\ell.
 \end{equation}
 
 A given measurement $\mu^{(j)}\in\mathcal{M}$ defines a steady-state operating point. For this operating point, the system states $h^{(j)}_i$, $q^{(j)}_i$ and $\tilde{q}^{(j)}_i$ are constant. Following the upstream equation for head, \cref{eq:upstream_head}, $n+1$ equations are defined as
@@ -40,7 +40,7 @@ A given measurement $\mu^{(j)}\in\mathcal{M}$ defines a steady-state operating p
     h_{n}^{(j)}-\theta L_{n+1} \left(q_{n}^{(j)}\right)^2
     \end{bmatrix},
 \end{equation}
-where $L_{n+1}:=L-\sum_{i=1}^n L_i$.
+where $L_{n+1}:=\ell-\sum_{i=1}^n L_i$.
 
 Similarly, $n$ equations are defined by the upstream equation for flow, \cref{eq:upstream_flow}, by
 \begin{equation}
@@ -111,8 +111,8 @@ For a given measurement $\mu^{(j)}$, the calculated outlet head and flow must eq
 \begin{equation}
     \label{eq:forward_pass}
     F_{fp}(\mathbf{x}, h_0^{(j)},q_0^{(j)}) = \begin{bmatrix}
-        h_L^{(j)}\\[0.4em]
-        q_L^{(j)}
+        h_{\ell}^{(j)}\\[0.4em]
+        q_{\ell}^{(j)}
     \end{bmatrix}.
 \end{equation}
 
@@ -128,11 +128,11 @@ By eliminating the state variables, $\phi^{(j)}$, through the forward pass, each
     \end{bmatrix}
     = \mathcal{M}_L :=
         \begin{bmatrix}
-        h_L^{(1)}\\[0.4em]
-        q_L^{(1)}\\
+        h_{\ell}^{(1)}\\[0.4em]
+        q_{\ell}^{(1)}\\
         \vdots\\
-        h_L^{(m)}\\[0.4em]
-        q_L^{(m)}\\
+        h_{\ell}^{(m)}\\[0.4em]
+        q_{\ell}^{(m)}\\
     \end{bmatrix}.
 \end{equation}
 
@@ -143,6 +143,7 @@ By eliminating the state variables, $\phi^{(j)}$, through the forward pass, each
 
 
 \section{Deriving the Derivatives (Backward Pass)}
+\label{sec:der_jacobian}
 
 In this section, the analytical expression for the Jacobian Matrix,
 \begin{equation*}
@@ -158,7 +159,7 @@ $\dfrac{\partial q_n}{\partial c_i}$
 for $i\in \{1,2,\dots,n\}$.
 Given that
 \begin{equation*}
-    \frac{\partial}{\partial L_i} L_{n+1} = \frac{\partial}{\partial L_i} \left(L-\sum_{i=1}^n L_i\right) = -1,
+    \frac{\partial}{\partial L_i} L_{n+1} = \frac{\partial}{\partial L_i} \left(\ell-\sum_{i=1}^n L_i\right) = -1,
 \end{equation*}
 the derivatives for head equate to
 \begin{align}
@@ -368,7 +369,7 @@ c_i = e^{\gamma_i}.
 
 For the lengths $L_i$, both positivity and the inequality constraint
 \begin{equation*}
-\sum_{i=1}^n L_i < L
+\sum_{i=1}^n L_i < \ell
 \end{equation*}
 must be satisfied. This is achieved by combining the simplex and box constraints as presented in \cite{leplat2025}. The simplex constraint is enforced by defining the weights $\alpha_i(\lambda)$ through a softmax-type normalization,
 \begin{equation}
@@ -400,15 +401,15 @@ which has the property
 
 By combining the simplex and box constraints, the length parameters, $L_i$, can be defined by
 \begin{equation}
-L_i = L \sigma(s) \alpha_i(\lambda).
+L_i = \ell \sigma(s) \alpha_i(\lambda).
 \end{equation}
 Since $\alpha_i(\lambda) > 0$ and $0 < \sigma(s) < 1$, it follows that
 \begin{equation*}
 L_i > 0,
 \qquad
 \sum_{i=1}^n L_i
-= L \sigma(s) \sum_{i=1}^n \alpha_i(\lambda)
-= L \sigma(s) < L.
+= \ell \sigma(s) \sum_{i=1}^n \alpha_i(\lambda)
+= \ell \sigma(s) < \ell.
 \end{equation*}
 
 In summary, the mapping $g : \mathbb{R}^{2n} \to \mathcal{C}$ is defined by
@@ -417,7 +418,7 @@ In summary, the mapping $g : \mathbb{R}^{2n} \to \mathcal{C}$ is defined by
 \mathbf{x}=g(\mathbf{y})
 =
 \bigl[
-L \sigma(s) \alpha_1(\lambda), \dots, L \sigma(s) \alpha_n(\lambda),
+\ell \sigma(s) \alpha_1(\lambda), \dots, \ell \sigma(s) \alpha_n(\lambda),
 e^{\gamma_1}, \dots, e^{\gamma_n}
 \bigr],
 \end{equation}
@@ -447,8 +448,9 @@ where the derivation of $\frac{\partial \mathbf{x}}{\partial\mathbf{y}}$ is pres
 
 \newpage
 \subsection{Solver Design}
+\label{sec:solver_design}
 
-To solve the optimization problem in \cref{eq:min_prob_via_y}, a Levenberg--Marquardt solver has been designed as described in \autoref{sec:levenberg_marquardt}. The problem definition requires the pipe parameters and the number of leaks in the system ($L$, $\theta$, $n$) to be known. Additionally, a set of measurements ($\mathcal{M}$), where the number of measurements is greater than the number of leaks ($m\geq n$), is also required. The solver requires an additional parameter, which is the initial guess and starting point for the iterative algorithm, $\mathbf{x}_0$. From these parameters, the solver operates as described in \autoref{fig:solver_flow_chart}.
+To solve the optimization problem in \cref{eq:min_prob_via_y}, a Levenberg--Marquardt solver has been designed as described in \autoref{sec:levenberg_marquardt}. The problem definition requires the pipe parameters and the number of leaks in the system ($\ell$, $\theta$, $n$) to be known. Additionally, a set of measurements ($\mathcal{M}$), where the number of measurements is greater than the number of leaks ($m\geq n$), is also required. The solver requires an additional parameter, which is the initial guess and starting point for the iterative algorithm, $\mathbf{x}_0$. From these parameters, the solver operates as described in \autoref{fig:solver_flow_chart}.
 
 \begin{figure}[ht]
     \centering
@@ -459,34 +461,32 @@ To solve the optimization problem in \cref{eq:min_prob_via_y}, a Levenberg--Marq
 
 The starting point $\mathbf{x}_0$ is translated into the $y$-space through the inverse function $g^{-1}$, which can be derived from \cref{eq:g_func}.\\
 
-Since the problem to solve is $r(\mathbf{x})=0$, the stopping criterion $\|r\|< \text{tol}$ is used, where tol is a sufficiently small number to be confident in the solution. Additionally, a maximal iteration stopping criterion ($k \geq k_{\max}$) is implemented to safeguard against an infinite loop. If the solver stops before $\|r\|< \text{tol}$, the solution is likely not correct and is not of interest. However, if the solver gets "stuck", other stopping criteria could be implemented in order to abort early without having to wait for the maximum iterations to be reached. Such a criterion could be based on a minimum required step size $\|s_k\|$, since very small steps do not improve the solution sufficiently. Additionally, if the largest gradient, $\|J(\mathbf{x}_k)^\top r(\mathbf{x}_k)\|_\infty$, is very small, then the solver has reached a local minima, and will likely not converge to another solution.
+Since the problem to solve is $r(\mathbf{x})=0$, the stopping criterion $\|r\|< \tau_\text{conv}$ is used, where the convergence tolerance, $\tau_\text{conv}$, is a sufficiently small number to be confident in the solution. Additionally, a maximal iteration stopping criterion ($k \geq k_{\max}$) is implemented to safeguard against an infinite loop. If the solver stops before $\|r\|< \tau_\text{conv}$, the solution is likely not correct and is not of interest. However, if the solver gets "stuck", other stopping criteria could be implemented in order to abort early without having to wait for the maximum iterations to be reached. Such a criterion could be based on a minimum required step size $\|s_k\|$, since very small steps do not improve the solution sufficiently. Additionally, if the largest gradient, $\|J(\mathbf{x}_k)^\top r(\mathbf{x}_k)\|_\infty$, is very small, then the solver has reached a local minima, and will likely not converge to another solution.
 
 
 
-\section{(WIP) Discussion on Solutions (not a great title)}
+\section{Discussion on Identifiability and Solution Existence}
 
-Something something about ...
-To solve for all the unknowns, there must be enough measurements at different steady-state operating points. Since each operating point yields two equations, and there are $2n$ unknown variables, it is necessary that
+To identify all leak parameters, the number of measurements must be sufficient relative to the number of unknown variables. From \cref{eq:main_function}, each steady state operating point, $m$, provides two scalar equations for outlet head and outlet flow. The parameter vector
+\[
+\mathbf{x} = [L_1,\dots,L_n,c_1,\dots,c_n] \in \mathbb{R}^{2n}
+\]
+contains $2n$ unknowns, so the measurements must satisfy
 \begin{equation*}
     m \geq n,
 \end{equation*}
-assuming all $m$ measurements provide independent equations.
+assuming each measurement provides independent information. Under this assumption, the nonlinear system
+\[
+r(\mathbf{x}) = F(\mathbf{x},\mathcal{M}_0) - \mathcal{M}_L = 0
+\]
+contains at least as many independent equations as unknowns.\\
 
-***\\
+If $n$, $\theta$, and $\ell$ are known,and the measurement set $\mathcal{M}$ provides sufficiently independent equations, a solution $\mathbf{x}^*$ satisfying
+\[
+r(\mathbf{x}^*) = 0
+\]
+reproduces all measured inlet–outlet relations across the operating points considered. The solution $\mathbf{x}^*$ is then a valid solution to the inverse problem defined in \cref{eq:inverse_problem_def}.\\
 
-Assuming $n$, $\theta$, and $L$ are known, $m \geq n$, and $\mathcal{M}$ provides sufficiently independent equations $r(\mathbf{x})$. It should be an easy argument to make that a solution $\mathbf{x^*}$, that solves $r(\mathbf{x^*})=0$, will be a true solution of leak parameters for the mapping $\mathcal{M}_0 \mapsto \mathcal{M}_L$ (Since this is all we have to base our solution on). Knowing if $\mathbf{x^*}$ is the true solution to the pipe where $\mathcal{M}$ was obtained is a different question.\\
+A solution to $r(\mathbf{x}) = 0$ does not guarantee that $\mathbf{x}^*$ corresponds to the true physical leak configuration. The nonlinear forward model may admit multiple solutions that produce identical boundary measurements. As discussed in \autoref{sec:sol_existence}, local uniqueness depends on properties of the Jacobian, while global uniqueness requires additional structural assumptions on the forward operator. \\
 
-***\\
-
-The input-output relationship of a pipe with leaks is modelled by the forward pass defined by \cref{eq:forward_pass}. Given a pipe with resistance coefficient $\theta$, length $L$, and $n$ leaks, an important question is whether there exist multiple distinct sets of leak parameters ($z_i,c_i$) that yield the same input-output relationship. If multiple leak parameters provide the same input-output relationship, it will not be possible to distinguish one configuration from the other solely from measuring flow and head at the inlet and outlet of the pipe. For the leak identification problem in this work, it implies that the true leak configuration can not be distinguished from other configurations that yield the same input-output relationship. This is formalised in \autoref{lem:unique_solution}. 
-
-\begin{lemma}{}{unique_solution}
-Let $\mathbf{x}^*$ be the true leak parameters and the solution to the leak identification problem. If there exist some leak parameters $\mathbf{x}^\dagger$, where $\mathbf{x}^* \ne \mathbf{x}^\dagger$ and 
-\begin{equation*}
-    F_{fp}(\mathbf{x}^*, h_0,q_0) = F_{fp}(\mathbf{x}^\dagger, h_0,q_0),\quad \forall \ h_0,q_0,
-\end{equation*}
-then $\mathbf{x}^\dagger$ is considered a false solution, and it is impossible to uniquely find the true solution to the leak identification problem.
-\end{lemma}
-
-Results presented in \autoref{sec:result_multiple_solutions} strongly suggest that there exists at least one false solution for some leak configurations of both two and three leaks. 
-This result suggests that the leak identification problem does not have a unique solution for $n \geq 2$. For this reason, this work will not try to prove that the problem has a globally unique solution. There will also not be presented a proof that there is no unique solution, as the simulation results that follow are considered sufficient.
+Even when $m \geq n$ and a solution is found, there is no guarantee for uniqueness. Multiple leak configurations may be consistent with the same measurement set. A rigorous analysis of existence and uniqueness would require a detailed structural study of the forward operator and its Jacobian, which lies outside the scope of this work. Instead, the method is evaluated empirically through simulation experiments in \autoref{chap:results_performance}. The results show that accurate leak configurations are recovered across a wide range of test cases, which supports the practical applicability of the approach. \autoref{chap:analysis_of_sol} shows how the choice of measurement set affects the conditioning of the Jacobian and indicates when reliable solutions can be expected. Together, these results provide practical evidence of feasibility, even though formal guarantees are not established.

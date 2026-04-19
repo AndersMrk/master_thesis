@@ -63,23 +63,23 @@ In this section, the notation for a pipe with $n$ leaks is defined. \autoref{fig
 
 \renewcommand{\descriptionlabel}[1]{\normalfont #1}
 \begin{description}[itemsep=2pt, topsep=0pt, parsep=0pt]
-    \item[$L$] is the length of the pipe.
+    \item[$\ell$] is the length of the pipe.
     
-    \item[$z \in \lbrack 0,L \rbrack$] is the spatial coordinate along the pipe.
+    \item[$z \in \lbrack 0,\ell \rbrack$] is the spatial coordinate along the pipe.
     
-    \item[$z_i, \; i\in \{1,2,...,n\}$] is the location of the $i$-th leak downstream along the pipe such that $z_i < z_{i+1} \;\forall i$. Defining $z_0=0$ and $z_{n+1}=L$ simplifies equations.
+    \item[$z_i, \; i\in \{1,2,\dots,n\}$] is the location of the $i$-th leak downstream along the pipe such that $z_i < z_{i+1} \;\forall i$. Defining $z_0=0$ and $z_{n+1}=\ell$ simplifies equations.
 
     \item[$\tilde{q}_i$] is the flow leaking out of the $i$-th leak.
 
-    \item[$h_i:=h(z_i)$] is the head at leak location $z_i$. $h_0$ and $h_L:=h_{n+1}$ are defined as the head at the inlet and outlet of the pipe.
+    \item[$h_i:=h(z_i)$] is the head at leak location $z_i$. $h_0$ and $h_{\ell}:=h_{n+1}$ are defined as the head at the inlet and outlet of the pipe.
 
-    \item[$q_i:=q(z'), \; z'\in(z_i,z_{i+1})$] is the flow of the non-leaking pipe section after the $i$-th leak. $q_0$ and $q_L:=q_n$ are defined as the inlet and outlet flow of the pipe.
+    \item[$q_i:=q(z'), \; z'\in(z_i,z_{i+1})$] is the flow of the non-leaking pipe section after the $i$-th leak. $q_0$ and $q_{\ell}:=q_n$ are defined as the inlet and outlet flow of the pipe.
 
-    \item[$L_i:=z_i-z_{i-1}$] is the length of the non-leaking pipe section between $z_{i-1}$ and $z_i$. Defining $L_{n+1}:=L-z_n$ yields $\sum_{k=1}^{n+1} L_k = L$.
+    \item[$L_i:=z_i-z_{i-1}$] is the length of the non-leaking pipe section between $z_{i-1}$ and $z_i$. Defining $L_{n+1}:=\ell-z_n$ yields $\sum_{k=1}^{n+1} L_k = \ell$.
 
-    \item[$\mu:=\{h_0,h_L,q_0,q_L\}$] is the set containing the head and flow at the inlet and outlet of the pipe, which can be measured.
+    \item[$\mu:=\{h_0,h_{\ell},q_0,q_{\ell}\}$] is the set containing the head and flow at the inlet and outlet of the pipe, which can be measured.
 
-    \item[$\mu^{(j)}:=\{h_0^{(j)},h_L^{(j)},q_0^{(j)},q_L^{(j)}\},\;j\in(1,m)$] is the $j$-th measurement and $m$ is the total number of measurements.
+    \item[$\mu^{(j)}:=\{h_0^{(j)},h_{\ell}^{(j)},q_0^{(j)},q_{\ell}^{(j)}\},\;j\in\{1,2,\dots,m\}$] is the $j$-th measurement and $m$ is the total number of measurements.
 
     \item[$\mathcal{M}:=\bigcup_{j=1}^{m} \mu^{(j)}$] is the combined set of all $m$ measurements.
 \end{description}

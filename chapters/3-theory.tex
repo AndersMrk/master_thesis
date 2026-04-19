@@ -6,7 +6,7 @@ Let
 \[
 r : \mathbb{R}^n \to \mathbb{R}^m
 \]
-be a nonlinear and continuously differentiable residual function. The nonlinear residual problem is to find any
+be a nonlinear and continuously differentiable function. The nonlinear residual problem is to find any
 \begin{equation*}
      x^\ast \in \mathbb{R}^n \quad \text{such that} \quad r(x^*) = 0.
 \end{equation*}
@@ -26,58 +26,91 @@ J(x) = \frac{\partial r(x)}{\partial x}
 \in \mathbb{R}^{m \times n}.
 \]
 
-The Jacobian represents the best linear approximation of \(r\) near \(x\):
-\[
+Using first-order Taylor expansion, the Jacobian represents the first-order linearization of \(r\) near \(x\):
+\begin{equation}
+\label{eq:jac_res_approx}    
 r(x + \Delta x) \approx r(x) + J(x)\,\Delta x.
-\]
+\end{equation}
 
 Thus, \(J(x)\) describes the local sensitivity of the residual with respect to perturbations in the variables.
 
 \subsection{Existence and Number of Local Solutions}
+\label{sec:sol_existence}
 
 Let $x^\ast \in \mathbb{R}^n$ satisfy $r(x^\ast)=0$, and assume that $r$ is continuously differentiable in a neighborhood of $x^\ast$.
-Then it follows from the Implicit Function Theorem that the local structure of solutions is determined by the rank of the Jacobian $J(x^\ast)$. 
+Then it follows from the Implicit Function Theorem that the local structure of solutions is determined by the rank of the Jacobian $J(x^\ast)$, provided the rank is constant in a neighborhood of $x^\ast$.
 
 \paragraph{Case $m = n$ (square system).}
 
-If $J(x^\ast)$ is nonsingular ($\det J(x^\ast) \neq 0$), then $x^\ast$ is a locally unique solution.
-In this case, the system is locally well-posed, and there exists a neighborhood around $x^\ast$ in which no other solutions exist.
+Suppose $m=n$ and let $x^\ast$ satisfy $r(x^\ast)=0$.  
+If the Jacobian $J(x^\ast)$ is nonsingular,
+\[
+\det J(x^\ast) \neq 0,
+\]
+then, by the Implicit Function Theorem, $x^\ast$ is a locally unique solution. In particular, there exists a neighborhood around $x^\ast$ in which no other solutions exist.
 
-If $J(x^\ast)$ is singular, local uniqueness is not guaranteed.
+If $J(x^\ast)$ is singular, the local behavior of the solution set cannot be determined from first-order information alone. In this case, the solution may fail to be isolated, and additional solutions may exist arbitrarily close to $x^\ast$.
 
 \paragraph{Case $m < n$ (underdetermined system).}
 
 If $J(x^\ast)$ has full row rank $m$, then the solution set near $x^\ast$ is not isolated. Instead, it forms a smooth manifold of dimension $n - m$.
-Hence, there are infinitely many nearby solutions, parameterized by $n-m$ free variables.
+Hence, there are infinitely many nearby solutions, parameterized by $n-m$ degrees of freedom.
 
 \paragraph{Case $m > n$ (overdetermined system).}
 
-In general, an overdetermined system has no solution.
-A necessary condition for a local solution is that the equations are compatible at $x^\ast$.
+In an overdetermined system, the number of equations exceeds the number of unknowns, so the system generally has no exact solution.
+Suppose, however, that a point $x^\ast$ satisfies $r(x^\ast)=0$.
+If $J(x^\ast)$ has full rank $n$, the constraints are locally independent and restrict all directions in $\mathbb{R}^n$, so the solution $x^\ast$ is locally isolated.
+If $\operatorname{rank} J(x^\ast)<n$, the constraints are not independent, and the solution is structurally unstable under perturbations of $r$.
 
 \paragraph{Global Solution.}
 
-The Jacobian $J(x^\ast)$ characterizes only the \emph{local} structure of the solution set. Even if $J(x^\ast)$ is nonsingular and $x^\ast$ is locally unique, the nonlinear system may possess additional isolated solutions elsewhere in $\mathbb{R}^n$. Consequently, local invertibility of the Jacobian does not imply global uniqueness.
+The Jacobian $J(x^\ast)$ characterizes only the \emph{local} structure of the solution set. Even if $J(x^\ast)$ is nonsingular and $x^\ast$ is locally unique, the nonlinear system may possess additional solutions elsewhere in $\mathbb{R}^n$. Consequently, local invertibility of the Jacobian does not imply global uniqueness.
 
-Global existence or uniqueness of a solution to $r(x)=0$ requires additional structural assumptions on $r$, such as global injectivity or strong monotonicity. In the absence of such global properties, the existence and uniqueness of a solution can not be guaranteed from an analysis of the Jacobian.
+Global existence or uniqueness of a solution to $r(x)=0$ requires additional structural assumptions on $r$, such as global injectivity or strong monotonicity. In the absence of such global properties, the existence and uniqueness of a solution cannot be guaranteed from an analysis of the Jacobian.
 
-\section{(WIP) Sensitivity Analysis of a Solution}
+\section{Local Sensitivity of the Residual}
 
-\subsection{SVD-decomposition and singular values}
+The Jacobian matrix characterizes how perturbations in the variables influence the residual locally (\cref{eq:jac_res_approx}). The magnitude of this influence may vary significantly depending on the direction of perturbation. Understanding these directional effects is important for assessing how reliably the variables can be inferred from the residual.\\
+
+Local sensitivity can be analyzed through the singular values of the Jacobian, which quantify how strongly perturbations in different directions affect the residual.
+
+\subsection{Singular Value Decomposition}
+
+Let $J \in \mathbb{R}^{m \times n}$ denote the Jacobian evaluated at a point of interest. The singular value decomposition (SVD) of $J$ is given by
+\begin{equation*}
+J = U \Sigma V^\top,
+\end{equation*}
+where
+
+\begin{itemize}
+\item $U \in \mathbb{R}^{m \times m}$ and $V \in \mathbb{R}^{n \times n}$ are orthogonal matrices,
+\item $\Sigma \in \mathbb{R}^{m \times n}$ is diagonal,
+\item the diagonal entries satisfy
 \[
-J = U \Sigma V^\top
+\sigma_1 \ge \sigma_2 \ge \dots \ge \sigma_p \ge 0,
 \]
+with $p = \min(m,n)$.
+\end{itemize}
 
-\subsection{Condition Number}
+The singular values describe how perturbations in specific directions of the variable space influence the residual. The columns of $V$ define orthogonal directions in $\mathbb{R}^n$, while the corresponding singular values determine the magnitude of the resulting change in the residual.\\
 
-\[
-\kappa(J) = \frac{\sigma_1}{\sigma_p}.
-\]
+Large singular values correspond to directions in which small perturbations of the variables produce relatively large changes in the residual. Conversely, small singular values correspond to directions in which the residual changes only weakly. If one or more singular values are close to zero, the Jacobian is nearly rank-deficient, indicating directions along which the residual provides little local information about the variables.
 
-A large condition number indicates that small perturbations in the residual may cause large changes in the solution.
+\subsection{Condition Number of the Jacobian}
 
-\subsection{Scaling to improve condition number}
-Ruiz method, van der Sluis lower bound ++
+A scalar measure of local sensitivity is given by the condition number of the Jacobian,
+\begin{equation}
+    \label{eq:cond_num_def}
+\kappa(J) = \frac{\sigma_1}{\sigma_p},
+\end{equation}
+where $\sigma_1$ and $\sigma_p$ denote the largest and smallest singular values of $J$, respectively.\\
+
+The condition number measures how differently perturbations in various directions affect the residual. If the singular values are of comparable magnitude, perturbations in different directions produce changes in the residual of similar size, indicating balanced local sensitivity.\\
+
+If the smallest singular value is much smaller than the largest, some directions produce much weaker changes in the residual than others. In such situations, small perturbations in the residual may correspond to large changes in the variables, indicating reduced numerical stability.\\
+
+If $\sigma_p = 0$, the Jacobian is rank-deficient and the condition number is infinite. In this case, there exist directions in which perturbations of the variables do not influence the residual to first order.
 
 \input{chapters/3-1-optmet}
 
