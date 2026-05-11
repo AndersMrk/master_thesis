@@ -1,0 +1,107 @@
+% pipe_3leaks.tikz
+% Requires in main document:
+% \usepackage{tikz}
+
+% Colors
+\definecolor{PipeOuter}{HTML}{000000}
+\definecolor{PipeInner}{HTML}{006083}
+\definecolor{LeakColor}{HTML}{006083}
+\definecolor{AxisColor}{HTML}{000000}
+\definecolor{BgColor}{HTML}{FFFFFF}
+
+\begin{tikzpicture}[
+  pipe/.style={draw=PipeOuter, line width=1.5pt, line join=round, fill=PipeInner, fill opacity=1},
+  pipeEndLine/.style={draw=PipeOuter, line width=2pt, line cap=round},
+  crack/.style={draw=BgColor, line width=0.5pt, fill=BgColor},
+  axis/.style={draw=AxisColor, line width=0.8pt, line cap=butt},
+  tick/.style={draw=AxisColor, line width=0.8pt, line cap=butt},
+]
+
+% ---- Geometry ----
+\def\Lpipe{12}
+\def\yPipe{0}
+\def\yAxis{1}
+\def\Ro{0.35}
+
+% Leak locations
+\def\zA{2.0}
+\def\zB{5.25}
+\def\zC{10}
+
+\def\ezA{3}
+\def\ezB{8.2}
+
+% ---- Pipe body ----
+\draw[pipe]
+  (0,\yPipe+\Ro) --
+  (\Lpipe,\yPipe+\Ro) --
+  (\Lpipe,\yPipe-\Ro) --
+  (0,\yPipe-\Ro) -- cycle;
+
+% End caps
+\draw[pipeEndLine] (0,\yPipe+\Ro+0.06) -- (0,\yPipe-\Ro-0.06);
+\draw[pipeEndLine] (\Lpipe,\yPipe+\Ro+0.06) -- (\Lpipe,\yPipe-\Ro-0.06);
+
+% ---- Z-axis above pipe ----
+\draw[axis,->] (0,\yAxis) -- (\Lpipe+0.6,\yAxis) node[right] {$z$-axis};
+
+% ---- Crack marker ----
+\newcommand{\CrackAt}[1]{%
+  \begin{scope}[shift={(#1,\yPipe-\Ro)}]
+    % crack as a closed polygon (edit points to taste)
+    \def\r{-0.05}
+    \filldraw[crack]
+      ( \r,  -0.1) --
+      ( \r-0.1,  0.15) --
+      ( \r,  0.2) --
+      ( \r-0.1,  0.4) --
+      ( \r+0.2,  0.15) --
+      ( \r+0.1,  0.1) --
+      ( \r+0.2,  -0.1)-- cycle;
+  \end{scope}%
+}
+
+\draw[tick] (0,\yAxis-0.10) -- (0,\yAxis+0.10) node[right=-7pt, yshift=8pt,text=AxisColor] {$0$};
+\draw[tick] (\Lpipe,\yAxis-0.10) -- (\Lpipe,\yAxis+0.10) node[right=-7pt, yshift=8pt,text=AxisColor] {$\ell$};
+
+% ---- Leaks ----
+\newcommand{\LeakAt}[2]{%
+  \CrackAt{#1}
+  % tick + label on z-axis
+  \draw[tick] (#1,\yAxis-0.10) -- (#1,\yAxis+0.10)
+    node[right=-7pt, yshift=8pt, text=AxisColor] {$z^*_{#2}$};
+}
+
+\LeakAt{\zA}{1}
+\LeakAt{\zB}{2}
+\LeakAt{\zC}{3}
+
+% estimated locations
+\draw[tick] (\ezA,\yAxis-0.10) -- (\ezA,\yAxis+0.10) node[right=-7pt, yshift=8pt, text=AxisColor] {$\hat z_{1}$};
+\draw[tick] (\ezB,\yAxis-0.10) -- (\ezB,\yAxis+0.10) node[right=-7pt, yshift=8pt, text=AxisColor] {$\hat z_{2}$};
+
+\newcommand{\SearchDist}[1]{%
+  % location, width
+  \def\yDim{\yAxis-0.28} % vertical offset below axis (tune)
+  \def\ezm{1.2}
+  \def\len{\ezm*0.3}
+  \def\pA{#1-\ezm}
+  \def\pB{#1}
+  \def\pC{#1+\ezm}
+  \def\tickSize{0.08}
+  
+  \draw[axis] (\pA,\yDim) -- ++(\len,0);
+  \node[anchor=west, text=AxisColor, font=\scriptsize] at ($(\pA,\yDim)+(\len-0.01,-0.03)$) {$e^z_{\min}$};
+  \draw[axis] ($(\pB-\len,\yDim)$) -- (\pB,\yDim);
+  
+  \draw[axis] (\pB,\yDim) -- ++(\len,0);
+  \node[anchor=west, text=AxisColor, font=\scriptsize] at ($(\pB,\yDim)+(\len,-0.03)$) {$e^z_{\min}$};
+  \draw[axis] ($(\pC-\len,\yDim)$) -- (\pC,\yDim);
+
+  \draw[tick] (\pA,\yDim-\tickSize) -- (\pA,\yDim+\tickSize);
+  \draw[tick] (\pB,\yDim-\tickSize) -- (\pB,\yDim+\tickSize);
+  \draw[tick] (\pC,\yDim-\tickSize) -- (\pC,\yDim+\tickSize);
+}
+\SearchDist{\ezA}
+\SearchDist{\ezB}
+\end{tikzpicture}

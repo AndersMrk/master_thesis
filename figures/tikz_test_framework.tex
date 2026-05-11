@@ -1,0 +1,101 @@
+% Requires: \usepackage{tikz}
+% TikZ libraries: \usetikzlibrary{arrows.meta,positioning,fit,calc}
+
+
+\begin{tikzpicture}[
+  font=\small,
+  >=Latex,
+  box/.style={
+    draw,
+    rounded corners=2pt,
+    align=center,
+    minimum height=7mm,
+    inner xsep=5pt,
+    inner ysep=2pt
+  },
+  root/.style={box, very thick, fill=gray!10, minimum width=58mm},
+  suite/.style={box, fill=blue!8, minimum width=10mm},
+  suiteSmall/.style={box, fill=blue!5, minimum width=7mm, minimum height=7mm},
+  case/.style={box, fill=green!8, minimum width=10mm},
+  trial/.style={box, fill=orange!10, minimum width=10mm},
+  note/.style={
+    draw,
+    rounded corners=2pt,
+    align=left,
+    fill=gray!6,
+    inner sep=3pt,
+    font=\scriptsize,
+    text width=42mm
+  },
+  ellipsis/.style={font=\large}
+]
+
+% Root
+\node[root] (root) at (0,0) {Test Framework};
+
+% Suites on one common horizontal line
+\node[suite]      (s2) at (-16mm,-18mm) {Test suite $n=2$};
+\node[suiteSmall] (s3) at ( 20mm,-18mm) {};
+\node[suiteSmall] (s4) at ( 32mm,-18mm) {};
+\node[suiteSmall] (s5) at ( 44mm,-18mm) {};
+\node[right=2mm of s5] {\scriptsize $n=3,4,5,\dots$};
+
+% Common bus line for suite arrows
+\coordinate (busL) at (-16mm,-10mm);
+\coordinate (busR) at (44mm,-10mm);
+\draw[thick] (root.south) -- (0,-10mm);
+\draw[thick] (busL) -- (busR);
+
+\foreach \s in {s2,s3,s4,s5}
+  \draw[-Latex, thick] (\s |- busL) -- (\s.north);
+
+% Test cases under expanded suite, spaced to avoid overlap
+\node[case] (c1) at (-36mm,-40mm) {test case\\$c=1$};
+\node[ellipsis] (cdots) at (-16mm,-40mm) {$\cdots$};
+\node[case] (cN) at (  6mm,-40mm) {test case\\$c=N_{\mathrm{cases}}$};
+
+\draw[thick] (s2.south) -- (-16mm,-31mm);
+\foreach \c in {c1,cN}
+  \draw[-Latex, thick] (-16mm,-31mm) -| (\c.north);
+
+% Trials under one representative test case, spaced to avoid overlap
+\node[trial] (t1) at (-46mm,-64mm) {trial\\$j=1$};
+\node[ellipsis] (tdots) at (-28mm,-64mm) {$\cdots$};
+\node[trial] (tN) at (-28mm,-64mm) {trial\\$j=N_{\mathrm{trials}}$};
+
+\draw[thick] (c1.south) -- (-36mm,-55mm);
+\foreach \t in {t1,tN}
+  \draw[-Latex, thick] (-36mm,-55mm) -| (\t.north);
+
+% Compact trial block for final case
+\node[trial] (tNblock) at (6mm,-64mm) {trials\\$j=1,\ldots,N_{\mathrm{trials}}$};
+\draw[-Latex, thick] (cN.south) -- (tNblock.north);
+
+% Notes
+\node[note] (case-note) at (53mm,-40mm) {
+Each test case:\\
+generates leak configuration\\
+and simulates measurements
+};
+
+\node[note] (trial-note) at (53mm,-64mm) {
+Each trial:\\
+samples random initial value\\
+runs solver with simulated data\\
+and known parameters
+};
+
+\draw[-Latex, dashed] (cN.east) -- (case-note.west);
+\draw[-Latex, dashed] (tNblock.east) -- (trial-note.west);
+
+% Expanded-view box
+\node[
+  draw,
+  dashed,
+  rounded corners=4pt,
+  fit=(c1)(cN)(t1)(tN)(tNblock),
+  inner sep=5pt,
+  label={[font=\scriptsize]below:Expanded hierarchy shown for one suite.}
+] {};
+
+\end{tikzpicture}

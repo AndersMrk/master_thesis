@@ -1,0 +1,28 @@
+\chapter{Discussion on Findings}
+
+The solver reliably identifies two and three leaks, with strong robustness to the choice of initial values. For two leaks, it outperforms previous methods.\\
+
+For four leaks, the solver often found multiple solutions. Having multiple solutions still limits the search distance by limiting the search to the found solutions. From \autoref{sec:err_mag}, it is likely that many of the multiple solutions are relatively close. For four leaks, it did not find the exact solution within $\varepsilon=0.001$ every time, but it found a close solution within $10\varepsilon$ in most of the cases, indicating that the produced solutions yield useful results.
+
+For five leaks, the solver is not reliable at identifying them. Recall from \autoref{tab:cond_nums} that for five leaks, the condition number at the solution is on the scale of $10^{12}$. This indicates that a highly ill-conditioned system is likely the cause of the poor performance.\\
+
+Intuitively, it is expected that when introducing more leaks, the effect of each individual leak will be harder to distinguish and isolate. This is also based on the intuition that the characteristics of the pipe at different steady-state operating points provide limited new information. Based on the modeling of a pipe with leaks proposed in this work and the results shown, it is likely that four leaks is the upper limit for how many leaks can reliably be identified based solely on steady state input and output measurements of head and flow.\\
+
+Despite the poor performance for $n > 4$, the solver can still be applied to pipe systems with more leaks. As shown in \autoref{sec:n_not_known}, assuming two or three leaks often resulted in an estimated leak location close to a true solution. Showing the potential for an iterative approach in identifying many leaks.
+
+\section{Limitations and Applicability in Practice}
+
+A common method for estimating parameters such as \gls{theta} is to use measurements in which the pipe is excited without leaks. In this work, the pipes of interest have not been historically monitored, and it is therefore assumed that they have no measurement data from the pipes without leaks. Such parameters will therefore have to be estimated based on models and documentation of the pipe system. However, the pipes are likely old and have likely changed dynamics since construction. This makes estimating the pipe parameters challenging.\\
+
+Despite the great performance in the theoretical setup, \autoref{sec:mod_err} showed that the solver is extremely sensitive to both modeling error and measurement noise. It was shown that \gls{theta} could be found by running the solver for a range of values and choosing the solution with the lowest residual. However, given the challenging setup for estimating the friction parameter and the introduction of measurement errors, it is uncertain how robust that method is. \\
+
+Based on the results from the sensitivity analysis, the solver likely has limited practical application in its current state. 
+
+\section{Future Work}
+
+The obvious next step is to apply the theoretical results from this work to develop a method that is more robust to modeling errors and measurement noise. This should be combined with collecting a dataset of real measurements and validating the method against real data.\\
+
+In the theoretical framework, it could be interesting to see how the method extends to small pipe networks, where multiple pipes are connected at a junction. \\
+
+As briefly noted in \autoref{sec:n_not_known}, it could be interesting to see if results from running the solver with different configurations can be combined to minimize the search distance.
+

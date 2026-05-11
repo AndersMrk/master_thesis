@@ -25,6 +25,7 @@
 \usetikzlibrary{arrows.meta}
 \usetikzlibrary{calc,positioning}
 \usetikzlibrary{shapes.geometric}
+\usetikzlibrary{fit}
 \usetikzlibrary{svg.path}
 \usetikzlibrary{matrix}
 
@@ -59,12 +60,12 @@
         \crefname{paper}{Paper}{Papers}
         \crefname{lemma}{Lemma}{Lemmas}
         \addto\captionsamerican{
-            \renewcommand{\contentsname}{Contents}
-            \renewcommand{\listfigurename}{Figures}
-            \renewcommand{\listtablename}{Tables}
-            \renewcommand{\glossaryname}{Glossary}
+            \renewcommand{\contentsname}{Table of Contents}
+            \renewcommand{\listfigurename}{List of Figures}
+            \renewcommand{\listtablename}{List of Tables}
             \renewcommand{\acronymname}{Acronyms}
-            \renewcommand{\listalgorithmcfname}{Algorithms}
+            \renewcommand{\listalgorithmcfname}{List of Algorithms}
+            \renewcommand{\glossaryname}{List of Variables}
         }
         \addto\extrasamerican{%
             \def\chapterautorefname{Chapter}%
@@ -90,6 +91,7 @@
 
 \RequirePackage{amsmath}
 \RequirePackage{amsthm}
+\RequirePackage{bm}
 \RequirePackage[most]{tcolorbox}
 \tcbuselibrary{theorems}
 
@@ -158,7 +160,6 @@
 \else
     \RequirePackage[noabbrev]{cleveref}
 \fi
-\RequirePackage[acronym]{glossaries}        % create a glossary and acronym list
 
 % Autoref naming
 \renewcommand{\chapterautorefname}{Chapter}
@@ -210,7 +211,7 @@
 \let\std@schapter\@schapter
 \def\@schapter#1{
     \std@schapter{#1}
-    \addcontentsline{toc}{chapter}{#1}
+    % \addcontentsline{toc}{chapter}{#1}
     \def\ch@ptermark{#1}
 }
 
@@ -319,6 +320,12 @@
        \endgroup%
        }%
 
+
+\RequirePackage[nonumberlist]{glossaries}
+\makenoidxglossaries
+\setglossarystyle{long}
+
 % Renew \glossarysection command to avoid creating a section for the glossary.
 % Using unnumbered chapters for correct chapter name in headings.
+
 \renewcommand{\glossarysection}[2][]{}

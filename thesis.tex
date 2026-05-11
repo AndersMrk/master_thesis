@@ -1,7 +1,7 @@
 \documentclass[american, titlepage, oneside]{ntnuthesis}
 
 % Front page
-\title{Identification of N Simultaneous Pipeline Leaks Using Inlet-Outlet Steady-State Measurements}
+\title{Identification of Multiple Simultaneous Pipeline Leaks Using Inlet-Outlet Steady-State Measurements}
 \shorttitle{Multi Leak Identification}
 \author{Anders Mørk}
 \shortauthor{A. Mørk}
@@ -9,46 +9,64 @@
 
 \addbibresource{thesis.bib}
 
-%\input{glossary.tex} % add glossary and acronym lists
+\input{variables}
+
+\makeatletter
+\renewenvironment{theglossary}
+  {\begin{longtable}{@{}p{0.12\linewidth}p{0.82\linewidth}@{}}}
+  {\end{longtable}}
+\makeatother
 
 \begin{document}
 
 %\includepdf[pages=-]{master_agreement.pdf}
 %\includepdf[pages=-]{AI_declaration.pdf}
 
+
 \input{chapters/0a-abstract.tex}
 \input{chapters/0b-sammendrag.tex}
-% \input{chapters/0c-preface}
+\input{chapters/0c-preface}
 
 \tableofcontents
+
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{\listfigurename}
 \listoffigures
+
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{\listtablename}
 \listoftables
-% \lstlistoflistings
+
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{\listalgorithmcfname}
 \listofalgorithms
 
-% Acronyms
-% \chapter*{\acronymname}
-% \printglossary[type=\acronymtype]
-
-% glossary
-% \chapter*{\glossaryname}
-% \printglossary
+\chapter*{\glossaryname}
+\addcontentsline{toc}{chapter}{\glossaryname}
+{
+\renewcommand{\arraystretch}{1.5}
+\printnoidxglossary[sort=use]
+}
 
 \input{chapters/1-introduction}
-\input{chapters/2-literature}
-\input{chapters/3-theory}
-\input{chapters/4-model}
+% \input{chapters/2-literature}
+% \input{chapters/3-theory}
+% \input{chapters/4-model}
 \input{chapters/5-derivations}
 \input{chapters/6-analysis_of_solution_space}
 \input{chapters/7-solver_performance}
-\input{chapters/8-conclusion}
+\input{chapters/8-discussion}
+\input{chapters/9-conclusion}
 
 \chapter*{\bibname}
+\addcontentsline{toc}{chapter}{\bibname}
 \printbibliography[heading=none]
 
 \appendix
 \input{appendices/inequality_proof}
 \input{appendices/calc_dydx}
-%\input{appendices/leak_number_derivation}
 
 \end{document}
