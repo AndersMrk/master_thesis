@@ -59,6 +59,7 @@
         \crefname{listing}{Code listing}{Code listings}
         \crefname{paper}{Paper}{Papers}
         \crefname{lemma}{Lemma}{Lemmas}
+        \crefname{definition}{Definition}{Definitions}
         \addto\captionsamerican{
             \renewcommand{\contentsname}{Table of Contents}
             \renewcommand{\listfigurename}{List of Figures}
@@ -169,15 +170,16 @@
 \AtBeginDocument{%
   \makeatletter
   \providecommand*{\tcb@cnt@lemmaautorefname}{Lemma}%
+  \providecommand*{\tcb@cnt@definitionautorefname}{Definition}%
   \makeatother
 }
 
 %% CUSTOMISATION
-\definecolor{lemmablue}{HTML}{006083}
+\definecolor{boxblue}{HTML}{006083}
 \newtcbtheorem[number within=chapter]{lemma}{Lemma}%
 {
   colback=white,
-  colframe=lemmablue,
+  colframe=boxblue,
   boxrule=0.5pt,
   arc=2mm,
   %sharp corners,
@@ -186,6 +188,18 @@
   label type=lemma
 }%
 {lem}
+
+\newtcbtheorem[number within=chapter]{definition}{Definition}%
+{
+  colback=white,
+  colframe=boxblue,
+  boxrule=0.5pt,
+  arc=2mm,
+  fonttitle=\bfseries,
+  %breakable,
+  label type=definition
+}%
+{def}
 
 % Page geometry and spacing (same for even and odd pages)
 \geometry{left=4cm, right=4cm, top=4cm, bottom=4.5cm}

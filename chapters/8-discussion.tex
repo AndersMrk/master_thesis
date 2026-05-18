@@ -1,28 +1,36 @@
 \chapter{Discussion on Findings}
+\label{chap:discussion}
 
-The solver reliably identifies two and three leaks, with strong robustness to the choice of initial values. For two leaks, it outperforms previous methods.\\
+This chapter discusses the thesis's main findings, the practical limitations of the proposed method, and directions for further work.
 
-For four leaks, the solver often found multiple solutions. Having multiple solutions still limits the search distance by limiting the search to the found solutions. From \autoref{sec:err_mag}, it is likely that many of the multiple solutions are relatively close. For four leaks, it did not find the exact solution within $\varepsilon=0.001$ every time, but it found a close solution within $10\varepsilon$ in most of the cases, indicating that the produced solutions yield useful results.
+\section{Main Findings}
 
-For five leaks, the solver is not reliable at identifying them. Recall from \autoref{tab:cond_nums} that for five leaks, the condition number at the solution is on the scale of $10^{12}$. This indicates that a highly ill-conditioned system is likely the cause of the poor performance.\\
+The results show that identifying multiple leaks from steady-state inlet and outlet measurements is a challenging problem. A significant change in leak parameters may produce only a small change in the outlet head and flow, making the inverse problem inherently ill-conditioned. Consequently, small changes in the measurements or model parameters can produce large changes in the estimated leak configuration. This was observed both through the large condition numbers in \autoref{chap:analysis_of_sol} and through the sensitivity analysis in \autoref{sec:mod_err}.\\
 
-Intuitively, it is expected that when introducing more leaks, the effect of each individual leak will be harder to distinguish and isolate. This is also based on the intuition that the characteristics of the pipe at different steady-state operating points provide limited new information. Based on the modeling of a pipe with leaks proposed in this work and the results shown, it is likely that four leaks is the upper limit for how many leaks can reliably be identified based solely on steady state input and output measurements of head and flow.\\
+The difficulty increases rapidly with the number of leaks. As more leaks are introduced, the effect of each individual leak becomes harder to distinguish. This is reflected in the Jacobian, where the columns become increasingly aligned as $n$ increases. The measurements therefore contain less independent information about each additional leak, which makes the inverse problem increasingly close to singular.\\
 
-Despite the poor performance for $n > 4$, the solver can still be applied to pipe systems with more leaks. As shown in \autoref{sec:n_not_known}, assuming two or three leaks often resulted in an estimated leak location close to a true solution. Showing the potential for an iterative approach in identifying many leaks.
+The solver performs reliably for two and three leaks, although the results show increased dependence on the initial guess for three leaks. For four leaks, the solver remains useful but is no longer fully reliable. The true solution is not always recovered within the strict tolerance $\varepsilon=0.001$, and several test cases produce multiple solutions. However, many of these solutions are close to the true leak configuration, as shown in \autoref{sec:err_mag}. This indicates that the method can still provide useful localization information, even when exact identification fails.\\
 
-\section{Limitations and Applicability in Practice}
+For five leaks, the solver is not reliable. The true solution is rarely recovered, and most converged solutions are false according to the chosen tolerance. This is consistent with the conditioning analysis, where the condition number for five leaks is already on the order of $10^{12}$. Based on these results, four leaks appear to be close to the upper limit for reliable identification using only steady-state inlet and outlet measurements of head and flow. This limit is not absolute, since some configurations are easier to solve than others, but the general trend is clear. Identifying many simultaneous leaks from boundary measurements alone is unlikely to be feasible without additional information.\\
 
-A common method for estimating parameters such as \gls{theta} is to use measurements in which the pipe is excited without leaks. In this work, the pipes of interest have not been historically monitored, and it is therefore assumed that they have no measurement data from the pipes without leaks. Such parameters will therefore have to be estimated based on models and documentation of the pipe system. However, the pipes are likely old and have likely changed dynamics since construction. This makes estimating the pipe parameters challenging.\\
+Even when the number of leaks exceeds what can be identified exactly, the method may still have value. As shown in \autoref{sec:n_not_known}, solving the problem with $\hat n=2$ or $\hat n=3$ often produced an estimated leak location close to a true leak. This suggests that the solver may be useful in an iterative localization strategy, where one leak is located and repaired before new measurements are collected.
 
-Despite the great performance in the theoretical setup, \autoref{sec:mod_err} showed that the solver is extremely sensitive to both modeling error and measurement noise. It was shown that \gls{theta} could be found by running the solver for a range of values and choosing the solution with the lowest residual. However, given the challenging setup for estimating the friction parameter and the introduction of measurement errors, it is uncertain how robust that method is. \\
+\section{Practical Limitations}
 
-Based on the results from the sensitivity analysis, the solver likely has limited practical application in its current state. 
+A critical limitation is the assumption that the resistance coefficient \gls{theta} is known. In practice, \gls{theta} must often be estimated from pipe documentation, friction models, or calibration data. For old pipes without historical monitoring, leak-free calibration data may not be available. Since pipe roughness and effective resistance can change over time, the true value of \gls{theta} may differ significantly from its estimated value.\\
+
+The sensitivity analysis showed that this is a serious issue. Small errors in \gls{theta} can lead to large errors in the estimated leak parameters. Although the residual may be used to search over possible values of \gls{theta}, it is uncertain whether this approach remains reliable when measurement noise and other model errors are present.\\
+
+Measurement noise is also a major limitation. Even small relative measurement errors produced large variations in the estimated leak locations. Since the measurements represent steady-state conditions, random noise can be assumed to be limited, as the measurements can be obtained from the mean of many samples. Bias errors and deviations from the exact steady-state might still be present, limiting the method's practical performance.\\
+
+Based on these results, the proposed solver likely has limited practical applicability in its current form. 
 
 \section{Future Work}
 
-The obvious next step is to apply the theoretical results from this work to develop a method that is more robust to modeling errors and measurement noise. This should be combined with collecting a dataset of real measurements and validating the method against real data.\\
+The most important next step is to develop a method that is more robust to modeling errors and measurement noise. An interesting approach is to investigate whether pipe parameters, such as \gls{theta} and \gls{ell}, can be estimated alongside the leak parameters. This would improve practical applicability, but it would increase the dimension and difficulty of the inverse problem. It is not clear whether steady-state boundary measurements contain enough information for such simultaneous identification under modeling and measurement uncertainty.\\
 
-In the theoretical framework, it could be interesting to see how the method extends to small pipe networks, where multiple pipes are connected at a junction. \\
+Testing on real measurements is another important step. Experimental or field data would make it possible to evaluate whether the assumptions used in this work are sufficiently accurate in practice, and how large the actual modeling and measurement errors are.\\
 
-As briefly noted in \autoref{sec:n_not_known}, it could be interesting to see if results from running the solver with different configurations can be combined to minimize the search distance.
+An additional extension is to apply the method to small pipe networks with junctions. This would make the formulation more relevant to real water distribution systems, but would likely introduce additional identifiability challenges.\\
 
+Finally, the results from \autoref{sec:n_not_known} indicate that solving the problem for several assumed values of $\hat n$ may help reduce the search distance. As briefly discussed in the section, combining results from several solver configurations could provide a more robust localization method for pipes with many leaks.

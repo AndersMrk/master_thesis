@@ -1,11 +1,11 @@
 \chapter{Pipe and Leak Model}
 \label{chap:model}
 
-This chapter derives the mathematical model for a leaking pipe system that forms the basis for the work presented in this thesis. It begins with the transient one-dimensional flow equations for pressurized pipe systems and derives the equations introduced in \autoref{sec:task_desc}. The chapter then derives a set of recursive equations that describe the system's steady-state dynamics and are used to develop the leak identification method.
+This chapter derives the mathematical model for a leaking pipe system that forms the basis for the work presented in this thesis. It begins with the transient one-dimensional flow equations for pressurized pipe systems and derives the equations introduced in \autoref{sec:task_desc}. The chapter then derives a set of recursive equations that describe the system's steady-state relations and are used to develop the leak identification method.
 
 \section{Modeling of Pipe With Leaks}
 
-Under the assumption that water in a closed straight pipe flows one-dimensionally, so that the flow variables are approximated by their cross-sectional averages, and the material of the pipe is linearly elastic\footnote{Linearly elastic means that stress is proportional to strain and is true for most pipe materials such as metal, concrete, and wood \cite[p.~27]{chaudhry2013}.}, according to \cite[pp.~27--33]{chaudhry2013}, the momentum and continuity equations describe transient hydraulic behavior:
+Under the assumption that water in a closed straight pipe flows one-dimensionally, so that the flow variables are approximated by their cross-sectional averages, and the material of the pipe is linearly elastic\footnote{Linearly elastic means that stress is proportional to strain and is true for most pipe materials such as metal, concrete, and wood \cite[p.~27]{chaudhry2013}.}, according to \cite[pp.~27-33]{chaudhry2013}, the momentum and continuity equations describe transient hydraulic behavior:
 
 \begin{equation}\label{eq:momentum}
 \frac{1}{gA}\frac{\partial Q(z,t)}{\partial t}
@@ -17,19 +17,18 @@ Under the assumption that water in a closed straight pipe flows one-dimensionall
 + \frac{a^{2}}{gA}\frac{\partial Q(z,t)}{\partial z} = 0
 \end{equation}
 
-$Q(z,t)\;[m^3/s]$ and $H(z,t)\;[m]$ are the flow and head that vary both by the location along the pipe (\gls{z}) and time ($t$). Head is defined as
+$Q(z,t)\;[m^3/s]$ and $H(z,t)\;[m]$ are the flow and head that vary both by the location along the pipe (\gls{z}) and time ($t$). Furthermore, $A$ is the pipe cross-sectional area, $g$ is gravitational acceleration, and $a$ is the pressure wave speed accounting for fluid compressibility and pipe wall elasticity. Head is defined as
 \[
 H = \frac{P}{\rho g} + z_e,
 \]
-where $P$ is the fluid pressure, $\rho$ is the fluid density, and $z_e$ is the elevation above a chosen datum. It represents the mechanical energy per unit weight of fluid and corresponds to the height to which the fluid would rise in a piezometer connected to the pipe. Spatial and temporal variations of $h$ therefore describe pressure surges and depressions during hydraulic transients.\\
+where $P$ is the fluid pressure, $\rho$ is the fluid density, and $z_e$ is the elevation above a chosen datum. It represents the mechanical energy per unit weight of fluid and corresponds to the height to which the fluid would rise in a piezometer connected to the pipe. Spatial and temporal variations of $H$ therefore describe pressure surges and depressions during hydraulic transients.\\
 
-Furthermore, $A$ is the pipe cross-sectional area, $g$ is gravitational acceleration, and $a$ is the pressure wave speed accounting for fluid compressibility and pipe wall elasticity. 
 The resistance coefficient \gls{theta} accounts for quasi-steady friction losses and is given by
 \begin{equation}
 \label{eq:theta_defined}
 \theta = \frac{f}{2 g D A^{2}},
 \end{equation}
-with \gls{dwfric} being the Darcy--Weisbach friction factor and $D$ the pipe diameter.\\
+with \gls{dwfric} being the Darcy-Weisbach friction factor and $D$ the pipe diameter.\\
 
 A leak in the pipe is modeled as a valve with a constant opening. Following \cite[pp.~54]{chaudhry2013}, the flow through a valve, denoted by $\tilde{q}$, at location $z^*$,can be expressed as
 \begin{equation*}
@@ -54,11 +53,11 @@ A pipe with \gls{n} leaks can be modeled as $n+1$ sections of non-leaking pipes 
 \subsection*{Extension to Non-Straight Pipes}
 It should be noted that the mathematical formulation in \cref{eq:momentum,eq:continuity} assumes a straight pipe. This does not limit generality, since a non-straight pipeline can be modeled as a combination of straight segments connected by non-straight elements (fittings), whose effect can be represented through an equivalent straight length (ESL). The ESL is defined as the length of an ideal straight pipe, with the same characteristics as the real system, that produces an identical pressure drop. \\
 
-This equivalence is obtained by accounting for the additional losses introduced by each fitting between straight pipeline segments. Using the Darcy--Weisbach equation \cite[pp.~238--242]{mott2006}, the ESL of the pipeline, $\ell_e$, is given by
+This equivalence is obtained by accounting for the additional losses introduced by each fitting between straight pipeline segments. Using the Darcy-Weisbach equation \cite[pp.~238-242]{mott2006}, the ESL of the pipeline, $\ell_e$, is given by
 \begin{equation*}
 \ell_e = \ell_s + \frac{D}{f}\sum_{i=1}^{n_f} K_i
 \end{equation*}
-where $\ell_s$ is the total length of the straight pipe sections, $D$ is the pipe diameter, \gls{dwfric} is the Darcy--Weisbach friction factor, $K_i$ is the loss coefficient of the $i$-th fitting (usually provided by manufacturers), and $n_f$ is the total number of fittings in the pipeline.
+where $\ell_s$ is the total length of the straight pipe sections, $D$ is the pipe diameter, \gls{dwfric} is the Darcy-Weisbach friction factor, $K_i$ is the loss coefficient of the $i$-th fitting (usually provided by manufacturers), and $n_f$ is the total number of fittings in the pipeline.
 
 \section{Derivation of Steady-State Equations}
 
@@ -70,7 +69,7 @@ and the head and flow are no longer time varying:
 \begin{equation}\label{eq:steady_state}
     \lim_{t\rightarrow\infty} H(z,t)=h(z), \quad \lim_{t\rightarrow\infty} Q(z,t)=q(z).
 \end{equation}
-Combining \cref{eq:momentum,eq:continuity} with \cref{eq:zero_derivatives,eq:steady_state} gives the steady state equations for a non-leaking pipe segment:
+Combining \cref{eq:momentum,eq:continuity} with \cref{eq:zero_derivatives,eq:steady_state} gives the steady-state equations for a non-leaking pipe segment:
 \begin{equation}\label{eq:momentum_ss}
 \frac{d h(z)}{d z}
 = -\theta q^{2}(z),
@@ -80,7 +79,7 @@ Combining \cref{eq:momentum,eq:continuity} with \cref{eq:zero_derivatives,eq:ste
 \end{equation}
 Comparing \cref{eq:momentum_ss} with \cref{eq:task_desc_ufunc}, it follows from this derivation that the head loss function equates to
 \[
-    \text{\gls{U}} (q(z)) = \theta q^{2}(z)
+    \text{\gls{U}} (q(z)) = \theta q^{2}(z).
 \]
 Consider a non-leaking pipe section between the leaks $z_i$ and $z_{i+1}$. It follows from \cref{eq:continuity_ss} that the flow $q_i$ is constant along the entire section. Utilizing the fundamental theorem of calculus to solve \cref{eq:momentum_ss},  the change of head along the non-leaking section is given by
 \begin{align}
@@ -100,7 +99,7 @@ Recall that \gls{ci} is the discharge coefficient for this specific leak. The ch
 
 \begin{samepage}
 \section{Summary}
-Given a pipe operating in steady state, and under the assumptions previously stated, the following equations and \autoref{fig:leak_notation_summary} describe the system around a leak at location \gls{zi}:
+Given a pipe operating in steady-state, and under the assumptions previously stated, the following equations and \autoref{fig:leak_notation_summary} describe the system around a leak at location \gls{zi}:
 \begin{enumerate}
     \item \textbf{Piezometric Head:}  
     \begin{align}

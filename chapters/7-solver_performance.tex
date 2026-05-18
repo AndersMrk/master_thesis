@@ -4,7 +4,7 @@ This chapter evaluates the performance of the proposed solver through a series o
 
 \section{Comparison Against Peralta et al. (2023)}
 
-In \autoref{sec:peralta_study}, a method presented by \cite{peralta2023} for identifying two leaks was studied. The publication also includes simulation results for five test cases and provides sufficient information to replicate them using the method proposed in this work. The paper simulates synthetic data at three different operating points for a pipe with the parameters
+A method for identifying two leaks based on steady-state measurements is presented in \cite{peralta2023}. The publication also includes simulation results for five test cases and provides sufficient information to replicate them using the method proposed in this work. The paper simulates synthetic data at three different operating points for a pipe with the parameters
 \begin{equation*}
     \ell=160.76, \quad \theta = 583.32.
 \end{equation*}
@@ -20,7 +20,7 @@ Based on the provided pipe parameters and simulated measurements, the solver pre
 \begin{equation*}
     \mathbf{x}_0=\begin{bmatrix}
         \ell/3 & \ell/3 & 5\times10^{-4} & 5\times10^{-4}
-    \end{bmatrix},
+    \end{bmatrix}^\top,
 \end{equation*}
 and a convergence tolerance of $\tau_{\text{conv}}=10^{-12}$.\\
 
@@ -345,7 +345,7 @@ Let the estimate of \gls{theta} be given by
 \begin{equation*}
     \hat{\theta} = \theta + \delta\theta
 \end{equation*}
-where $\delta\theta$ is the modeling error. The relative modeling error is given by $\dfrac{\delta\theta}{\theta}$. To evaluate the solver's sensitivity with respect to the resistance coefficient, a measurement set \gls{M} is generated using the true value of $\theta$, and the solver is run with $\hat\theta$ for a range of errors. For the simple case of two and three evenly spaced leaks and small perturbations of $\delta\theta$, the resulting leak locations from the solver are given in \autoref{fig:theta_sens_comparison}.\\
+where $\delta\theta$ is the modeling error. The relative modeling error is given by $\dfrac{\delta\theta}{\theta}$. To evaluate the solver's sensitivity with respect to the resistance coefficient, a measurement matrix \gls{M} is generated using the true value of $\theta$, and the solver is run with $\hat\theta$ for a range of errors. For the simple case of two and three evenly spaced leaks and small perturbations of $\delta\theta$, the resulting leak locations from the solver are given in \autoref{fig:theta_sens_comparison}.\\
 
 \begin{figure}[ht]
     \centering
@@ -408,14 +408,14 @@ In the case of two leaks, the sensitivities are estimated to be
 \begin{equation*}
     \dfrac{\partial \begin{bmatrix}
         L_1 & L_2
-    \end{bmatrix}}{\partial \theta} = \begin{bmatrix}
-        365 & 783
+    \end{bmatrix}^\top}{\partial \theta} = \begin{bmatrix}
+        365 \\ 783
     \end{bmatrix},
     \qquad
     \dfrac{\partial \begin{bmatrix}
         c_1 & c_2
-    \end{bmatrix}}{\partial \theta} = \begin{bmatrix}
-        297 & -297
+    \end{bmatrix}^\top}{\partial \theta} = \begin{bmatrix}
+        297 \\ -297
     \end{bmatrix},
 \end{equation*}
 
@@ -423,7 +423,7 @@ which indicates extreme sensitivity. A perturbation in $\theta$ of 0.01 yields a
 
 \subsection{Sensitivity Analysis of Measurements}
 
-Let $\hat{\mu}$ be an element of \gls{M} and denote a single measurement point, which represents either an inlet or outlet flow or head measured at a steady state operating point. Here, $\mu$ denotes the true physical quantity. The measurement noise is modeled as a relative normal distribution according to
+Let $\hat{\mu}$ be an element of \gls{M} and denote a single measurement point, which represents either an inlet or outlet flow or head measured at a steady-state operating point. Here, $\mu$ denotes the true physical quantity. The measurement noise is modeled as a relative normal distribution according to
 \begin{equation*}
 \hat{\mu} = \mu(1+\epsilon), \quad \epsilon \sim \mathcal{N}(0,\sigma_\mu),
 \end{equation*}

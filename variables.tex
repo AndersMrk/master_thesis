@@ -65,12 +65,12 @@
 
 \newglossaryentry{qi}{
     name={$q_i$},
-    description={constant steady-state flow in pipe segment $[z_i,z_{i+1})$}
+    description={constant steady-state flow in non-leaking pipe segment $[z_i,z_{i+1})$, for notation purposes $q_{n}=q_\ell$}
 }
 
 \newglossaryentry{Li}{
     name={$L_i$},
-    description={length of the $i$-th pipe segment}
+    description={length of the $i$-th non-leaking pipe segment}
 }
 
 \newglossaryentry{hi}{
@@ -78,20 +78,21 @@
     description={head at the $i$-th leak location, for notation purposes $h_{n+1}=h_\ell$}
 }
 
-% delete??
 \newglossaryentry{y}{
     name={$y^{(j)}$},
-    description={measurement set containing $\{h_0^{(j)},h_{\ell}^{(j)},q_0^{(j)},q_{\ell}^{(j)}\}$ and corresponding to the $j$-th operating point}
+    description={measurement vector $\begin{bmatrix}
+        h_0^{(j)} & h_{\ell}^{(j)} & q_0^{(j)} & q_{\ell}^{(j)}
+    \end{bmatrix}^\top$, corresponding to the $j$-th operating point}
 }
 
 \newglossaryentry{y0}{
     name={$y_0^{(j)}$},
-    description={Inlet measurements of flow and head for the $j$-th operating point}
+    description={inlet measurements of flow and head for the $j$-th operating point}
 }
 
 \newglossaryentry{yl}{
     name={$y_{\ell}^{(j)}$},
-    description={Outlet measurements of flow and head for the $j$-th operating point}
+    description={outlet measurements of flow and head for the $j$-th operating point}
 }
 
 \newglossaryentry{m}{
@@ -101,17 +102,17 @@
 
 \newglossaryentry{M}{
     name={$\mathcal M$},
-    description={complete collection of measurements}
+    description={matrix containing all measurements}
 }
 
 \newglossaryentry{M0}{
     name={$\mathcal M_0$},
-    description={set of inlet measurements}
+    description={matrix containing all inlet measurements}
 }
 
 \newglossaryentry{Ml}{
     name={$\mathcal M_\ell$},
-    description={set of outlet measurements}
+    description={matrix containing all outlet measurements}
 }
 
 \newglossaryentry{theta}{
@@ -131,5 +132,5 @@
 
 \newglossaryentry{phi}{
     name={$\phi^{(j)}$},
-    description={collection of state variables corresponding to the $j$-th operating point}
+    description={vector of state variables corresponding to the $j$-th operating point}
 }

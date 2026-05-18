@@ -3,10 +3,14 @@
 
 Recall the re-parameterization
 \begin{equation*}
-\bm{\xi} = \bigl[ \lambda_1,\dots,\lambda_{n-1},\,s,\,\gamma_1,\dots,\gamma_n\bigr]
+\bm{\xi} = \begin{bmatrix}
+\lambda_1 & \cdots & \lambda_{n-1} & s & \gamma_1 & \cdots & \gamma_n
+\end{bmatrix}^\top
 \in \mathbb{R}^{2n},
 \qquad
-\mathbf{x} = g(\bm{\xi}) = \bigl[ L_1 , \dots , L_n, \, c_1 , \dots , c_n \bigr],
+\mathbf{x} = g(\bm{\xi}) = \begin{bmatrix}
+L_1 & \cdots & L_n & c_1 & \cdots & c_n
+\end{bmatrix}^\top,
 \end{equation*}
 with
 \begin{equation*}

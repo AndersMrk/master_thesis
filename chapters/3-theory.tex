@@ -3,7 +3,7 @@
 
 This chapter introduces the theoretical background for the methods developed and the analysis performed in this work. It begins by defining nonlinear residual problems and presenting fundamental concepts related to the local structure and sensitivity of the residual function.\\
 
-The chapter then introduces iterative optimization methods for solving nonlinear least-squares problems, progressing from basic first-order methods to more advanced second-order and trust-region approaches. The chapter concludes with a detailed presentation of the Levenberg--Marquardt method, which forms the foundation of the solver adopted in this work.
+The chapter then introduces iterative optimization methods for solving nonlinear least-squares problems. The chapter concludes with a detailed presentation of the Levenberg--Marquardt method, which forms the foundation of the solver adopted in this work.
 
 \section{Nonlinear Residual Problems}
 
@@ -42,79 +42,99 @@ Thus, \(J(x)\) describes the local sensitivity of the residual with respect to p
 \subsection{Existence and Number of Local Solutions}
 \label{sec:sol_existence}
 
-Let $x^\ast \in \mathbb{R}^n$ satisfy $r(x^\ast)=0$, and assume that $r$ is continuously differentiable in a neighborhood of $x^\ast$.
-Then it follows from the Implicit Function Theorem that the local structure of solutions is determined by the rank of the Jacobian $J(x^\ast)$, provided the rank is constant in a neighborhood of $x^\ast$.
+Let $x^\ast \in \mathbb{R}^n$ satisfy $r(x^\ast)=0$, and assume that $r$ is continuously differentiable in a neighborhood of $x^\ast$. The local behavior of the solution set is closely related to the rank of the Jacobian $J(x^\ast)$, provided the rank is constant in a neighborhood of $x^\ast$.
 
-\paragraph{Case $m = n$ (square system).}
+\subsubsection*{Case $m = n$ (square system)}
 
-Suppose $m=n$ and let $x^\ast$ satisfy $r(x^\ast)=0$.  
-If the Jacobian $J(x^\ast)$ is nonsingular,
+Suppose $m=n$ such that $J(x^\ast)$ is square. If the Jacobian is nonsingular,
 \[
 \det J(x^\ast) \neq 0,
 \]
-then, by the Implicit Function Theorem, $x^\ast$ is a locally unique solution. In particular, there exists a neighborhood around $x^\ast$ in which no other solutions exist.
+then, by the Inverse Function Theorem, $r$ is locally invertible near $x^\ast$. Consequently, there exists a neighborhood around $x^\ast$ in which no other solutions exist, and $x^\ast$ is a locally unique solution \cite[pp.~657-660]{lee2013smooth}.\\
 
 If $J(x^\ast)$ is singular, the local behavior of the solution set cannot be determined from first-order information alone. In this case, the solution may fail to be isolated, and additional solutions may exist arbitrarily close to $x^\ast$.
 
-\paragraph{Case $m < n$ (underdetermined system).}
+\subsubsection*{Case $m < n$ (underdetermined system)}
 
-If $J(x^\ast)$ has full row rank $m$, then the solution set near $x^\ast$ is not isolated. Instead, it forms a smooth manifold of dimension $n - m$.
-Hence, there are infinitely many nearby solutions, parameterized by $n-m$ degrees of freedom.
 
-\paragraph{Case $m > n$ (overdetermined system).}
+If $J(x^\ast)$ has full row rank $m$, then the Regular Level Set Theorem implies that the solution set near $x^\ast$ is not isolated. Instead, it forms a smooth manifold of dimension $n - m$ \cite[pp.~105-106]{lee2013smooth}. Hence, there are infinitely many nearby solutions, parameterized
+by $n - m$ degrees of freedom.
 
-In an overdetermined system, the number of equations exceeds the number of unknowns, so the system generally has no exact solution.
-Suppose, however, that a point $x^\ast$ satisfies $r(x^\ast)=0$.
-If $J(x^\ast)$ has full rank $n$, the constraints are locally independent and restrict all directions in $\mathbb{R}^n$, so the solution $x^\ast$ is locally isolated.
-If $\operatorname{rank} J(x^\ast)<n$, the constraints are not independent, and the solution is structurally unstable under perturbations of $r$.
+\subsubsection*{Case $m > n$ (overdetermined system)}
 
-\paragraph{Global Solution.}
+In an overdetermined system, the number of equations exceeds the number of unknowns. Such systems are often inconsistent, meaning that no exact solution exists, and is a motivation for the least-squares formulations as presented in \autoref{sec:theory_optmet} \cite[p.~37]{beck2014nonlinearoptimization}.\\
 
-The Jacobian $J(x^\ast)$ characterizes only the \emph{local} structure of the solution set. Even if $J(x^\ast)$ is nonsingular and $x^\ast$ is locally unique, the nonlinear system may possess additional solutions elsewhere in $\mathbb{R}^n$. Consequently, local invertibility of the Jacobian does not imply global uniqueness.
+Suppose, however, that a point $x^\ast$ satisfies $r(x^\ast)=0$. If $J(x^\ast)$ has full column rank $n$, then some square subsystem has a nonsingular Jacobian. The Inverse Function Theorem applied to that subsystem implies that $x^\ast$ is locally isolated \cite[pp.~657-660]{lee2013smooth}. \\
 
-Global existence or uniqueness of a solution to $r(x)=0$ requires additional structural assumptions on $r$, such as global injectivity or strong monotonicity. In the absence of such global properties, the existence and uniqueness of a solution cannot be guaranteed from an analysis of the Jacobian.
+If $\operatorname{rank} J(x^\ast)<n$, first-order information alone does not determine the local structure, and the solution may be isolated or non-isolated depending on higher-order terms.
+
+\subsubsection*{Global Solution}
+
+The Jacobian $J(x^\ast)$ characterizes only the \emph{local} structure of the solution set. Even if $J(x^\ast)$ is nonsingular and $x^\ast$ is locally unique, the nonlinear system may possess additional solutions elsewhere in $\mathbb{R}^n$. Consequently, local invertibility of the Jacobian does not imply global uniqueness \cite[pp.~657-660]{lee2013smooth}. \\
+
+Global existence or uniqueness of a solution to $r(x)=0$ requires additional structural assumptions on $r$, which go beyond the relevant scope of this work. In the absence of such properties, the existence and uniqueness of a solution cannot be guaranteed from an analysis of the Jacobian.
 
 \section{Local Sensitivity of the Residual}
 
-The Jacobian matrix characterizes how perturbations in the variables influence the residual locally (\cref{eq:jac_res_approx}). The magnitude of this influence may vary significantly depending on the direction of perturbation. Understanding these directional effects is important for assessing how reliably the variables can be inferred from the residual.\\
-
-Local sensitivity can be analyzed through the singular values of the Jacobian, which quantify how strongly perturbations in different directions affect the residual.
+The Jacobian matrix characterizes how perturbations in the variables locally influence the residual, as shown in \cref{eq:jac_res_approx}. The magnitude of this influence may vary significantly depending on the direction of perturbation. Understanding these directional effects is important for assessing how reliably the variables can be inferred from the residual. This can be analyzed through the singular values of the Jacobian.\\
 
 \subsection{Singular Value Decomposition}
 
-Let $J \in \mathbb{R}^{m \times n}$ denote the Jacobian evaluated at a point of interest. The singular value decomposition (SVD) of $J$ is given by
+Let $J \in \mathbb{R}^{m \times n}$ denote the Jacobian evaluated at a point of interest. Its singular value decomposition (SVD) \cite[pp.~41-42]{bjork2008} is
 \begin{equation*}
-J = U \Sigma V^\top,
+J = U \Sigma V^\top
 \end{equation*}
 where
+\begin{equation*}
+U =
+\begin{bmatrix}
+    u_1 & \cdots & u_m
+\end{bmatrix}
+\in \mathbb{R}^{m \times m},
+\quad
+V =
+\begin{bmatrix}
+    v_1 & \cdots & v_n
+\end{bmatrix}
+\in \mathbb{R}^{n \times n}
+\end{equation*}
+are orthogonal matrices, where $v_j \in \mathbb{R}^n$ and $u_j \in \mathbb{R}^m$ are regarded as left and right singular vectors. The matrix \(\Sigma \in \mathbb{R}^{m \times n}\) contains the singular values and is diagonal with the block form
+\begin{align*}
+    \Sigma &=
+    \begin{bmatrix}
+        \Sigma_p & 0\\
+        0 & 0
+    \end{bmatrix}
+    \in \mathbb{R}^{m\times n},\\
+    \Sigma_p &= \operatorname{diag}(\sigma_1,\sigma_2,\dots,\sigma_p),
+\end{align*}
+where \(p=\min(m,n)\). The singular values are ordered as
+\begin{equation*}
+\sigma_1 \ge \sigma_2 \ge \cdots \ge \sigma_p \ge 0.
+\end{equation*}
 
-\begin{itemize}
-\item $U \in \mathbb{R}^{m \times m}$ and $V \in \mathbb{R}^{n \times n}$ are orthogonal matrices,
-\item $\Sigma \in \mathbb{R}^{m \times n}$ is diagonal and the diagonal entries satisfy
-\[
-\sigma_1 \ge \sigma_2 \ge \dots \ge \sigma_p \ge 0,
-\]
-with $p = \min(m,n)$.
-\end{itemize}
+From \cref{eq:jac_res_approx} and letting $\Delta x=\delta v_j$ be a small perturbation along a right singular vector:
+\begin{align*}
+    r(x+\delta v_j) & \approx r(x) + J(x)\delta v_j\\
+    & = r(x) + \delta U \Sigma V^\top v_j \\
+    & = r(x) + \delta \sigma_ju_j.
+\end{align*}
 
-The singular values describe how perturbations in specific directions of the variable space influence the residual. The columns of $V$ define orthogonal directions in $\mathbb{R}^n$, while the corresponding singular values determine the magnitude of the resulting change in the residual.\\
-
-Large singular values correspond to directions in which small perturbations of the variables produce relatively large changes in the residual. Conversely, small singular values correspond to directions in which the residual changes only weakly. If one or more singular values are close to zero, the Jacobian is nearly rank-deficient, indicating directions along which the residual provides little local information about the variables.
+Hence, a perturbation along $v_j$ in the variable space approximates a direction of change $u_j$ in the residual space, scaled by the corresponding singular value, $\sigma_j$. The singular values are therefore a measure of local sensitivity, where the residual is most sensitive to variable changes in $v_1$, and least sensitive to changes in $v_p$. If one or more singular values are close to zero, the Jacobian is nearly rank-deficient, indicating directions where the residual provides little local information about the variables.
 
 \subsection{Condition Number of the Jacobian}
-
 A scalar measure of local sensitivity is given by the condition number of the Jacobian,
 \begin{equation}
     \label{eq:cond_num_def}
 \kappa(J) = \frac{\sigma_1}{\sigma_p},
 \end{equation}
-where $\sigma_1$ and $\sigma_p$ respectively denote the largest and smallest singular values of $J$.\\
+where $\sigma_1$ and $\sigma_p$ respectively denote the largest and smallest singular values of $J$ \cite[pp.~131-134]{bjork2008}.\\
 
-The condition number measures how differently perturbations in various directions affect the residual. If the singular values are of comparable magnitude, perturbations in different directions produce changes in the residual of similar size, indicating balanced local sensitivity.\\
+The condition number summarizes the spread of the singular values. If they are of comparable magnitude, the condition number is small, meaning that perturbations in different variable directions produce residual changes of similar size. A large condition number indicates directions where the residual changes comparatively weakly. In such directions, small residual perturbations may correspond to large changes in the variables, reducing numerical stability. The problem is then considered \emph{ill-conditioned}.\\
 
-If the smallest singular value is much smaller than the largest, some directions produce much weaker changes in the residual than others. In such situations, small perturbations in the residual may correspond to large changes in the variables, indicating reduced numerical stability.\\
+A large condition number at the solution indicates that the solution space of the residual is locally flat in at least one direction. Points near and in flat directions may therefore yield similar residual values, making it harder for a solver to converge towards the true solution.\\
 
-If $\sigma_p = 0$, the Jacobian is rank-deficient and the condition number is infinite. In this case, there exist directions in which perturbations of the variables do not influence the residual to first order.
+It is important to note that the condition number is a property of the function $r(x)$, not of the algorithm used to evaluate it. An ill-conditioned problem is therefore intrinsically difficult to solve accurately. Even with exact input data, rounding errors introduced by floating-point arithmetic may be amplified and lead to large perturbations in the final result \cite[p.~133]{bjork2008}.
 
 \section{Optimization Methods}
 \label{sec:theory_optmet}
@@ -171,14 +191,16 @@ The step length selection then corresponds to minimizing $\phi(\alpha)$ for $\al
 
 In practice, computing the exact minimizer of $\phi(\alpha)$ is rarely feasible. The function may contain multiple local minima, and evaluating $\phi(\alpha)$ requires computing the objective function itself. \autoref{fig:line_search} shows an example of a situation where finding the global minimizer is difficult. As a result, determining $\alpha^\ast$ would require solving a separate optimization problem at each iteration. Line search, therefore, becomes an iterative procedure, where candidate values of $\alpha$ are evaluated until a step length that sufficiently reduces the objective function is found.\\
 
-Practical line search algorithms aim to find a step length that provides a sufficient decrease rather than the exact minimizer. Common strategies include Armijo backtracking and step selection based on Wolfe conditions. These methods impose conditions on the decrease of the objective function and on the gradient along the search direction. A detailed introduction to these techniques is not required for the work presented in this report and is therefore omitted.
-
 \begin{figure}[ht]
     \centering
     \input{figures/tikz_linesearch}
     \caption{Example of a cost function along a search direction $p_k$, where $\alpha$ is the step lenght along the search direction.}
     \label{fig:line_search}
 \end{figure}
+
+Practical line search algorithms aim to find a step length that provides a sufficient decrease rather than the exact minimizer. Common strategies include Armijo backtracking and step selection based on Wolfe conditions. These methods impose conditions on the decrease of the objective function and on the gradient along the search direction. A detailed introduction to these techniques is not required for the work presented in this report and is therefore omitted.
+
+
 
 \subsection{Gradient Descent}
 Gradient descent \cite{madsen2004} is a simple method that is based on moving in the direction of the negative gradient of the objective function. 
@@ -259,9 +281,10 @@ where $\lambda \geq 0$ is the damping parameter, and $\lambda \ s^\top s$ penali
 
 For a given $\Delta$ or $\lambda$, if no sufficient step $s_k$ is found such that $f(x_k+s_k)<f(x_k)$ (assuming $x_k$ is not a solution), the parameters ($\Delta,\lambda$) must be tuned such that a sufficient step is found. Since $m_k(s)$ is assumed to be a sufficient approximation for $f(x_k+s)$ when $s$ is sufficiently small, the trust region should be decreased ($\lambda$ increased) for the next iteration. When a sufficient step is found, it indicates that $m_k(s)$ is a good approximation, and the trust region can be increased ($\lambda$ decreased) to achieve faster convergence.
 
+\newpage
 \subsection{Levenberg--Marquardt Method} \label{sec:levenberg_marquardt}
 
-The Levenberg--Marquardt (LM) method \cite{madsen2004} is a damped Gauss--Newton method designed for solving nonlinear least--squares problems. It can be interpreted as a trust-region method in which the step is computed from a regularized Gauss--Newton system. The damping parameter, $\lambda$, controls the transition between the Gauss--Newton and steepest descent method.\\
+The Levenberg--Marquardt (LM) method \cite{madsen2004} is a damped Gauss--Newton method designed for solving nonlinear least-squares problems. It can be interpreted as a trust-region method in which the step is computed from a regularized Gauss--Newton system. The damping parameter, $\lambda$, controls the transition between the Gauss--Newton and steepest descent methods.\\
 
 At iteration $k$, the LM step is obtained by solving the linear system
 \begin{equation} \label{eq:lm_system}
@@ -269,7 +292,7 @@ At iteration $k$, the LM step is obtained by solving the linear system
     =
     - J(x_k)^\top r(x_k),
 \end{equation}
-which is obtained by substituting the quadratic model $m_k(s)$ in \cref{eq:mk} into the minimization problem in \cref{eq:damped_problem}, and setting the gradient with respect to $s$ to 0.\\
+which is obtained by substituting the quadratic model $m_k(s)$ in \cref{eq:mk} into \cref{eq:damped_problem}, and solving the minimization problem by setting the gradient with respect to $s$ to 0.\\
 
 As $\lambda \to 0$, the system approaches the Gauss--Newton equations, \cref{eq:gauss_newton}, with $\alpha = 1$. For large $\lambda$, the step approaches,
 \begin{equation*}
@@ -277,7 +300,7 @@ As $\lambda \to 0$, the system approaches the Gauss--Newton equations, \cref{eq:
 \end{equation*}
 which is the steepest descent direction, \cref{eq:steepest_descent}, with a small step lenght of $\alpha=\lambda^{-1}$.\\
 
-The damping parameter must be initialized for the first iteration. \cite{nielsen1999} states that the initial value should relate to the magnitude of the eigenvalues, and proposes
+The damping parameter must be initialized for the first iteration. The study in \cite{nielsen1999} states that the initial value should relate to the magnitude of the eigenvalues, and proposes
 \begin{equation} \label{eq:init_lambda}
 \lambda_0 = \tau \max \left( \operatorname{diag}(J(x_0)^\top J(x_0)) \right),
 \end{equation}
@@ -317,7 +340,7 @@ The updated damping parameter, $\lambda_+$ is then decreased according to
 \begin{equation}
 \label{eq:dec_lambda}
 \lambda_+ = 
-\lambda \max \left\{ \frac{1}{3},\, 1 - (2\varrho - 1)^3 \right\}.
+\lambda \max \left( \frac{1}{3},\, 1 - (2\varrho - 1)^3 \right).
 \end{equation}
 
 If $\varrho \le 0$, the step is rejected, and the damping parameter is increased by

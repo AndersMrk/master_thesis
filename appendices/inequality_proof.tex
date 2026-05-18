@@ -1,144 +1,192 @@
-\chapter{Proof of Non-Unique Leak Ordering of Single-Leak Equivalents in Pipe With 3 Leaks}
+\chapter{Non-Unique Ordering of Single-Leak Equivalents in a Three-Leak Pipe}
 \label{app:3_leak_eq_proof}
 
-% Make some introduction?
+This appendix shows that, for a pipe with three leaks, the location of the corresponding single-leak equivalent does not necessarily preserve a fixed ordering relative to the actual leaks.\\
 
-Consider a straight pipeline of length $\ell$ operating in steady state, with three leaks located along the pipe and following the same model as in \autoref{chap:model}.
+Consider a straight pipeline of length $\ell$ operating in steady state, with three leaks located at
+\[
+0<z_1<z_2<z_3<\ell,
+\]
+and following the leak model presented in \autoref{chap:model}. Since each leak removes flow from the pipe,
+\begin{equation}
+\label{eq:leak_ordering}
+0<q_{\ell}<q_2<q_1<q_0.
+\end{equation}
 
-\subsection*{Calculate Single Leak Equivalent $L_{eq}$}
-
-The pressure drop along the pipe can be formulated as the sum of the four pressure drops between leaks:
+The total pressure drop across the pipe is equal to the sum of the pressure drop of each non-leaking pipe segment:
 \begin{align}
-h_0-h_{\ell} &= \theta(L_1q_0^2+L_2q_1^2+L_3q_2^2 + (\ell-L_1-L_2-L_3)q_{\ell}^2) \notag \\
-    &= \theta(\ell q_{\ell}^2 + L_1(q_0^2-q_{\ell}^2)+ L_2(q_1^2-q_{\ell}^2)+ L_3(q_2^2-q_{\ell}^2)) \label{eq:three_leaks_pres_drop}
+h_0-h_{\ell}
+&=
+\theta\left(
+L_1q_0^2
++L_2q_1^2
++L_3q_2^2
++(\ell-L_1-L_2-L_3)q_{\ell}^2
+\right) \notag \\
+&=
+\theta\left(
+\ell q_{\ell}^2
++L_1(q_0^2-q_{\ell}^2)
++L_2(q_1^2-q_{\ell}^2)
++L_3(q_2^2-q_{\ell}^2)
+\right).
+\label{eq:three_leaks_pres_drop}
 \end{align}
-We can construct a fictitious single leak equivalent at location $L_{eq}$ with leak coefficient $c_{eq}$ that produces the same change of pressure and flow along the pipe. The pressure drop can be formulated as the sum of the pressure drop upstream and downstream of the single leak equivalent:
+
+Let $L_{eq}$ denote the location of a fictitious single leak that produces the same pressure drop and inlet-outlet flows. For this single-leak equivalent,
 \begin{align}
-h_0-h_{\ell} &= \theta(L_{eq}q_0^2+(\ell-L_{eq})q_{\ell}^2) \notag \\
-    &= \theta(\ell q_{\ell}^2+L_{eq}(q_0^2-q_{\ell}^2)) \label{eq:single_leak_eq}
+h_0-h_{\ell}
+&=
+\theta\left(
+L_{eq}q_0^2
++(\ell-L_{eq})q_{\ell}^2
+\right) \notag \\
+&=
+\theta\left(
+\ell q_{\ell}^2
++L_{eq}(q_0^2-q_{\ell}^2)
+\right).
+\label{eq:single_leak_eq}
 \end{align}
-By equating \cref{eq:three_leaks_pres_drop} and \cref{eq:single_leak_eq} we get:
-\begin{equation}\label{eq:Lf_general}
+
+Equating \cref{eq:three_leaks_pres_drop} and \cref{eq:single_leak_eq} gives
+\begin{equation*}
 L_{eq}
 =
 L_1
-+ L_2\,r_1
-+ L_3\,r_2,
-\end{equation}
-where the dimensionless ratios are
-\begin{equation}\label{eq:ratios_def}
-r_1 := \frac{q_1^2-q_{\ell}^2}{q_0^2-q_{\ell}^2},
++L_2r_1
++L_3r_2,
+\end{equation*}
+where
+\begin{equation*}
+r_1
+:=
+\dfrac{q_1^2-q_{\ell}^2}{q_0^2-q_{\ell}^2},
 \qquad
-r_2 := \frac{q_2^2-q_{\ell}^2}{q_0^2-q_{\ell}^2}.
+r_2
+:=
+\dfrac{q_2^2-q_{\ell}^2}{q_0^2-q_{\ell}^2}.
+\end{equation*}
+By \cref{eq:leak_ordering},
+\begin{equation}
+0<r_2<r_1<1.
+\label{eq:ratio_bounds}
 \end{equation}
-Since $0<q_{\ell}<q_2<q_1<q_0$, these ratios satisfy
-\begin{equation}\label{eq:ratio_bounds}
-0< r_2 < r_1 < 1.
-\end{equation}
 
-\subsection*{Operating Point and Ratio Equality}
-We show that for fixed leak locations $z_1<z_2<z_3$ and fixed leak coefficients $c_i>0$,
-any pair $(r_1,r_2)$ satisfying \cref{eq:ratio_bounds} can be realized by some steady-state
-operating point $\{h_0,h_{\ell},q_0,q_{\ell}\}$.\\
-
-Fix any $(r_1,r_2)$ satisfying \cref{eq:ratio_bounds}. Choose $q_{\ell}>0$ and choose $q_0>q_{\ell}$.
-From \cref{eq:ratios_def} we obtain
-\begin{equation*}
-q_1 = \sqrt{q_{\ell}^2 + r_1\,(q_0^2-q_{\ell}^2)}, 
-\qquad
-q_2 = \sqrt{q_{\ell}^2 + r_2\,(q_0^2-q_{\ell}^2)}.
-\end{equation*}
-
-The leak flows are defined as
-\begin{equation*}
-\tilde{q}_{1}:=q_0-q_1,\qquad
-\tilde{q}_{2}:=q_1-q_2,\qquad
-\tilde{q}_{3}:=q_2-q_{\ell},
-\end{equation*}
-which are strictly positive. Enforce the leak law at $z_3$ by defining
-\begin{equation*}
-h_3:=\left(\frac{\tilde{q}_{3}}{c_3}\right)^2.
-\end{equation*}
-Now define the interior pressures uniquely by the friction relations moving upstream:
-\begin{align*}
-h_2 &:= h_3+\theta\,(z_3-z_2)\,q_2^2,\\
-h_1 &:= h_2+\theta\,(z_2-z_1)\,q_1^2,
-\end{align*}
-and define the boundary pressures by
-\begin{equation*}
-h_{\ell} := h_3-\theta\,(\ell-z_3)\,q_{\ell}^2,
-\qquad
-h_0 := h_1+\theta\,z_1\,q_0^2.
-\end{equation*}
-With these definitions, all segment pressure drops satisfy the quadratic friction law by construction.\\
-
-It remains to satisfy the leak laws at $z_2$ and $z_1$. Since $\tilde{q}_{2}$ and $\tilde{q}_{1}$ are fixed by
-$(q_0,q_1,q_2,q_{\ell})$, the leak laws at $z_2$ and $z_1$ are equivalent to the compatibility constraints
-\begin{align}
-\left(\frac{\tilde{q}_{2}}{c_2}\right)^2 &= h_2=h_3+\theta\,(z_3-z_2)\,q_2^2,
-\label{eq:compat_z2}\\
-\left(\frac{\tilde{q}_{1}}{c_1}\right)^2 &= h_1=h_2+\theta\,(z_2-z_1)\,q_1^2.
-\label{eq:compat_z1}
-\end{align}
-\cref{eq:compat_z2,eq:compat_z1} constrain the admissible operating points
-(e.g., they can be enforced by adjusting the boundary conditions $q_0$ and/or $q_{\ell}$).
-Whenever these compatibilities hold, the constructed $\{h_0,h_{\ell},q_0,q_{\ell}\}$ is a valid steady state
-realizing the prescribed $(r_1,r_2)$.
-
-\subsection*{Signed Distance $\Delta$}
-The second leak is located at $L_1+L_2$. We introduce the signed distance
-\begin{equation*}
-\Delta := L_{eq} - (L_1+L_2).
-\end{equation*}
-Using \cref{eq:Lf_general} gives
-\begin{equation}\label{eq:Delta_r}
+To determine the position of the equivalent leak relative to the second leak, define
+\begin{equation}
+\label{eq:Delta_r}
 \Delta
+:=
+L_{eq}-z_2
 =
--\,L_2(1-r_1)+L_3 r_2.
+L_{eq}-(L_1+L_2)
+=
+-L_2(1-r_1)+L_3r_2.
 \end{equation}
 Hence,
-\begin{equation}\label{eq:intervals}
-\Delta < 0 \iff L_{eq} \in (z_1,\,z_2),
+\begin{equation*}
+\Delta<0
+\iff
+L_{eq}\in(z_1,z_2),
 \qquad
-\Delta > 0 \iff L_{eq} \in (z_2,\,z_3).
-\end{equation}
-The boundary $\Delta=0$ is equivalently
-\begin{equation*}
-r_2 = \frac{L_2}{L_3}(1-r_1).
+\Delta>0
+\iff
+L_{eq}\in(z_2,z_3).
 \end{equation*}
 
-\subsection*{Existence of ratios yielding $\Delta < 0$}
-Fix any $r_1\in(0,1)$. Choose $r_2$ such that
+The boundary between the two cases is
 \begin{equation*}
-0<r_2<\min\!\left\{r_1,\ \frac{L_2}{L_3}(1-r_1)\right\}.
+r_2
+=
+\dfrac{L_2}{L_3}(1-r_1).
 \end{equation*}
-Then $(r_1,r_2)$ follows \cref{eq:ratio_bounds}, and using \cref{eq:Delta_r} gives
-\begin{equation*}
-\Delta = -L_2(1-r_1)+L_3r_2 < -L_2(1-r_1)+L_3\cdot \frac{L_2}{L_3}(1-r_1)=0,
-\end{equation*}
-so $\Delta<0$ and hence $L_{eq}\in(z_1,z_2)$ by \cref{eq:intervals}.
 
-\subsection*{Existence of ratios yielding $\Delta > 0$}
-Choose any $r_1$ satisfying
+Both signs of $\Delta$ are compatible with the admissible ordering in \cref{eq:ratio_bounds}. First, fix any $r_1\in(0,1)$ and choose
 \begin{equation*}
-\frac{L_2}{L_2+L_3}<r_1<1,
+0<r_2<
+\min\left(
+r_1,\,
+\dfrac{L_2}{L_3}(1-r_1)
+\right).
 \end{equation*}
-which implies $\frac{L_2}{L_3}(1-r_1)<r_1$. Then choose $r_2$ such that
+Then $0<r_2<r_1<1$, and \cref{eq:Delta_r} gives
 \begin{equation*}
-\frac{L_2}{L_3}(1-r_1)<r_2<r_1.
+\Delta
+=
+-L_2(1-r_1)+L_3r_2
+<
+-L_2(1-r_1)+L_3\dfrac{L_2}{L_3}(1-r_1)
+=
+0.
 \end{equation*}
-Again $(r_1,r_2)$ follows \cref{eq:ratio_bounds}, and from \cref{eq:Delta_r} we obtain
-\begin{equation*}
-\Delta = -L_2(1-r_1)+L_3r_2 > -L_2(1-r_1)+L_3\cdot \frac{L_2}{L_3}(1-r_1)=0,
-\end{equation*}
-so $\Delta>0$ and hence $L_{eq}\in(z_2,z_3)$ by \cref{eq:intervals}.
+Thus, $L_{eq}\in(z_1,z_2)$.\\
 
-\hfill \break
-\hfill \break
+Conversely, choose $r_1$ such that
+\begin{equation*}
+\dfrac{L_2}{L_2+L_3}<r_1<1.
+\end{equation*}
+Then, by rearranging the lower bound, $\dfrac{L_2}{L_3}(1-r_1)<r_1$, so one can choose
+\begin{equation*}
+\dfrac{L_2}{L_3}(1-r_1)<r_2<r_1.
+\end{equation*}
+Again $0<r_2<r_1<1$, but now \cref{eq:Delta_r} gives
+\begin{equation*}
+\Delta
+=
+-L_2(1-r_1)+L_3r_2
+>
+-L_2(1-r_1)+L_3\dfrac{L_2}{L_3}(1-r_1)
+=
+0.
+\end{equation*}
+Thus, $L_{eq}\in(z_2,z_3)$.\\
+
+Therefore, there exist admissible flow-ratio pairs for which the single-leak equivalent lies upstream of the second leak, and there exist admissible flow-ratio pairs for which it lies downstream of the second leak. Consequently, the ordering of the actual leaks and the single-leak equivalent is not unique across all steady-state operating points for a pipe with three leaks.
+
 \begin{center}
     \noindent\fbox{
         \parbox{0.9\textwidth}{
-            Two different pairs of ratios that both satisfy \cref{eq:ratio_bounds} and yield opposite signs for \cref{eq:Delta_r} were found. This is equivalent to the single leak equivalent $L_{eq}$ existing both upstream and downstream of the second leak, $z_2$, for two different steady state operating points. As a result, a unique ordering of the actual leaks and leak equivalents does not exist across all possible steady state operating points for a pipe with three leaks.
+            The sign of $\Delta=L_{eq}-z_2$ is not fixed by the ordering of the three physical leaks, but depends on the operating point through $r_1$ and $r_2$. Hence, a three-leak pipe does not admit a unique global ordering between the physical leaks and their single-leak equivalent.
         }
     }
 \end{center}
+
+This sign change also appears in simulated steady-state measurements. Consider the pipe
+\[
+\ell=1,
+\qquad
+\theta=0.4,
+\]
+with
+\begin{align*}
+z_1&=0.2,
+&
+z_2&=0.5,
+&
+z_3&=0.8,\\
+c_1&=0.015,
+&
+c_2&=0.010,
+&
+c_3&=0.020.
+\end{align*}
+The following two simulated measurement vectors give opposite signs of $\Delta$:
+\begin{align*}
+y^{(1)}
+=
+\begin{bmatrix}
+10 & 1 & 9.65 & 0.86
+\end{bmatrix}^{\top}
+&\implies
+\Delta = 0.02>0,
+\\
+y^{(2)}
+=
+\begin{bmatrix}
+10 & 5 & 0.20 & 4.91
+\end{bmatrix}^{\top}
+&\implies
+\Delta = -0.04<0.
+\end{align*}
+Thus, the first operating point places the equivalent leak downstream of $z_2$, while the second places it upstream of $z_2$. The simulations, therefore, provide a concrete example of the non-unique ordering established above.

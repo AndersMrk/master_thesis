@@ -1,0 +1,150 @@
+\chapter{Non-Unique Ordering of Single-Leak Equivalents in a Three-Leak Pipe}
+\label{app:3_leak_eq_proof}
+
+% Make some introduction?
+
+Consider a straight pipeline of length $\ell$ operating in steady-state, with three leaks located along the pipe and following the same model as in \autoref{chap:model}.
+
+The pressure drop along the pipe can be formulated as the sum of the four pressure drops between leaks:
+\begin{align}
+h_0-h_{\ell} &= \theta(L_1q_0^2+L_2q_1^2+L_3q_2^2 + (\ell-L_1-L_2-L_3)q_{\ell}^2) \notag \\
+    &= \theta(\ell q_{\ell}^2 + L_1(q_0^2-q_{\ell}^2)+ L_2(q_1^2-q_{\ell}^2)+ L_3(q_2^2-q_{\ell}^2)) \label{eq:three_leaks_pres_drop}.
+\end{align}
+Let $L_{eq}$ be the location of a fictitious single leak equivalent with leak coefficient $c_{eq}$ that produces the same change of pressure and flow along the pipe. The pressure drop can be formulated as the sum of the pressure drop upstream and downstream of the single leak equivalent:
+\begin{align}
+h_0-h_{\ell} &= \theta(L_{eq}q_0^2+(\ell-L_{eq})q_{\ell}^2) \notag \\
+    &= \theta(\ell q_{\ell}^2+L_{eq}(q_0^2-q_{\ell}^2)) \label{eq:single_leak_eq}
+\end{align}
+By equating \cref{eq:three_leaks_pres_drop} and \cref{eq:single_leak_eq} we get:
+\begin{equation}\label{eq:Lf_general}
+L_{eq}
+=
+L_1
++ L_2\,r_1
++ L_3\,r_2,
+\end{equation}
+where the dimensionless ratios are
+\begin{equation}\label{eq:ratios_def}
+r_1 := \frac{q_1^2-q_{\ell}^2}{q_0^2-q_{\ell}^2},
+\qquad
+r_2 := \frac{q_2^2-q_{\ell}^2}{q_0^2-q_{\ell}^2}.
+\end{equation}
+Since $0<q_{\ell}<q_2<q_1<q_0$, these ratios satisfy
+\begin{equation}\label{eq:ratio_bounds}
+0< r_2 < r_1 < 1.
+\end{equation}
+
+For fixed leak locations $z_1<z_2<z_3$ and fixed leak coefficients $c_i>0$, any pair $(r_1,r_2)$ satisfying \cref{eq:ratio_bounds} can be realized by some steady-state operating point $[h_0,h_{\ell},q_0,q_{\ell}]$.\\
+
+Fix any $(r_1,r_2)$ satisfying \cref{eq:ratio_bounds}. Choose $q_{\ell}>0$ and choose $q_0>q_{\ell}$.
+From \cref{eq:ratios_def},
+\begin{equation*}
+q_1 = \sqrt{q_{\ell}^2 + r_1\,(q_0^2-q_{\ell}^2)}, 
+\qquad
+q_2 = \sqrt{q_{\ell}^2 + r_2\,(q_0^2-q_{\ell}^2)}.
+\end{equation*}
+
+The leak flows are
+\begin{equation*}
+\tilde{q}_{1}=q_0-q_1,\qquad
+\tilde{q}_{2}=q_1-q_2,\qquad
+\tilde{q}_{3}=q_2-q_{\ell},
+\end{equation*}
+which are strictly positive. The leak law at $z_3$ is enforced by
+\begin{equation*}
+h_3=\left(\frac{\tilde{q}_{3}}{c_3}\right)^2.
+\end{equation*}
+The interior pressures are then uniquely defined by the friction relations moving upstream:
+\begin{align*}
+h_2 &= h_3+\theta\,(z_3-z_2)\,q_2^2,\\
+h_1 &= h_2+\theta\,(z_2-z_1)\,q_1^2,
+\end{align*}
+and the boundary pressures are defined by
+\begin{equation*}
+h_{\ell} = h_3-\theta\,(\ell-z_3)\,q_{\ell}^2,
+\qquad
+h_0 = h_1+\theta\,z_1\,q_0^2.
+\end{equation*}
+With these definitions, all segment pressure drops satisfy the quadratic friction law by construction.\\
+
+It remains to satisfy the leak laws at $ z_1$ and $ z_2$. Since $\tilde{q}_{1}$ and $\tilde{q}_{2}$ are fixed by
+$(q_0,q_1,q_2,q_{\ell})$, the leak laws at $z_1$ and $z_2$ are equivalent to the compatibility constraints
+\begin{align}
+\left(\frac{\tilde{q}_{1}}{c_1}\right)^2 &= h_1=h_2+\theta\,(z_2-z_1)\,q_1^2,
+\label{eq:compat_z1}\\
+\left(\frac{\tilde{q}_{2}}{c_2}\right)^2 &= h_2=h_3+\theta\,(z_3-z_2)\,q_2^2.
+\label{eq:compat_z2}
+\end{align}
+\cref{eq:compat_z1,eq:compat_z2} constrain the admissible operating points (e.g., they can be enforced by adjusting the boundary conditions $q_0$ and/or $q_{\ell}$). Whenever these compatibilities hold, the constructed $[h_0,h_{\ell},q_0,q_{\ell}]$ is a valid steady-state realizing the specified $(r_1,r_2)$.
+
+The second leak is located at $L_1+L_2$. We introduce the signed distance
+\begin{equation*}
+\Delta := L_{eq} - (L_1+L_2).
+\end{equation*}
+Using \cref{eq:Lf_general} gives
+\begin{equation}\label{eq:Delta_r}
+\Delta
+=
+-\,L_2(1-r_1)+L_3 r_2.
+\end{equation}
+Hence,
+\begin{equation}\label{eq:intervals}
+\Delta < 0 \iff L_{eq} \in (z_1,\,z_2),
+\qquad
+\Delta > 0 \iff L_{eq} \in (z_2,\,z_3).
+\end{equation}
+The boundary $\Delta=0$ is equivalently
+\begin{equation*}
+r_2 = \frac{L_2}{L_3}(1-r_1).
+\end{equation*}
+
+\subsection*{Existence of ratios yielding $\Delta < 0$}
+Fix any $r_1\in(0,1)$. Choose $r_2$ such that
+\begin{equation*}
+0<r_2<\min\!\left(r_1,\ \frac{L_2}{L_3}(1-r_1)\right).
+\end{equation*}
+Then $(r_1,r_2)$ follows \cref{eq:ratio_bounds}, and using \cref{eq:Delta_r} gives
+\begin{equation*}
+\Delta = -L_2(1-r_1)+L_3r_2 < -L_2(1-r_1)+L_3\cdot \frac{L_2}{L_3}(1-r_1)=0,
+\end{equation*}
+so $\Delta<0$ and hence $L_{eq}\in(z_1,z_2)$ by \cref{eq:intervals}.
+
+\subsection*{Existence of ratios yielding $\Delta > 0$}
+Choose any $r_1$ satisfying
+\begin{equation*}
+\frac{L_2}{L_2+L_3}<r_1<1,
+\end{equation*}
+which implies $\frac{L_2}{L_3}(1-r_1)<r_1$. Then choose $r_2$ such that
+\begin{equation*}
+\frac{L_2}{L_3}(1-r_1)<r_2<r_1.
+\end{equation*}
+Again $(r_1,r_2)$ follows \cref{eq:ratio_bounds}, and from \cref{eq:Delta_r} we obtain
+\begin{equation*}
+\Delta = -L_2(1-r_1)+L_3r_2 > -L_2(1-r_1)+L_3\cdot \frac{L_2}{L_3}(1-r_1)=0,
+\end{equation*}
+so $\Delta>0$ and hence $L_{eq}\in(z_2,z_3)$ by \cref{eq:intervals}.
+
+\hfill \break
+\hfill \break
+\begin{center}
+    \noindent\fbox{
+        \parbox{0.9\textwidth}{
+            Two different pairs of ratios that both satisfy \cref{eq:ratio_bounds} and yield opposite signs for \cref{eq:Delta_r} were found. This is equivalent to the single-leak equivalent $L_{eq}$ existing both upstream and downstream of the second leak, $z_2$, at two different steady-state operating points. As a result, a unique ordering of the actual leaks and leak equivalents does not exist across all possible steady-state operating points for a pipe with three leaks.
+        }
+    }
+\end{center}
+
+A numerical example is also given. Let $\ell=1, \theta=0.4$, and the leaks be characterized by
+\begin{align*}
+    z_1 & =0.2, \qquad z_2 = 0.5, \qquad z_3=0.8\\
+    c_1 & =0.015, \quad c_2 = 0.010, \quad c_3=0.020.
+\end{align*}
+The following simulated measurements yield both signs of $\Delta$:
+\begin{align*}
+    y^{(1)} = \begin{bmatrix}
+        10 & 1 & 9.65 & 0.86
+    \end{bmatrix}^\top &\implies \Delta = 0.02 > 0\\
+    y^{(2)} = \begin{bmatrix}
+        10 & 5 & 0.20 & 4.91
+    \end{bmatrix}^\top &\implies \Delta = -0.04 < 0\\
+\end{align*}
