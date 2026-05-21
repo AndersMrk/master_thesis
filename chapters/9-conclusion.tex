@@ -1,3 +1,10 @@
 \chapter{Conclusion}
 
-***
+This thesis investigated whether several simultaneous leaks in a single pipeline can be localized and quantified using only steady-state head and flow measurements at the inlet and outlet. A mathematical pipe model was derived and used to formulate the inverse problem as a nonlinear residual minimization problem. Based on this formulation, a Levenberg--Marquardt solver with an analytically derived Jacobian was developed.\\
+
+The simulated test framework shows that steady-state endpoint data can recover two or three simultaneous leaks under idealized conditions and provide useful localization for four leaks in many cases. The replicated two-leak test cases also gave lower localization errors than the reference results. For five leaks, however, the true leak configuration was rarely recovered, consistent with the conditioning analysis indicating that the endpoint-measurement formulation becomes numerically fragile for larger leak counts.\\
+
+The study also showed that the choice of operating points affects identifiability, with greater variation in hydraulic conditions generally improving solution quality. At the same time, sensitivity to uncertainty in the resistance coefficient and to measurement noise remains a clear limitation for practical use.\\
+
+Overall, the work extends steady-state leak identification beyond the one- and two-leak cases most commonly addressed by comparable methods, while also demonstrating a practical numerical ceiling for the approach. Future work should focus on improving robustness to model and measurement errors and validating the method on real pipeline data.
+

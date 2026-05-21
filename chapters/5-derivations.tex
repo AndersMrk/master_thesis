@@ -1,12 +1,17 @@
 \chapter{Derivation of Proposed Solution}
+\label{chap:derivations}
 
 This chapter presents the derivation of the proposed method for solving the leak identification problem, defined by \autoref{def:leak-identification}. First, the equations relating the leak parameters to the measurements are derived and reformulated into a nonlinear system. Next, the system's Jacobian matrix is derived analytically. The problem is then reformulated as a least-squares optimization problem using a nonlinear residual function. Finally, a solver for estimating the leak parameters is developed, and the identifiability and existence of solutions are discussed.
 
 \section{Deriving the System States (Forward Pass)}
 
-In this section, the equations that hold between measurements \gls{M} and leak parameters (\gls{zi}, \gls{ci}) for $i = 1,\dots,n$ will be derived.\\
+In this section, the equations relating measurements \gls{M} to leak parameters \gls{leakparam} will be derived.\\
 
-Consider a pipe where \gls{n}, \gls{ell}, and \gls{theta} are assumed to be known. The vector of unknown leak parameters is defined by 
+Consider a pipe where \gls{n}, \gls{ell}, and \gls{theta} are assumed to be known. To simplify constraints and expressions, the leak locations, \gls{zi}, will instead be represented by the lengths of the non-leaking pipe sections, \gls{Li}. The leak locations can be uniquely recovered by
+\begin{equation*}
+    z_i=\sum_{k=1}^i L_k.
+\end{equation*}
+Let \gls{x} be the unknown parameter vector and an equivalent re-parametrization of \gls{leakparam}, defined by 
 \begin{equation*}
     \text{\gls{x}} := \begin{bmatrix}
         L_1 & \cdots & L_n & c_1 & \cdots & c_n
@@ -17,20 +22,15 @@ constrained to
 \label{eq:constraints}
     L_i>0,\quad c_i>0, \quad \sum_{i=1}^n L_i<\ell.
 \end{equation}
-The leak positions are uniquely defined by the length of the non-leaking pipe sections, and can be recovered by 
-\begin{equation*}
-    z_i=\sum_{k=1}^i L_k.
-\end{equation*}
 
-\newpage
-Recall that a given measurement \gls{y} is a column of \gls{M} and defines a steady-state operating point. For this operating point, the system states $h^{(j)}_i$, $q^{(j)}_i$ and $\tilde{q}^{(j)}_i$ are constant. Following the upstream equation for head, \cref{eq:upstream_head}, $n+1$ equations are defined as
+Recall that a measurement \gls{y} is a column vector of \gls{M}, and defines a steady-state operating point, where the states $h^{(j)}_i$, $q^{(j)}_i$, and $\tilde{q}^{(j)}_i$ are constant. Using \cref{eq:upstream_head} gives $n+1$ equations:
 \begin{equation}
 \label{eq:phi_h}
     \begin{bmatrix}
-    h_1^{(j)}\\[0.4em]
-    \vdots\\
-    h_i^{(j)}\\
-    \vdots\\
+    h_1^{(j)}\\[0.3em]
+    \vdots\\[0.3em]
+    h_i^{(j)}\\[0.3em]
+    \vdots\\[0.3em]
     h_{n+1}^{(j)}
     \end{bmatrix}
     =
@@ -42,34 +42,40 @@ Recall that a given measurement \gls{y} is a column of \gls{M} and defines a ste
     h_{n}^{(j)}-\theta L_{n+1} \left(q_{n}^{(j)}\right)^2
     \end{bmatrix},
 \end{equation}
-where $L_{n+1}=\ell-\sum_{i=1}^n L_i$. Similarly, $n$ equations are defined by the upstream equation for flow, \cref{eq:upstream_flow}, by
+where $L_{n+1}=\ell-\sum_{i=1}^n L_i$. Similarly, \cref{eq:upstream_flow} gives $n$ equations:
 \begin{equation}
 \label{eq:phi_q}
     \begin{bmatrix}
-    q_1^{(j)}\\[0.4em]
-    \vdots\\
-    q_i^{(j)}\\
-    \vdots\\
+    q_1^{(j)}\\[0.2em]
+    \vdots\\[0.2em]
+    q_i^{(j)}\\[0.2em]
+    \vdots\\[0.2em]
     q_{n}^{(j)}
     \end{bmatrix}
     =
     \begin{bmatrix}
-    q_0^{(j)}-\tilde{q}^{(j)}_1\\[0.4em]
-    \vdots\\
-    q_{i-1}^{(j)}-\tilde{q}^{(j)}_{i}\\
-    \vdots\\
+    q_0^{(j)}-\tilde{q}^{(j)}_1\\[0.2em]
+    \vdots\\[0.2em]
+    q_{i-1}^{(j)}-\tilde{q}^{(j)}_{i}\\[0.2em]
+    \vdots\\[0.2em]
     q_{n-1}^{(j)}-\tilde{q}^{(j)}_{n}
     \end{bmatrix}
     =
     \begin{bmatrix}
-    q_0^{(j)} - c_1 \sqrt{h_1^{(j)}}\\[0.4em]
+    q_0^{(j)} - c_1 \sqrt{h_1^{(j)}}\\
     \vdots\\
     q_{i-1}^{(j)} - c_{i} \sqrt{h_{i}^{(j)}}\\
     \vdots\\
     q_{n-1}^{(j)} - c_{n} \sqrt{h_{n}^{(j)}}
     \end{bmatrix}.
 \end{equation}
-
+It follows that the estimate of the outlet head and flow is given by 
+\begin{equation}
+\label{eq:yhat}
+    \text{\gls{ylhat}} = \begin{bmatrix}
+        h_{n+1}^{(j)} & q_n^{(j)}
+    \end{bmatrix}^\top.
+\end{equation}
 
 From \cref{eq:phi_h,eq:phi_q}, it can be seen that the vector of system states,
 \begin{equation*}
@@ -80,50 +86,62 @@ From \cref{eq:phi_h,eq:phi_q}, it can be seen that the vector of system states,
 can be structured into an iterative forward pass. Each iteration is defined by 
 \begin{equation*}
 f_{fp}({\phi_{i-1}};\mathbf{x}_i): \begin{bmatrix}
-    h_{i-1} &  q_{i-1}
-\end{bmatrix}^\top \mapsto \begin{bmatrix}
-    h_{i} & q_{i}
+    h_{i-1}^{(j)} &  q_{i-1}^{(j)}
+\end{bmatrix}^\top \to \begin{bmatrix}
+    h_{i}^{(j)} & q_{i}^{(j)}
 \end{bmatrix}^\top,
 \end{equation*}
-illustrated by \autoref{fig:single_forward_pass}. Where $\phi_{i-1}=[h_{i-1}\;q_{i-1}]^\top$ and $\mathbf{x}_i=[c_i\;L_i]^\top$. 
+
+and illustrated by \autoref{fig:single_forward_pass}, where 
+$\phi_{i-1}^{(j)}= \begin{bmatrix}
+    h_{i-1}^{(j)} &
+    q_{i-1}^{(j)}
+\end{bmatrix}^\top$
+and
+$\mathbf{x}_i=\begin{bmatrix}
+    L_i &
+    c_i
+\end{bmatrix}^\top$.
 
 \begin{figure}[h!]
     \centering
     \input{figures/tikz_single_forward_pass}
-    \caption{Block diagram of a single iteration in the forward pass, $f_{fp}({\phi_{i-1}};\mathbf{x}_i)$.}
+    \caption[Block diagram of a single iteration in the forward pass]{Block diagram of a single iteration in the forward pass, $f_{fp}({\phi_{i-1}^{(j)}};\mathbf{x}_i)$.}
     \label{fig:single_forward_pass}
 \end{figure}
 
+\FloatBarrier
 \newpage
+
 \autoref{fig:complete_forward_pass} illustrates how each iteration can be chained to obtain the forward pass 
-$y_0 \mapsto [h_{n}\;q_n]^\top$. 
+$y_0^{(j)}~\to~\begin{bmatrix}
+    h_{n}^{(j)} & q_n^{(j)}
+\end{bmatrix}^\top$. Combining this forward pass with \cref{eq:upstream_head} gives $h_{n+1}^{(j)}$. Using \cref{eq:yhat}, the complete forward pass, \gls{y0} $\to$ \gls{ylhat}, is then defined as the function
+\begin{equation*}
+    F_{fp}\left(\mathbf{x}, \text{\gls{y0}}\right) := \text{\gls{ylhat}} \in \mathbb{R}^2.
+\end{equation*}
 
 \begin{figure}[h!]
     \centering
     \input{figures/tikz_complete_forward_pass}
-    \caption{Chaining of forward pass iterations. Mapping $y_0 \mapsto [h_{n}\;q_n]^\top$.}
+    \caption[Chaining of forward pass iterations]{Chaining of forward pass iterations. Mapping $y_0^{(j)} \to [h_{n}^{(j)}\;\;\;q_n^{(j)}]^\top$.}
     \label{fig:complete_forward_pass}
 \end{figure}
 
 An important observation from the structure of the forward pass is that the system states \gls{phi} are uniquely defined by $\mathbf{x}$ and the inlet measurements \gls{y0}. Another observation is that $\phi_i^{(j)}$ is uniquely defined by $\phi_{i-1}^{(j)}$ and $\mathbf{x}_i$ which is formalized in \autoref{lem:forwardpass}.
 
+\vspace{3mm}
 \begin{lemma}{}{forwardpass}
 The system states $\phi_i^{(j)}=
 \begin{bmatrix}
     h_i^{(j)} & q_i^{(j)}
 \end{bmatrix}^\top$ 
 are uniquely defined by $\begin{bmatrix}
-q^{(j)}_0 & h^{(j)}_0 & L_1 & \cdots & L_i & c_1 & \cdots & c_i
-\end{bmatrix}^\top$, and is not affected by any downstream variabeles: $\mathbf{x}_k,\, \phi_k^{(j)},\,k>i$.
+h^{(j)}_0 & q^{(j)}_0 & L_1 & \cdots & L_i & c_1 & \cdots & c_i
+\end{bmatrix}^\top$, and are not affected by any downstream variables: $\mathbf{x}_k,\, \phi_k^{(j)},\,k>i$.
 \end{lemma}
+\vspace{3mm}
 
-From \cref{eq:phi_h,eq:phi_q}, the full forward pass, $y_0 \mapsto [h_{n+1}\; q_n]^\top$, is defined by the function, 
-\begin{equation*}
-    F_{fp}\left(\mathbf{x}, \text{\gls{y0}}\right) := \begin{bmatrix}
-        h^{(j)}_{n+1} \\[0.4em]
-        q^{(j)}_n
-    \end{bmatrix}.
-\end{equation*}
 For a given measurement \gls{y}, the calculated outlet head and flow must equate the outlet measurements by
 \begin{equation}
     \label{eq:forward_pass}
@@ -139,28 +157,26 @@ By eliminating the state variables \gls{phi} during the forward pass, each measu
         F_{fp}\left(\mathbf{x}, y_0^{(1)}\right)^\top\\
         \vdots\\
         F_{fp}\left(\mathbf{x}, y_0^{(m)}\right)^\top
-    \end{bmatrix}^\top
+    \end{bmatrix}^\top \in \mathbb{R}^{2 \times m}
     = \text{\gls{Ml}}.
 \end{equation}
 
 \newpage
-
 \section{Deriving the Derivatives (Backward Pass)}
 \label{sec:der_jacobian}
 
-In this section, the analytical expression for the Jacobian Matrix,
+In this section, the analytical expression for the Jacobian matrix,
 \begin{equation*}
-    J(\mathbf{x}):=\frac{\partial F(\mathbf{x},\mathcal{M}_0)}{\partial \mathbf{x}} \in \mathbb{R}^{2m\times 2n},
+    J(\mathbf{x}):=\frac{\partial\,\mathrm{vec}(F(\mathbf{x},\mathcal{M}_0))}{\partial \mathbf{x}} \in \mathbb{R}^{2m\times 2n},
 \end{equation*}
-will be derived. The Jacobian Matrix will be later used to solve \cref{eq:main_function}, as discussed in \autoref{sec:solving_eq}.\\
+will be derived, where $\mathrm{vec}(F)\in \mathbb{R}^{2m}$ is the column-wise vectorization of $F$. The Jacobian matrix will later be used to solve \cref{eq:main_function}, as discussed in \autoref{sec:solving_eq}.\\
 
 The Jacobian can be constructed by solving 
 $\dfrac{\partial h_{n+1}}{\partial L_i}$, 
 $\dfrac{\partial h_{n+1}}{\partial c_i}$,
 $\dfrac{\partial q_n}{\partial L_i}$ and
 $\dfrac{\partial q_n}{\partial c_i}$
-for $i = 1,\dots,n$.
-Given that
+for $i = 1,\dots,n$, omitting the superscript $(j)$ for readability. Given that
 \begin{equation*}
     \frac{\partial}{\partial L_i} L_{n+1} = \frac{\partial}{\partial L_i} \left(\ell-\sum_{i=1}^n L_i\right) = -1,
 \end{equation*}
@@ -240,11 +256,11 @@ From \autoref{lem:forwardpass}, it follows that
 \end{equation*}
 The differential equations of $B_i$ can then be solved from \cref{eq:upstream_head,eq:upstream_flow},
 \begin{align*}
-    \frac{\partial h_i}{\partial L_i} &= -\theta q_{i-1}^2,\\
-    \frac{\partial h_i}{\partial c_i} &= 0, \\
+    \frac{\partial h_i}{\partial c_i} &= 0, \quad
+    \frac{\partial h_i}{\partial L_i} = -\theta q_{i-1}^2, \quad
+    \frac{\partial q_i}{\partial c_i} = -\sqrt{h_i}, \\
     \frac{\partial q_i}{\partial L_i} &= - \frac{c_i}{2\sqrt{h_i}} \frac{\partial h_i}{\partial L_i} = 
-    \frac{c_i \theta q_{i-1}^2}{2 \sqrt{h_i}}, \\
-    \frac{\partial q_i}{\partial c_i} &= -\sqrt{h_i}, \\
+    \frac{c_i \theta q_{i-1}^2}{2 \sqrt{h_i}}, 
 \end{align*}
 which yields
 \begin{equation}
@@ -255,24 +271,43 @@ B_i=\begin{bmatrix}
 \end{bmatrix}.
 \end{equation}
 To summarise, the partial derivatives are derived by solving
-\begin{equation}
-    \label{eq:derivative_equation}
+\begin{equation*}
     \frac{\partial \phi_{n}}{\partial \mathbf{x}_i} =
      A_n A_{n-1} \cdots A_{i+1} B_i =
     G_i B_i.
-\end{equation}
-
-A proposed method for calculating $\phi_i$ and $\dfrac{\partial \phi_n}{\partial \mathbf{x}_i}$ for $i = 1,\dots,n$ in $O(n)$ time is given by \autoref{alg:forward_backwards_pass}. The returned list $D$ takes the form
-
+\end{equation*}
+A proposed method for calculating $\phi_i$ and $\dfrac{\partial \phi_n}{\partial \mathbf{x}_i}$ for $i = 1,\dots,n$ in $O(n)$ time is given by \autoref{alg:forward_backwards_pass}. 
+The returned list $D$ takes the form
 \begin{equation*}
     D = \left[\frac{\partial \phi_n}{\partial \mathbf{x}_1}, \cdots ,\frac{\partial \phi_n}{\partial \mathbf{x}_n} \right].
 \end{equation*}
 
-\begin{algorithm}[ht]
+
+
+Let 
+\begin{align*}
+    J^{(j)}(\mathbf{x}) :=& \frac{\partial F_{fp}(\mathbf{x},y_0^{(j)})}{\partial \mathbf{x}}
+    = \begin{bmatrix}
+    \dfrac{\partial h_{n+1}^{(j)}}{\partial L_1} & \cdots & \dfrac{\partial h_{n+1}^{(j)}}{\partial L_n} & 
+    \dfrac{\partial h_{n+1}^{(j)}}{\partial c_1} & \cdots & \dfrac{\partial h_{n+1}^{(j)}}{\partial c_n} \\[0.8em]
+    \dfrac{\partial q_n^{(j)}}{\partial L_1} & \cdots & \dfrac{\partial q_n^{(j)}}{\partial L_n} & 
+    \dfrac{\partial q_n^{(j)}}{\partial c_1} & \cdots & \dfrac{\partial q_n^{(j)}}{\partial c_n}
+    \end{bmatrix} \in \mathbb{R}^{2\times 2n},
+\end{align*}
+where all partial derivatives are solved by the elements in $D^{(j)}$ and \cref{eq:dhnp1dx}. Finally, the full Jacobian matrix is given by
+\begin{equation}
+\label{eq:jacobian}
+    J(\mathbf{x}) = \begin{bmatrix}
+        J^{(1)}(\mathbf{x})\\
+        \vdots\\
+        J^{(m)}(\mathbf{x})
+    \end{bmatrix}
+    \in \mathbb{R}^{2m\times2n}.
+\end{equation}
+
+\begin{algorithm}[H]
 \caption{Forward and Backward Pass}
 \label{alg:forward_backwards_pass}
-%\caption{hello}
-
 \DontPrintSemicolon
 \SetKwFunction{func}{ForwardBackwardPass}
 \SetKwFunction{Afunc}{CalcA}
@@ -283,7 +318,6 @@ A proposed method for calculating $\phi_i$ and $\dfrac{\partial \phi_n}{\partial
 \SetKwInput{KwNote}{\normalfont Note}
 \Fn{\func{$L,c,h_0,q_0,n,\theta$}}{
     \KwNote{\textit{$L[0]$ and $c[0]$ are dummy values to make indexing consistent with equations: ($L_i:=L[i], c_i:=c[i]$).}}
-    \;
     $h \gets [h_0], \; q \gets [q_0]$\;
     \tcp{Forward pass}
     \For{$i \gets 1$ \KwTo n}{
@@ -306,26 +340,7 @@ A proposed method for calculating $\phi_i$ and $\dfrac{\partial \phi_n}{\partial
 }
 \end{algorithm}
 
-Let 
-\begin{align*}
-    J^{(j)}(\mathbf{x)} :=& \frac{\partial F_{fp}(\mathbf{x},y_0^{(j)})}{\partial \mathbf{x}} \in \mathbb{R}^{2\times 2n}\\[0.2em]
-    =& \begin{bmatrix}
-    \dfrac{\partial h_{n+1}^{(j)}}{\partial L_1} & \cdots & \dfrac{\partial h_{n+1}^{(j)}}{\partial L_n} & 
-    \dfrac{\partial h_{n+1}^{(j)}}{\partial c_1} & \cdots & \dfrac{\partial h_{n+1}^{(j)}}{\partial c_n} \\[0.8em]
-    \dfrac{\partial q_n^{(j)}}{\partial L_1} & \cdots & \dfrac{\partial q_n^{(j)}}{\partial L_n} & 
-    \dfrac{\partial q_n^{(j)}}{\partial c_1} & \cdots & \dfrac{\partial q_n^{(j)}}{\partial c_n}
-    \end{bmatrix},
-\end{align*}
-where all partial derivatives are solved by the elements in $D^{(j)}$ and \cref{eq:dhnp1dx}. Finally, the full Jacobian Matrix is given by
-\begin{equation}
-\label{eq:jacobian}
-    J(\mathbf{x}) = \begin{bmatrix}
-        J^{(1)}(\mathbf{x})\\
-        \vdots\\
-        J^{(m)}(\mathbf{x})
-    \end{bmatrix}
-    \in \mathbb{R}^{2m\times2n}.
-\end{equation}
+\FloatBarrier
 \newpage
 
 \section{Solving the Equations}
@@ -334,12 +349,14 @@ where all partial derivatives are solved by the elements in $D^{(j)}$ and \cref{
 Given the measurements $\mathcal{M}$ and using \cref{eq:main_function}, a residual function can be defined by
 \begin{equation}
     \label{eq:residual}
-    r(\mathbf{x}) := F(\mathbf{x},\mathcal{M}_0) - \mathcal{M}_{\ell}.
+    r(\mathbf{x}) := \mathrm{vec}(F(\mathbf{x},\mathcal{M}_0) - \mathcal{M}_{\ell}).
 \end{equation}
 
 Note that
 \begin{equation*}
-    \frac{\partial r(\mathbf{x})}{\partial \mathbf{x}} =\frac{\partial F(\mathbf{x},\mathcal{M}_0)}{\partial \mathbf{x}} = J(\mathbf{x}).
+    \frac{\partial r(\mathbf{x})}{\partial \mathbf{x}} = 
+    \frac{\partial\,\mathrm{vec}(F(\mathbf{x},\mathcal{M}_0))}{\partial \mathbf{x}} =
+    J(\mathbf{x}).
 \end{equation*}
 
 The problem to solve can then be formulated as the residual problem,
@@ -351,7 +368,7 @@ As discussed in \autoref{sec:theory_optmet}, it is often more practical to solve
 \label{eq:min_prob}
     \mathbf{x}^* = \underset{\mathbf{x}\in \mathcal{C}}{\text{argmin}} \frac{1}{2}\|r(\mathbf{x})\|^2,
 \end{equation}
-where $\mathcal{C} \subset \mathbb{R}^{2n}$ is the feasible set defined by the constraints in \cref{eq:constraints}.\\ 
+where $\mathcal{C} \subset \mathbb{R}^{2n}$ is the feasible set defined by the constraints in \cref{eq:constraints}.
 
 \subsection{Re-Parametrization}
 To enforce the constraints, the constrained variable $\mathbf{x}$ can be re-parameterized by an unconstrained variable, $\bm{\xi} \in \mathbb{R}^{2n}$, by defining $\mathbf{x}=g(\bm{\xi})$ as a smooth mapping $g : \mathbb{R}^{2n} \to \mathcal{C}$.\\
@@ -365,11 +382,10 @@ The minimization problem in \cref{eq:min_prob} can then be solved via the uncons
 \end{aligned}
 \end{equation}
 
-Following the re-parametrization method in \cite{leplat2025}, the positivity constraint for the leak coefficients, $c_i > 0$, is enforced by
-\begin{equation}
-\label{eq:re_param_c}
+Following the re-parametrization method in \cite{leplat2025}, the positivity constraint for the effective leak coefficients, $c_i > 0$, is enforced by
+\begin{equation*}
 c_i = e^{\gamma_i}.
-\end{equation}
+\end{equation*}
 
 For the lengths $L_i$, both positivity and the inequality constraint
 \begin{equation*}
@@ -404,9 +420,9 @@ which has the property
 \end{equation*}
 
 By combining the simplex and box constraints, the length parameters, $L_i$, can be defined by
-\begin{equation}
+\begin{equation*}
 L_i = \ell \sigma(s) \alpha_i(\lambda).
-\end{equation}
+\end{equation*}
 Since $\alpha_i(\lambda) > 0$ and $0 < \sigma(s) < 1$, it follows that
 \begin{equation*}
 L_i > 0,
@@ -422,7 +438,6 @@ In summary, the mapping $g : \mathbb{R}^{2n} \to \mathcal{C}$ is defined by
 \mathbf{x}=g(\bm{\xi})
 =
 \begin{bmatrix}
-    
 \ell \sigma(s) \alpha_1(\lambda) & \cdots & \ell \sigma(s) \alpha_n(\lambda) &
 e^{\gamma_1} & \cdots & e^{\gamma_n}
 \end{bmatrix}^\top,
@@ -443,7 +458,7 @@ s &
 
 This re-parametrization yields a smooth, unconstrained formulation in $\bm{\xi}$ that automatically satisfies all constraints and is therefore suitable for unconstrained optimization methods, such as the methods presented in \autoref{sec:theory_optmet}.\\
 
-The new Jacobian Matrix is calculated using the chain rule,
+The new Jacobian matrix is calculated using the chain rule,
 \begin{equation}
 \label{eq:Jy}
     J_\xi(\bm{\xi}):= \frac{\partial r(g(\bm{\xi}))}{\partial\bm{\xi}} 
@@ -456,29 +471,31 @@ where the derivation of $\dfrac{\partial \mathbf{x}}{\partial\bm{\xi}}$ is prese
 \subsection{Solver Design}
 \label{sec:solver_design}
 
-To solve the optimization problem in \cref{eq:min_prob_via_y}, a Levenberg--Marquardt solver was developed as described in \autoref{sec:levenberg_marquardt}. The iterative algorithm requires an initial starting point, $\mathbf{x}_0$, which is mapped into the $\xi$-space using the inverse transformation $g^{-1}$ derived from \cref{eq:g_func}. The solver operates as illustrated in \autoref{fig:solver_flow_chart}.
+To solve the optimization problem in \cref{eq:min_prob_via_y}, a Levenberg--Marquardt solver was developed as described in \autoref{sec:levenberg_marquardt}. The iterative algorithm requires an initial starting point, $\mathbf{x}_0$, which is mapped into the $\xi$-space using the inverse transformation $g^{-1}$ derived from \cref{eq:g_func}. The solver operates as illustrated in \autoref{fig:solver_flow_chart}.\\
 
-\begin{figure}[ht]
+\begin{figure}[h]
     \centering
     \input{figures/tikz_solver_flow_chart}    
-    \caption{Flow chart describing the design of the Levenberg--Marquardt solver used to solve \cref{eq:min_prob_via_y}.}
+    \caption[Flow chart of the solver design]{Flow chart describing the design of the Levenberg--Marquardt solver used to solve \cref{eq:min_prob_via_y}.}
     \label{fig:solver_flow_chart}
 \end{figure}
 
-Since the problem to solve is $r(\mathbf{x})=0$, the stopping criterion $\|r\|< \tau_\text{conv}$ is used, where the convergence tolerance, $\tau_\text{conv}$, is a sufficiently small number to be confident in the solution. Additionally, a maximal iteration stopping criterion ($k \geq k_{\max}$) is implemented to safeguard against an infinite loop. If the solver stops before $\|r\|< \tau_\text{conv}$, the solution is likely not correct and is not of interest. However, if the solver gets "stuck", other stopping criteria could be implemented to abort early without waiting for the maximum number of iterations to be reached. Such a criterion could be based on a minimum required step size $\|s_k\|$, since very small steps do not improve the solution sufficiently. Additionally, if the largest gradient, $\|J(\mathbf{x}_k)^\top r(\mathbf{x}_k)\|_\infty$, is very small, then the solver has reached a local minima, and will likely not converge to a better solution.
+Since the problem to solve is $r(\mathbf{x})=0$, the stopping criterion $\|r\|< \tau_\text{conv}$ is used, where the convergence tolerance, $\tau_\text{conv}$, is a sufficiently small number to be confident in the solution. Additionally, a maximum-iteration stopping criterion ($k \geq k_{\max}$) is implemented to prevent an infinite loop. If the solver stops before $\|r\|< \tau_\text{conv}$, the solution is likely not correct and is not of interest. However, if the solver gets "stuck", other stopping criteria could be implemented to abort early without waiting for the maximum number of iterations to be reached. Such a criterion could be based on a minimum required step size $\|s_k\|$, since very small steps do not improve the solution sufficiently. Additionally, if the largest gradient, $\|J(\mathbf{x}_k)^\top r(\mathbf{x}_k)\|_\infty$, is very small, then the solver has reached a local minimum and will likely not converge to a better solution.
+
+\FloatBarrier
 
 \section{Discussion on Identifiability and Solution Existence}
 
-To identify all leak parameters, the number of independent equations must at least equal the number of unknown variables as discussed in \autoref{sec:sol_existence}. Recall from \cref{eq:main_function} that each steady-state operating point provides two scalar equations. Measurements from $m$ different steady-states therefore yield $2m$ equations. The parameter vector \gls{x} contains $2n$ unknowns, so the number of measurements must satisfy
+To identify all leak parameters, the number of independent equations must at least equal the number of unknown variables as discussed in \autoref{sec:sol_existence}. Recall from \cref{eq:main_function} that each steady-state operating point provides two scalar equations. Measurements from $m$ different steady states therefore yield $2m$ equations. The parameter vector \gls{x} contains $2n$ unknowns, so the number of measurements must satisfy
 \begin{equation*}
     m \geq n,
 \end{equation*}
 assuming each measurement provides independent information.\\
 
-If \gls{n}, \gls{theta}, and \gls{ell} are known, and the measurements \gls{M} provides sufficiently independent equations, a solution $\mathbf{x}^*$ satisfying
+If \gls{n}, \gls{theta}, and \gls{ell} are known, and the measurements \gls{M} provide sufficiently independent equations, a solution $\mathbf{x}^*$ satisfying
 \[
 r(\mathbf{x}^*) = 0
 \]
-reproduces all measured inlet–outlet relations across the considered steady-states. The solution $\mathbf{x}^*$ is then a valid solution to the problem defined in \autoref{def:leak-identification}.\\
+reproduces all measured inlet–outlet relations across the considered steady states. The solution $\mathbf{x}^*$ is then a valid solution to the problem defined in \autoref{def:leak-identification}.\\
 
 A solution to $r(\mathbf{x}) = 0$ does not guarantee that $\mathbf{x}^*$ corresponds to the true physical leak configuration. The nonlinear forward model may admit multiple solutions that produce identical measurements. As discussed in \autoref{sec:sol_existence}, global uniqueness requires additional properties beyond the properties of the Jacobian, which lie outside the scope of this work. Instead, this thesis focuses on empirical results, which are presented in \autoref{chap:results_performance}.

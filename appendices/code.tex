@@ -1,0 +1,58 @@
+\chapter{Demo and GitHub Repository}
+\label{app:code}
+
+A demo of the leak identification method is open-source and publicly available at: \\
+
+{ \centering 
+\href{https://github.com/AndersMrk/Pipe-Leak-Identification}{\faGithub\ \texttt{github.com/AndersMrk/Pipe-Leak-Identification}} \par
+}
+
+\subsection*{How to Run the Demo}
+
+\begin{enumerate}
+    \item Clone the repository:
+    \begin{lstlisting}[language=bash]
+git clone https://github.com/AndersMrk/Pipe-Leak-Identification.git
+cd Pipe-Leak-Identification
+    \end{lstlisting}
+
+    \item Create a Python virtual environment:
+    \begin{lstlisting}[language=bash]
+python -m venv .venv
+    \end{lstlisting}
+
+    \item Activate the virtual environment.
+        \begin{lstlisting}[language=bash]
+Windows PowerShell:
+    .\.venv\Scripts\Activate.ps1
+        \end{lstlisting}
+        
+        \begin{lstlisting}[language=bash]
+Windows Command Prompt:
+    .\.venv\Scripts\activate.bat
+        \end{lstlisting}
+    
+        \begin{lstlisting}[language=bash]
+Linux/macOS Bash:
+    source .venv/bin/activate
+        \end{lstlisting}
+
+    \item Install the required dependencies:
+    \begin{lstlisting}[language=bash]
+python -m pip install -r requirements.txt
+    \end{lstlisting}
+
+    \item Run the demo:
+    \begin{lstlisting}[language=bash]
+python demo.py
+    \end{lstlisting}
+\end{enumerate}
+
+To test different configurations, these parameters can be changed in \texttt{demo.py}:
+
+\begin{lstlisting}[language=bash]
+     TRUE_LEAK_Z = [0.2, 0.6, 0.8]
+     TRUE_LEAK_C = [0.02, 0.05, 0.06]
+     PIPE_LEN = 1
+     THETA = 0.2         
+\end{lstlisting}

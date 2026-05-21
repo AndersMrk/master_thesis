@@ -136,8 +136,8 @@
 \draw[axis,->] (0,\yAxis) -- (\Lpipe+0.6,\yAxis) node[right] {$z$-axis};
 
 % endpoints 0 and L
-\draw[tick] (0,\yAxis-0.10) -- (0,\yAxis+0.10) node[right=-7pt, yshift=8pt,text=AxisColor] {$0 \mapsto h_{0}$};
-\draw[tick] (\Lpipe,\yAxis-0.10) -- (\Lpipe,\yAxis+0.10) node[right=-7pt, yshift=8pt,text=AxisColor] {$\ell \mapsto h_{\ell}$};
+\draw[tick] (0,\yAxis-0.10) -- (0,\yAxis+0.10) node[right=-7pt, yshift=8pt,text=AxisColor] {$0 \to h_{0}$};
+\draw[tick] (\Lpipe,\yAxis-0.10) -- (\Lpipe,\yAxis+0.10) node[right=-7pt, yshift=8pt,text=AxisColor] {$\ell \to h_{\ell}$};
 
 % optional break markers on axis
 \node[breakmark] at (\zBreakA+0.5*\s,\yAxis) {//};
@@ -169,7 +169,7 @@
     node[below=-6pt,right=3pt, text=AxisColor] {$\tilde{q}_{#2}$};
   % tick + label on z-axis
   \draw[tick] (#1,\yAxis-0.10) -- (#1,\yAxis+0.10)
-    node[right=-7pt, yshift=8pt, text=AxisColor] {$z_{#2} \mapsto h_{#2}$};
+    node[right=-7pt, yshift=8pt, text=AxisColor] {$z_{#2} \to h_{#2}$};
 }
 
 \LeakAt{\zOne}{1}

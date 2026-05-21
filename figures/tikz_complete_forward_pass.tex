@@ -26,20 +26,20 @@
 % --- First block: f_{fp,0} mapping (h0,q0) -> (h1,q1) ---
 \node[fblock] (f0) at (\bOne,\yF) {$f_{fp}(\mathbf{x}_1)$};
 
-\draw[line] ($(f0.west|-0,\yH) - (\stub,0)$) -- ($(f0.west|-0,\yH)$) node[midway, above] {$h_0$};
-\draw[line] ($(f0.west|-0,\yB) - (\stub,0)$) -- ($(f0.west|-0,\yB)$) node[midway, below] {$q_0$};
-\draw[line] ($(f0.east|-0,\yH)$) -- ($(f0.east|-0,\yH) + (\stub,0)$) node[midway, above] {$h_1$};
-\draw[line] ($(f0.east|-0,\yB)$) -- ($(f0.east|-0,\yB) + (\stub,0)$) node[midway, below] {$q_1$};
+\draw[line] ($(f0.west|-0,\yH) - (\stub,0)$) -- ($(f0.west|-0,\yH)$) node[midway, above] {$h_0^{(j)}$};
+\draw[line] ($(f0.west|-0,\yB) - (\stub,0)$) -- ($(f0.west|-0,\yB)$) node[midway, below] {$q_0^{(j)}$};
+\draw[line] ($(f0.east|-0,\yH)$) -- ($(f0.east|-0,\yH) + (\stub,0)$) node[midway, above] {$h_1^{(j)}$};
+\draw[line] ($(f0.east|-0,\yB)$) -- ($(f0.east|-0,\yB) + (\stub,0)$) node[midway, below] {$q_1^{(j)}$};
 
 % % --- Ellipsis between early indices and i-1 ---
 \node[lab] (dotsA) at (3.25,\yF) {$\cdots$};
 
 % % --- Middle block: f_{fp,i-1} mapping (h_{i-1},q_{i-1}) -> (h_i,q_i) ---
 \node[fblock] (f1) at (\bTwo,\yF) {$f_{fp}(\mathbf{x}_i)$};
-\draw[line] ($(f1.west|-0,\yH) - (\stub,0)$) -- ($(f1.west|-0,\yH)$) node[midway, above] {$h_{i-1}$};
-\draw[line] ($(f1.west|-0,\yB) - (\stub,0)$) -- ($(f1.west|-0,\yB)$) node[midway, below] {$q_{i-1}$};
-\draw[line] ($(f1.east|-0,\yH)$) -- ($(f1.east|-0,\yH) + (\stub,0)$) node[midway, above] {$h_i$};
-\draw[line] ($(f1.east|-0,\yB)$) -- ($(f1.east|-0,\yB) + (\stub,0)$) node[midway, below] {$q_i$};
+\draw[line] ($(f1.west|-0,\yH) - (\stub,0)$) -- ($(f1.west|-0,\yH)$) node[midway, above] {$h_{i-1}^{(j)}$};
+\draw[line] ($(f1.west|-0,\yB) - (\stub,0)$) -- ($(f1.west|-0,\yB)$) node[midway, below] {$q_{i-1}^{(j)}$};
+\draw[line] ($(f1.east|-0,\yH)$) -- ($(f1.east|-0,\yH) + (\stub,0)$) node[midway, above] {$h_i^{(j)}$};
+\draw[line] ($(f1.east|-0,\yB)$) -- ($(f1.east|-0,\yB) + (\stub,0)$) node[midway, below] {$q_i^{(j)}$};
 
 
 % % --- Ellipsis between i and n-2 ---
@@ -47,10 +47,10 @@
 
 % % --- Last block: f_{fp,n-2} mapping (h_{n-2},q_{n-2}) -> (h_{n-1},q_{n-1}) ---
 \node[fblock] (f2) at (\bThree,\yF) {$f_{fp}(\mathbf{x}_{n})$};
-\draw[line] ($(f2.west|-0,\yH) - (\stub,0)$) -- ($(f2.west|-0,\yH)$) node[midway, above] {$h_{n-1}$};
-\draw[line] ($(f2.west|-0,\yB) - (\stub,0)$) -- ($(f2.west|-0,\yB)$) node[midway, below] {$q_{n-1}$};
-\draw[line] ($(f2.east|-0,\yH)$) -- ($(f2.east|-0,\yH) + (\stub,0)$) node[midway, above] {$h_{n}$};
-\draw[line] ($(f2.east|-0,\yB)$) -- ($(f2.east|-0,\yB) + (\stub,0)$) node[midway, below] {${q}_n$};
+\draw[line] ($(f2.west|-0,\yH) - (\stub,0)$) -- ($(f2.west|-0,\yH)$) node[midway, above] {$h_{n-1}^{(j)}$};
+\draw[line] ($(f2.west|-0,\yB) - (\stub,0)$) -- ($(f2.west|-0,\yB)$) node[midway, below] {$q_{n-1}^{(j)}$};
+\draw[line] ($(f2.east|-0,\yH)$) -- ($(f2.east|-0,\yH) + (\stub,0)$) node[midway, above] {$h_{n}^{(j)}$};
+\draw[line] ($(f2.east|-0,\yB)$) -- ($(f2.east|-0,\yB) + (\stub,0)$) node[midway, below] {${q}_n^{(j)}$};
 
 
 \end{tikzpicture}

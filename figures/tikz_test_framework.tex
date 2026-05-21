@@ -1,6 +1,26 @@
 % Requires: \usepackage{tikz}
-% TikZ libraries: \usetikzlibrary{arrows.meta,positioning,fit,calc}
+% TikZ libraries: \usetikzlibrary{arrows.meta,positioning,calc}
 
+\colorlet{frameworkFill}{gray!10}
+\colorlet{lineColor}{black}
+
+\definecolor{mplBlue}{HTML}{1F77B4}
+\definecolor{mplGreen}{HTML}{2CA02C}
+\definecolor{mplOrange}{HTML}{FF7F0E}
+
+\colorlet{suiteFill}{mplBlue!35}
+\colorlet{caseFill}{mplOrange!35}
+\colorlet{trialFill}{mplGreen!35}
+
+% \colorlet{suiteFill}{blue!50}
+% \colorlet{caseFill}{green!50}
+% \colorlet{trialFill}{orange!50}
+
+\newcommand{\dotsYoffset}{2mm}
+\newcommand{\levelYspacing}{8mm}
+\newcommand{\busYspacing}{4mm}
+\newcommand{\suiteXspacing}{4mm}
+\newcommand{\levelXspacing}{16mm}
 
 \begin{tikzpicture}[
   font=\small,
@@ -9,93 +29,102 @@
     draw,
     rounded corners=2pt,
     align=center,
-    minimum height=7mm,
-    inner xsep=5pt,
-    inner ysep=2pt
+    inner xsep=6pt,
+    inner ysep=5pt
   },
-  root/.style={box, very thick, fill=gray!10, minimum width=58mm},
-  suite/.style={box, fill=blue!8, minimum width=10mm},
-  suiteSmall/.style={box, fill=blue!5, minimum width=7mm, minimum height=7mm},
-  case/.style={box, fill=green!8, minimum width=10mm},
-  trial/.style={box, fill=orange!10, minimum width=10mm},
-  note/.style={
-    draw,
-    rounded corners=2pt,
-    align=left,
-    fill=gray!6,
-    inner sep=3pt,
-    font=\scriptsize,
-    text width=42mm
+  root/.style={
+    box,
+    thick,
+    fill=frameworkFill,
+    minimum width=56mm,
+    minimum height=10mm
   },
-  ellipsis/.style={font=\large}
+  suite/.style={
+    box,
+    fill=suiteFill,
+    thick,
+    minimum width=12mm,
+    minimum height=10mm
+  },
+  case/.style={
+    box,
+    fill=caseFill,
+    thick,
+    minimum width=24mm,
+    minimum height=9mm
+  },
+  trial/.style={
+    box,
+    fill=trialFill,
+    thick,
+    minimum width=24mm,
+    minimum height=9mm
+  },
+  dots/.style={font=\large, text=lineColor},
+  line/.style={thick, draw=lineColor},
+  arrow/.style={-Latex, thick, draw=lineColor}
 ]
 
-% Root
-\node[root] (root) at (0,0) {Test Framework};
+% Framework level
+\node[root] (framework) at (0,0) {Test Framework};
 
-% Suites on one common horizontal line
-\node[suite]      (s2) at (-16mm,-18mm) {Test suite $n=2$};
-\node[suiteSmall] (s3) at ( 20mm,-18mm) {};
-\node[suiteSmall] (s4) at ( 32mm,-18mm) {};
-\node[suiteSmall] (s5) at ( 44mm,-18mm) {};
-\node[right=2mm of s5] {\scriptsize $n=3,4,5,\dots$};
+% Suite level
+\coordinate (suiteLevel) at ($(framework.south)+(0,-\levelYspacing)$);
+\node[suite, anchor=north] (suite3) at (framework |- suiteLevel)
+  {$n=3$};
+\node[suite, anchor=north east] (suite2) at ($(suite3.north west)+(-\suiteXspacing,0)$)
+  {Test Suite for\\[-1pt] 
+  $n=2$ leaks\\[-1pt]
+  (\autoref{alg:test_suite})};
+\node[suite, anchor=north west] (suite4) at ($(suite3.north east)+(\suiteXspacing,0)$)
+  {$n=4$};
+\node[suite, anchor=north west] (suite5) at ($(suite4.north east)+(\suiteXspacing,0)$)
+  {$n=5$};
 
-% Common bus line for suite arrows
-\coordinate (busL) at (-16mm,-10mm);
-\coordinate (busR) at (44mm,-10mm);
-\draw[thick] (root.south) -- (0,-10mm);
-\draw[thick] (busL) -- (busR);
+\coordinate (suiteBus) at ($(framework.south)+(0,-\busYspacing)$);
+\draw[line] (framework.south) -- (suiteBus);
+\draw[line] ($(suite2.north |- suiteBus)$) -- ($(suite5.north |- suiteBus)$);
+\foreach \s in {suite2,suite3,suite4,suite5}
+  \draw[arrow] ($(\s.north |- suiteBus)$) -- (\s.north);
 
-\foreach \s in {s2,s3,s4,s5}
-  \draw[-Latex, thick] (\s |- busL) -- (\s.north);
+% Case level for the n=2 suite
+\coordinate (caseLevel) at ($(suite2.south)+(0,-\levelYspacing)$);
+\node[case, anchor=north] (caseC) at (framework |- caseLevel)
+  {Test Case: $c$\\[3pt]
+   \begin{tabular}{@{}l@{}}
+      - Sample $\mathbf{x}_c^\ast$ and $\theta$\\
+      - Simulate $\mathcal{M}$
+   \end{tabular}};
+\node[case, anchor=north east] (case1) at ($(caseC.north west)+(-\levelXspacing,0)$)
+  {Test Case: $1$};
+\node[dots, anchor=north] (caseDotsA) at ($(case1.north east)!0.5!(caseC.north west)+(0,-\dotsYoffset)$) {$\cdots$};
+\node[case, anchor=north west] (caseN) at ($(caseC.north east)+(\levelXspacing,0)$)
+  {Test Case: $N_{\mathrm{cases}}$};
+\node[dots, anchor=north] (caseDotsB) at ($(caseC.north east)!0.5!(caseN.north west)+(0,-\dotsYoffset)$) {$\cdots$};
 
-% Test cases under expanded suite, spaced to avoid overlap
-\node[case] (c1) at (-36mm,-40mm) {test case\\$c=1$};
-\node[ellipsis] (cdots) at (-16mm,-40mm) {$\cdots$};
-\node[case] (cN) at (  6mm,-40mm) {test case\\$c=N_{\mathrm{cases}}$};
+\coordinate (caseBus) at ($(suite2.south)+(0,-\busYspacing)$);
+\draw[line] (suite2.south) -- (caseBus);
+\draw[line] ($(case1.north |- caseBus)$) -- ($(caseN.north |- caseBus)$);
+\foreach \c in {case1,caseC,caseN}
+  \draw[arrow] ($(\c.north |- caseBus)$) -- (\c.north);
 
-\draw[thick] (s2.south) -- (-16mm,-31mm);
-\foreach \c in {c1,cN}
-  \draw[-Latex, thick] (-16mm,-31mm) -| (\c.north);
+% Trial level inside the representative case
+\node[trial, below=\levelYspacing of caseC] (trialT)
+  {Trial: $t$\\[3pt]
+   \begin{tabular}{@{}l@{}}
+      - Sample $\mathbf{x}_0$\\
+      - $\mathrm{Solve}(\mathcal{M},\theta,\mathbf{x}_0)$
+   \end{tabular}};
+\node[trial, anchor=north] (trial1) at (case1 |- trialT.north)
+  {Trial: $1$};
+\node[dots, anchor=north] (trialDotsA) at ($(caseDotsA |- trialT.north)+(0,-\dotsYoffset)$) {$\cdots$};
+\node[trial, anchor=north] (trialN) at (caseN |- trialT.north)
+  {Trial: $N_{\mathrm{trials}}$};
+\node[dots, anchor=north] (trialDotsB) at ($(caseDotsB |- trialT.north)+(0,-\dotsYoffset)$) {$\cdots$};
 
-% Trials under one representative test case, spaced to avoid overlap
-\node[trial] (t1) at (-46mm,-64mm) {trial\\$j=1$};
-\node[ellipsis] (tdots) at (-28mm,-64mm) {$\cdots$};
-\node[trial] (tN) at (-28mm,-64mm) {trial\\$j=N_{\mathrm{trials}}$};
-
-\draw[thick] (c1.south) -- (-36mm,-55mm);
-\foreach \t in {t1,tN}
-  \draw[-Latex, thick] (-36mm,-55mm) -| (\t.north);
-
-% Compact trial block for final case
-\node[trial] (tNblock) at (6mm,-64mm) {trials\\$j=1,\ldots,N_{\mathrm{trials}}$};
-\draw[-Latex, thick] (cN.south) -- (tNblock.north);
-
-% Notes
-\node[note] (case-note) at (53mm,-40mm) {
-Each test case:\\
-generates leak configuration\\
-and simulates measurements
-};
-
-\node[note] (trial-note) at (53mm,-64mm) {
-Each trial:\\
-samples random initial value\\
-runs solver with simulated data\\
-and known parameters
-};
-
-\draw[-Latex, dashed] (cN.east) -- (case-note.west);
-\draw[-Latex, dashed] (tNblock.east) -- (trial-note.west);
-
-% Expanded-view box
-\node[
-  draw,
-  dashed,
-  rounded corners=4pt,
-  fit=(c1)(cN)(t1)(tN)(tNblock),
-  inner sep=5pt,
-  label={[font=\scriptsize]below:Expanded hierarchy shown for one suite.}
-] {};
-
+\coordinate (trialBus) at ($(caseC.south)+(0,-\busYspacing)$);
+\draw[line] (caseC.south) -- (trialBus);
+\draw[line] ($(trial1.north |- trialBus)$) -- ($(trialN.north |- trialBus)$);
+\foreach \t in {trial1,trialT,trialN}
+  \draw[arrow] ($(\t.north |- trialBus)$) -- (\t.north);
 \end{tikzpicture}

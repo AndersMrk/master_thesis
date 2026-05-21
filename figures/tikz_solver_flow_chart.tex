@@ -35,9 +35,9 @@
 \node[merge] (start) {};
 \node[block, below=of start] (b0) {
 \begin{tabular}{@{}lr@{}}
-    $\xi_k = g^{-1}(x_0)$ & (\ref*{eq:g_func})\\
-    $r_k = r(g(\xi))$ & (\ref*{eq:residual})\\
-    $J_k = J_\xi(\xi)$ & (\ref*{eq:jacobian} \ref*{eq:Jy}) \\
+    $\bm{\xi}_k = g^{-1}(x_0)$ & (\ref*{eq:g_func})\\
+    $r_k = r(g(\bm{\xi}))$ & (\ref*{eq:residual})\\
+    $J_k = J_\xi(\bm{\xi})$ & (\ref*{eq:jacobian} \ref*{eq:Jy}) \\
     initialize $\lambda$ & (\ref*{eq:init_lambda}) \\
 \end{tabular}
 };
@@ -50,7 +50,7 @@
 \draw[line] (b0) -- node[right,pos=0.7]{$k=0$} (d1);
 
 % Return x
-\node[block, right=12mm of d1] (ret) {$x=g(\xi_k)$,\ return $x$};
+\node[block, right=12mm of d1] (ret) {$x=g(\bm{\xi}_k)$,\ return $x$};
 \draw[line] (d1.east) -- node[above,pos=0.2]{False} (ret.west);
 
 % Continue False
@@ -69,9 +69,9 @@
 \node[block, below=of d2] (inner_compute){
 \begin{tabular}{@{}lr@{}}
     Compute $s_k$ & (\ref*{eq:sk_lm_solve})\\
-    $\xi_{\text{trial}}=\xi_k+s_k$ & (\ref*{eq:step_update_rule})\\
-    $r_{\text{trial}}=r(g(\xi_{\text{trial}}))$ & (\ref*{eq:residual})\\
-    $J_{\text{trial}}=J_\xi(\xi_{\text{trial}})$ & (\ref*{eq:jacobian} \ref*{eq:Jy})\\
+    $\bm{\xi}_{\text{trial}}=\bm{\xi}_k+s_k$ & (\ref*{eq:step_update_rule})\\
+    $r_{\text{trial}}=r(g(\bm{\xi}_{\text{trial}}))$ & (\ref*{eq:residual})\\
+    $J_{\text{trial}}=J_\xi(\bm{\xi}_{\text{trial}})$ & (\ref*{eq:jacobian} \ref*{eq:Jy})\\
     Compute $\varrho$ & (\ref*{eq:gain_ratio_solve})
 \end{tabular}
 };
@@ -102,7 +102,7 @@ $\lambda = \lambda \cdot \max \left( 1/3, 1-(2\varrho-1)^3 \right)$ & (\ref*{eq:
 
 
 \node[block, below=of lambda_update] (update_k_iter) {
-$\xi_k = \xi_{\text{trial}},\ r_k=r_{\text{trial}},\ J_k=J_{\text{trial}}$};
+$\bm{\xi}_k = \bm{\xi}_{\text{trial}},\ r_k=r_{\text{trial}},\ J_k=J_{\text{trial}}$};
 \draw[line] (lambda_update) -- (update_k_iter);
 
 

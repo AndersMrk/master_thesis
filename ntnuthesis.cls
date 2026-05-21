@@ -15,7 +15,7 @@
 %% CLASS OPTIONS
 
 % Penalties
-\hyphenpenalty=400
+\hyphenpenalty=300
 
 % Package for some reason needed before the options
 \RequirePackage{pdfpages}                   % including pdf files
@@ -69,10 +69,13 @@
             \renewcommand{\glossaryname}{List of Variables}
         }
         \addto\extrasamerican{%
-            \def\chapterautorefname{Chapter}%
-            \def\sectionautorefname{Section}%
-            \def\subsectionautorefname{Subsection}%
-            \def\subsubsectionautorefname{Subsubsection}%
+            \def\tableautorefname{\mbox{Table}}%
+            \def\figureautorefname{\mbox{Figure}}%
+            \def\algorithmautorefname{\mbox{Algorithm}}%
+            \def\chapterautorefname{\mbox{Chapter}}%
+            \def\sectionautorefname{\mbox{Section}}%
+            \def\subsectionautorefname{\mbox{Subsection}}%
+            \def\subsubsectionautorefname{\mbox{Subsubsection}}%
         }
     }
 }
@@ -90,11 +93,14 @@
 
 %% CUSTOM PACKAGE LOADING
 
+\RequirePackage{fontawesome5}
 \RequirePackage{amsmath}
 \RequirePackage{amsthm}
 \RequirePackage{bm}
 \RequirePackage[most]{tcolorbox}
 \tcbuselibrary{theorems}
+
+\RequirePackage{placeins}
 
 \RequirePackage{refcount}
 
@@ -202,7 +208,7 @@
 {def}
 
 % Page geometry and spacing (same for even and odd pages)
-\geometry{left=4cm, right=4cm, top=4cm, bottom=4.5cm}
+\geometry{left=3.5cm, right=3.5cm, top=4cm, bottom=4cm}
 \frenchspacing
 
 % Roman page numbers from the beginning of the document
@@ -283,7 +289,7 @@
 
 % Formatting of code listings
 \lstset{
-    frame=single,
+    % frame=single,
     basicstyle=\fontsize{9}{10}\ttfamily,
     keywordstyle=\color{thesisblue}\bfseries,
     stringstyle=\color{thesisred},

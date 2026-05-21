@@ -35,7 +35,7 @@
 
 \newglossaryentry{ci}{
     name={$c_i$},
-    description={discharge coefficient of the $i$-th leak}
+    description={effective leak coefficient of the $i$-th leak}
 }
 
 \newglossaryentry{U}{
@@ -81,18 +81,23 @@
 \newglossaryentry{y}{
     name={$y^{(j)}$},
     description={measurement vector $\begin{bmatrix}
-        h_0^{(j)} & h_{\ell}^{(j)} & q_0^{(j)} & q_{\ell}^{(j)}
+        h_0^{(j)} & q_0^{(j)} &  h_{\ell}^{(j)} & q_{\ell}^{(j)}
     \end{bmatrix}^\top$, corresponding to the $j$-th operating point}
 }
 
 \newglossaryentry{y0}{
     name={$y_0^{(j)}$},
-    description={inlet measurements of flow and head for the $j$-th operating point}
+    description={inlet measurements of head and flow for the $j$-th operating point}
 }
 
 \newglossaryentry{yl}{
     name={$y_{\ell}^{(j)}$},
-    description={outlet measurements of flow and head for the $j$-th operating point}
+    description={outlet measurements of head and flow for the $j$-th operating point}
+}
+
+\newglossaryentry{ylhat}{
+    name={$\hat{y}_{\ell}^{(j)}$},
+    description={estimate of head and flow at the outlet for the $j$-th operating point}
 }
 
 \newglossaryentry{m}{
@@ -127,7 +132,12 @@
 
 \newglossaryentry{x}{
     name={$\mathbf{x}$},
-    description={vector containing leak parameters}
+    description={vector containing leak parameters $(L_i,c_i)$}
+}
+
+\newglossaryentry{leakparam}{
+    name={$\vartheta$},
+    description={vector containing leak parameters $(z_i,c_i)$}
 }
 
 \newglossaryentry{phi}{

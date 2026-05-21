@@ -1,40 +1,41 @@
 \begin{tikzpicture}[
   >=Latex,
-  block/.style={draw, rectangle, minimum height=7mm, minimum width=10mm, align=center},
+  block/.style={draw, rectangle, minimum height=6mm, minimum width=10mm, align=center},
   sum/.style={draw, circle, inner sep=0pt, minimum size=6mm, font=\small},
   line/.style={-Latex, thick},
 ]
 
 % --- Key y-levels ---
 \def\yTop{0}
-\def\yBot{-3.6}
+\def\yBot{-2.8}
+\def\yOffset{0.2}
 
 \def\sumOne{3}
 \def\sumTwo{6}
 \def\lineEnd{9}
 
-\def\rowOne{-1.2}
-\def\rowTwo{-2.4}
+\def\rowOne{-1}
+\def\rowTwo{-1.8}
 
 % --- Top path nodes ---
-\node (hprev) at (0,\yTop) {$h_{i-1}$};
+\node (hprev) at (0,\yTop) {$h_{i-1}^{(j)}$};
 \node[sum] (sumH) at (\sumOne,\yTop) {$\sum$};
-\node (hi)   at (\lineEnd,\yTop) {$h_{i}$};
+\node (hi)   at (\lineEnd,\yTop) {$h_{i}^{(j)}$};
 
 % --- Bottom path nodes ---
-\node (qprev) at (0,\yBot) {$q_{i-1}$};
+\node (qprev) at (0,\yBot) {$q_{i-1}^{(j)}$};
 \node[sum] (sumQ) at (\sumTwo,\yBot) {$\sum$};
-\node (qi)   at (\lineEnd,\yBot) {$q_{i}$};
+\node (qi)   at (\lineEnd,\yBot) {$q_{i}^{(j)}$};
 
 % --- Left vertical branch (kept ABOVE the q-line) ---
 %\node[block] (theta) at (\sumOne,-1) {$\theta$};
 \node[block] (Li)    at (\sumOne,\rowOne) {$\theta L_i$};
-\node[block] (sq)    at (\sumOne,\rowTwo) {$({\cdot})^2$}; % above yBot=-3.0
+\node[block] (sq)    at (\sumOne,\rowTwo-\yOffset) {$({\cdot})^2$}; % above yBot=-3.0
 \node (b1)   at (\sumOne,\yBot) {};
 
 % --- Right vertical branch from hi down into sumQ ---
 \node (b2)   at (\sumTwo,\yTop) {};
-\node[block] (sqrt) at (\sumTwo,\rowOne) {$\sqrt{\cdot\;}$};
+\node[block] (sqrt) at (\sumTwo,\rowOne+\yOffset) {$\sqrt{\cdot\;}$};
 \node[block] (ci)   at (\sumTwo,\rowTwo) {$c_i$};
 
 % --- Connections: top line ---

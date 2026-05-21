@@ -1,0 +1,135 @@
+
+Consider a pipe of length \gls{ell}, where \gls{z} $\in [0, \ell]$ denotes position along the pipe. Assume steady-state operation, and let
+\[
+h : [0,\ell] \to \mathbb{R}_{\geq0}, \quad q : [0,\ell] \to \mathbb{R}_{\geq0}
+\]
+denote the piezometric head and volumetric discharge (from now regarded as head and flow for brevity). Thus, \gls{hz} and \gls{qz} represent the head and flow at position \gls{z}, which are both assumed strictly positive along the pipe. Suppose \gls{n} leaks occur at locations
+\[
+0 < z_1 < \dots < z_n < \ell,
+\]
+with corresponding leak discharges $\tilde q_1,\dots,\tilde q_n$, where \gls{tildeqi} and \gls{zi} correspond to the $i$-th leak. Assuming small leak openings, each leak is modeled as a valve by
+\[
+\tilde{q}_i = c_i \sqrt{h(z_i)},
+\]
+where \gls{ci} $>0$ is a constant effective leak coefficient characterizing the $i$-th leak. The leak parameters are then defined by
+\begin{equation*}
+    \text{\gls{leakparam}} := \begin{bmatrix}
+    z_1 & \cdots & z_n & c_1 & \cdots & c_n
+\end{bmatrix}^\top \in \mathbb{R}^{2n}.
+\end{equation*}
+The steady-state head loss along the pipe is governed by
+\begin{equation}
+\label{eq:task_desc_ufunc}
+\frac{dh}{dz} = -U(q(z)),
+\end{equation}
+where \gls{U} $:[0,\infty)\to[0,\infty)$ is smooth and strictly increasing. For notation purposes, let the head and flow at the inlet and outlet be defined by
+\[
+\text{\gls{h0}} := h(0), \qquad \text{\gls{q0}} := q(0), \qquad
+\text{\gls{hl}} := h(\ell), \qquad \text{\gls{ql}} := q(\ell).
+\]
+Since flow is conserved between leak locations, $q$ is piecewise constant. Introducing $z_0:=0$ and $z_{n+1}:=\ell$, the flow is given by
+\[
+q(z)=\text{\gls{qi}}:=
+\begin{cases}
+q_0, & \text{for } z \in [0, z_1), \quad i = 0, \\[6pt]
+q_0 - \sum_{k=1}^{i} \tilde{q}_k, & \text{for } z \in [z_i, z_{i+1}), \quad i = 1, \dots, n,
+\end{cases}
+\]
+where also $q_n=q_{\ell}$ for notation consistency. From \cref{eq:task_desc_ufunc}, it follows that the head is continuous and piecewise linear along the pipe. Let
+\[
+L_{i+1} := z_{i+1}-z_{i},
+\qquad i=0,\dots,n,
+\]
+denote the lengths of the non-leaking segments, so that
+\[
+\sum_{i=1}^{n+1} \text{\gls{Li}} = \ell.
+\]
+The head at the $i$-th leak location is denoted by
+\[
+\text{\gls{hi}} := h(z_i), \qquad i=1,\dots,n,
+\]
+and for notation consistency, let $h_{n+1}:=h_{\ell}$. The notation for a pipe is illustrated in \autoref{fig:leak_notation}.\\
+
+\begin{figure}[h!]
+    \centering
+    \input{figures/tikz_pipe}
+    \caption{Notation used for a pipe with $n$ leaks.}
+    \label{fig:leak_notation}
+\end{figure}
+
+Suppose the head and flow at the pipe's inlet and outlet can be measured at \gls{m} different steady-state operating points. For the $j$-th operating point, let
+\begin{equation*}
+\text{\gls{y0}} :=\begin{bmatrix}
+    h_0^{(j)} \\[0.4em]
+    q_0^{(j)}
+\end{bmatrix}, \quad
+\text{\gls{yl}} := \begin{bmatrix}
+    h_{\ell}^{(j)} \\[0.4em]
+    q_{\ell}^{(j)}
+\end{bmatrix}, \quad
+j=1,\dots,m,
+\end{equation*}
+define the vectors of inlet and outlet measurements. The complete matrices of inlet and outlet measurements are defined by
+\[
+\text{\gls{M0}}
+:=
+\begin{bmatrix}
+y_0^{(1)} & \cdots & y_0^{(m)}
+\end{bmatrix} \in\mathbb{R}^{2\times m},
+\qquad
+\text{\gls{Ml}}
+:=
+\begin{bmatrix}
+y_{\ell}^{(1)} & \cdots & y_{\ell}^{(m)}
+\end{bmatrix} \in\mathbb{R}^{2\times m}.
+\]
+Assuming \gls{y0} can be controlled, it is later shown that an estimate of the outlet head and flow, \gls{ylhat}, can be uniquely defined by \gls{leakparam} through some function
+\begin{equation*}
+    \hat{y}_\ell^{(j)} = f(\vartheta,y_0^{(j)}).
+\end{equation*}
+
+\begin{definition}{Leak Identification Problem}{leak-identification}
+Assume there exists a function $\mathcal{F} : D \to \mathbb{R}^{2\times m}$, where $D\subset \mathbb{R}^{2n}\times\mathbb{R}^{2\times m}$ is the domain containing all allowed pairs (\gls{leakparam}, \gls{M0}). Let \gls{M0} be fixed, and define the function as
+\[
+\mathcal{F}_{\mathcal{M}_0}(\vartheta) := \begin{bmatrix}
+    f(\vartheta,y_0^{(1)}) & \cdots & f(\vartheta,y_0^{(m)})
+\end{bmatrix} =
+\begin{bmatrix}
+\hat{y}_{\ell}^{(1)} & \cdots & \hat{y}_{\ell}^{(m)}
+\end{bmatrix}
+\]
+The leak identification problem is the inverse problem of recovering leak parameters $\vartheta$ from some obtained and consistent measurements \gls{M0} and \gls{Ml}, such that
+\[
+\mathcal{F}_{\mathcal{M}_0}(\vartheta)=\mathcal{M}_\ell.
+\]
+\end{definition}
+\vspace{3mm}
+
+For notation purposes, let all measurements be defined by
+\[
+\text{\gls{M}}
+:=
+\begin{bmatrix}
+\mathcal{M}_0 \\[0.4em] 
+\mathcal{M}_{\ell}
+\end{bmatrix} \in\mathbb{R}^{4\times m} 
+\]
+and \gls{y} $:=\begin{bmatrix}
+    \text{\gls{y0}} \\[0.4em]
+    \text{\gls{yl}}
+\end{bmatrix} \in \mathbb{R}^4$ is defined as the $j$-th column of \gls{M}.\\
+
+\begin{samepage}
+\subsubsection*{The following tasks should be performed:}
+\begin{enumerate}
+    \item Literature review (see \cite{peralta2023}, \cite{molno2024parallel}, \cite{molno2024conditions} for a starting point). \\
+
+    \item Assuming that the function \gls{U}, the number of leaks \gls{n}, and the pipe length \gls{ell} are known, develop and implement a method for solving the leak identification problem as defined in \autoref{def:leak-identification}.\\
+
+    \item Investigate the maximum number of leaks feasible to identify.\\
+    
+    \item Perform simulated tests to investigate the performance of the method in the idealized setup (\gls{U}, \gls{n}, and \gls{ell} are known).\\
+
+    \item Investigate how the method performs when parameters are uncertain, or noise is introduced to measurements.\\
+\end{enumerate}
+\end{samepage}

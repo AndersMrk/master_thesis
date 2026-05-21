@@ -1,25 +1,24 @@
-\chapter{Analysis Of Solution Space}
+\chapter{Analysis of Solution Space}
 \label{chap:analysis_of_sol}
 
-In \autoref{sec:der_jacobian}, an analytic expression for the Jacobian, $J(x)$, is derived. The Jacobian enables efficient analysis of the space around the solution. Recall from \cref{eq:jac_res_approx} that $J(x)$ approximates the residual locally around $x$. The condition number of the Jacobian, $\kappa(J(x))$, defined in \cref{eq:cond_num_def}, serves as a measure of how the residual behaves near $x$.\\
+In \autoref{sec:der_jacobian}, an analytic expression for the Jacobian, $J(x)$, is derived. Recall that the condition number of the Jacobian, $\kappa(J(x))$, defined in \cref{eq:cond_num_def}, serves as a measure of how the residual behaves near $x$. Let $\kappa^*:=\kappa(J(\mathbf{x}^*))$ denote the condition number of the Jacobian at the solution. Recall that a large $\kappa^*$ indicates that some directions in the residual space are more sensitive than others, suggesting that the corresponding solution is more difficult to identify reliably.\\
 
-Let $\kappa^*:=\kappa(J(\mathbf{x}^*))$ denote the condition number of the Jacobian at the solution. A large $\kappa^*$ indicates that some directions in the residual space are more sensitive than others, suggesting that the corresponding solution is more difficult to identify reliably.\\
+The condition number depends on the scaling and parametrization of the variables since the residual and parameter vectors contain quantities with different units. For this reason, the value of $\kappa^*$ should not be interpreted in isolation, but is still useful for comparing cases in this study. Scaling strategies for the residual and parameters were tested, and since the solver operates in the re-parametrized variables $\bm{\xi}$, the same analysis was also performed using $J_\xi(\bm{\xi}^*)$, defined in \cref{eq:Jy}. Neither notably affected the conditioning trends, so the results are reported using $J(\mathbf{x}^*)$ for simplicity and brevity.\\
 
-This chapter first investigates how the choice of measurements, $\mathcal{M}$, affects $\kappa^*$ and how to select measurements to minimize it. The chapter then examines how the condition number changes with the number of leaks and discusses how many leaks can feasibly be identified.
+This chapter first investigates how the choice of measurements, $\mathcal{M}$, affects $\kappa^*$ and how to minimize it. The chapter then examines how the condition number changes with the number of leaks and discusses how many leaks can feasibly be identified.
 
-\section{Constructing Optimal Measurements}
+\section{Constructing Well-Conditioned Measurements}
 
-This section will aim to construct measurements, $\mathcal{M}$, that minimizes $\kappa^*$, 
+This section aims to construct a measurement matrix $\mathcal{M}$ that minimizes $\kappa^*$, 
 \begin{equation*}
     \underset{\mathcal{M}}{\min} \ \kappa^*,
 \end{equation*}
-which in this sense will be considered optimal. The approach is based on the knowledge that increasing the linear independence of the residuals improves the conditioning of the Jacobian.\\
+which in this work is used as a criterion for constructing well-conditioned measurement matrices. The approach is based on the knowledge that increasing the linear independence of the residuals improves the conditioning of the Jacobian.\\
 
 For simplicity, only pipe systems with simple leak configurations will be considered, where the leaks are equally spaced and equal in size,
 \begin{equation*}
     \ell=1, \quad \theta =0.2, \quad L_i = \frac{1}{n+1}, \quad c_i = 0.05.
 \end{equation*}
-Intuitively, this should yield a simple leak configuration to solve.\\
 
 \subsection{Varying the Inlet Flow}
 
@@ -36,16 +35,15 @@ be the range of inlet flows in a measurement matrix. This metric quantifies the 
     \label{fig:plt_Rq0_cond}
 \end{figure}
 
-To investigate the effect of different ranges of inlet flows, $\kappa^*$ is calculated for multiple constructed measurement matrices. For a given $R_{q0}$, $\mathcal{M}$, is constructed by using a constant inlet head, $h_0$, and sampling $m$, equally spaced, inlet flows in the range $(q_0^{\min},q_0^{\min}+R_{q0})$, and simulating the outlet measurements. For this experiment, $m=2n$, $q_0^{\min}=1$ and $h_0=5$ was used. The results are shown in \autoref{fig:plt_Rq0_cond}, which indicates that increasing the range of inlet measurements significantly affects solution conditioning.\\ 
+To investigate the effect of different ranges of inlet flows, $\kappa^*$ is calculated for multiple constructed measurement matrices. For a given $R_{q0}$, $\mathcal{M}$ is constructed by using a constant inlet head, $h_0$, and sampling $m$ equally spaced inlet flows in the range $(q_0^{\min},q_0^{\min}+R_{q0})$, and simulating the outlet measurements. For this experiment, $m=2n$, $q_0^{\min}=1$ and $h_0=5$ was used. The results are shown in \autoref{fig:plt_Rq0_cond}, which indicates that increasing the range of inlet flows significantly affects solution conditioning.
 
 \subsection{Varying the Pressure Drop}
-
 Let
 \begin{equation}
 \label{eq:press_drop}
     \Delta h^{(j)} := 1-\dfrac{h_{\ell}^{(j)}}{h_0^{(j)}}
 \end{equation}
-be the pressure drop across the pipe for a steady-state operating point, and
+be the relative pressure drop across the pipe for a steady-state operating point, and
 \begin{equation*}
     R_{\Delta h}(\mathcal{M}) := \underset{j}{\max}(\Delta h^{(j)})-\underset{j}{\min}(\Delta h^{(j)})
 \end{equation*}
@@ -54,25 +52,24 @@ be the range of pressure drops in a measurement matrix. \autoref{fig:plt_Rq0_Rdh
 \begin{figure}[ht]
     \centering
     \includesvg[width=\linewidth]{plots/plt_Rq0_Rdh}
-    \caption{Correlation between $R_{\Delta h}$ and $R_{q0}$ from $\mathcal{M}$, constructed by varying ranges of inlet flow.}
+    \caption[Correlation between $R_{\Delta h}$ and $R_{q0}$]{Correlation between $R_{\Delta h}$ and $R_{q0}$ from $\mathcal{M}$, constructed by varying ranges of inlet flow.}
     \label{fig:plt_Rq0_Rdh}
 \end{figure}
 
-From a practical point of view, choosing steady-state operating points for varying inlet flows makes sense, as one can sample measurements at different times throughout the day when demand changes. However, for simulation purposes, it is simpler to construct a measurement matrix from a range of pressure drops, since $\Delta h$ is a relative metric, and constructing feasible measurements across varying pipe systems requires less tuning than choosing the absolute ranges for inlet flow.\\
+From a practical point of view, choosing steady-state operating points for varying inlet flows makes sense, as one can sample measurements at different times throughout the day when demand changes. However, for simulation purposes, it is simpler to construct a measurement matrix over a range of pressure drops, since $\Delta h$ is a relative metric, and obtaining feasible measurements across varying pipe systems requires less tuning than choosing absolute ranges for inlet flow.\\
 
 A measurement matrix can be constructed based on $R_{\Delta h}(\mathcal{M})$ by first sampling $m$ equally spaced pressure drops in the range $0.5\pm\frac{1}{2}R_{\Delta h}$. Then, by using a constant inlet head, $h_0$, a search algorithm finds a feasible inlet flow that satisfies the target pressure drop. The search algorithm is presented in \autoref{alg:generate_measurements}. \autoref{fig:plt_Rdh_cond} shows $\kappa^*$ calculated from different measurement matrices constructed by the method described above for different values of $R_{\Delta h}$, and using $m=2n$ and $h_0=10$.
 
 \begin{figure}[ht]
     \centering
     \includesvg[width=\linewidth]{plots/plt_Rdh_cond}
-    \caption[Condition number at the solution for different ranges of pressure drop]{Condition number of the Jacobian at the solution for different measurement matrices constructed by varying ranges of pressure drop, $R_{\Delta h}$, and using $m=2n$ and $h_0=10$}
+    \caption[Condition number at the solution for different ranges of pressure drop]{Condition number of the Jacobian at the solution for different measurement matrices constructed by varying ranges of pressure drop, $R_{\Delta h}$, and using $m=2n$ and $h_0=10$.}
     \label{fig:plt_Rdh_cond}
 \end{figure}
 
-\begin{algorithm}[ht]
+\begin{algorithm}[H]
 \caption{Generation of Measurements}
 \label{alg:generate_measurements}
-
 \DontPrintSemicolon
 \SetKwFunction{func}{GenerateMeasurements}
 \SetKwFunction{linspace}{Linspace}
@@ -80,7 +77,7 @@ A measurement matrix can be constructed based on $R_{\Delta h}(\mathcal{M})$ by 
 \SetKwFunction{append}{Append}
 \SetKwProg{Fn}{Function}{:}{}
 \SetKwInput{KwNote}{\normalfont Note}
-\Fn{\func{$x^*,m,h_0,R_{\Delta h}$}}{
+\Fn{\func{$x^*, m,R_{\Delta h},h_0$}}{
     $\Delta h \gets$ \linspace{$0.5-R_{\Delta h}/2,\ 0.5+R_{\Delta h}/2,\ m$} \;
     $\mathcal{M} \gets$ [ ] \;
     \For{$j \gets 1$ \KwTo m}{
@@ -101,6 +98,7 @@ A measurement matrix can be constructed based on $R_{\Delta h}(\mathcal{M})$ by 
 }
 \end{algorithm}
 
+\FloatBarrier
 \subsection{Varying the Inlet Head}
 
 The methods above both kept the inlet head, $h_0$, constant for all operating points. Let
@@ -109,42 +107,39 @@ The methods above both kept the inlet head, $h_0$, constant for all operating po
 \end{equation*}
 be the range of inlet heads in a measurement matrix. A measurement matrix can be constructed using \autoref{alg:generate_measurements}, but instead of a constant inlet head, $h_0$ also varies with the pressure drop. For a given $R_{h0}$, $m$ inlet heads are sampled in the range $(h_0^{\min},h_0^{\min}+R_{h0})$. \autoref{fig:plt_Rh0_cond} shows $\kappa^*$ calculated from different measurement matrices that are constructed using $R_{\Delta h}=0.8$, $m=2n$ and $h_0^{\min}=5$. It can be seen that varying the inlet head does not improve solution conditioning, and the choice of $h_0$ should not be a concern.
 
-\begin{figure}[!ht]
+\begin{figure}[ht]
     \centering
     \includesvg[width=\linewidth]{plots/plt_Rh0_cond}
-    \caption[Condition number at the solution for different ranges of inlet head]{Condition number of the Jacobian at the solution for different measurement matrices constructed by varying ranges of inlet head, $R_{h0}$, and using $m=2n$, $R_{\Delta h}=0.8$ and $h_0^{\min}=5$}
+    \caption[Condition number at the solution for different ranges of inlet head]{Condition number of the Jacobian at the solution for different measurement matrices constructed by varying ranges of inlet head, $R_{h0}$, and using $m=2n$, $R_{\Delta h}=0.8$, and $h_0^{\min}=5$.}
     \label{fig:plt_Rh0_cond}
 \end{figure}
 
 \subsection{Varying the Number of Measurements}
 
-In the above methods, the number of measurements used is twice the number of leaks, $m=2n$. To investigate the effect of varying the number of measurements, measurement matrices can be generated using \autoref{alg:generate_measurements} for different values of $m$. For this experiment, $\kappa ^*$ was calculated for $R_{\Delta h} = 0.6$ and $h_0=10$. The results are presented in \autoref{fig:plt_m_cond}. It can be seen that for a pipe with two leaks, there is no effect beyond two measurements. For pipes with more leaks, the condition number improves as the number of measurements increases. For most pipes, the improvement diminishes after $m=2n$. In practice, the number of available measurements can be limited, which will limit the ability to identify many leaks. 
+In the above methods, the number of measurements used is twice the number of leaks, $m=2n$. To investigate the effect of varying the number of measurements, measurement matrices can be generated using \autoref{alg:generate_measurements} for different values of $m$. For this experiment, $\kappa^*$ was calculated for $R_{\Delta h} = 0.6$ and $h_0=10$. The results are presented in \autoref{fig:plt_m_cond}. It can be seen that for a pipe with two leaks, there is no positive effect in extending beyond two measurements. For pipes with more leaks, the condition number improves as the number of measurements increases. For most pipes, the improvement diminishes after $m=2n$. In practice, the number of available measurements can be limited, which will limit the ability to identify many leaks. 
 
 
 \begin{figure}[ht]
     \centering
     \includesvg[width=\linewidth]{plots/plt_m_cond}
-    \caption[Condition number at the solution for different number of measurements]{Condition number of the Jacobian at the solution for different measurement matrices constructed by \autoref{alg:generate_measurements} and varying the number of measurements used}
+    \caption[Condition number at the solution for different numbers of measurements]{Condition number of the Jacobian at the solution for different measurement matrices constructed by \autoref{alg:generate_measurements} and varying the number of measurements used.}
     \label{fig:plt_m_cond}
 \end{figure}
 
 \subsection{Summary}
 
-In this section, the condition number at the solution of leak-identification problems has been investigated across a variety of measurement matrices. Although only the limited case of evenly spaced leaks was considered, the results should generalize to other leak configurations. It was seen that increasing the range of inlet flows, $q_0$, in a measurement matrix, is equivalent to increasing the range of pressure drops, $\Delta h$. In practice, varying the inlet flow might be the most feasible, but for simulation purposes, \autoref{alg:generate_measurements} was designed to generate a measurement matrix with varying pressure drops.\\
+The results show that well-conditioned measurement matrices are obtained by using operating points that produce sufficiently different hydraulic states. In practice, this can be achieved by varying the inlet flow, while for simulation purposes it is more convenient to construct measurements over a range of pressure drops using \autoref{alg:generate_measurements}.\\
 
-Based on the results in this section, \autoref{alg:generate_measurements} can be considered an optimal method for generating a measurement matrix. Performance increases by increasing $R_{\Delta h}$ within the bounds of feasible operating points and by increasing the number of measurements. Increasing the number of measurements showed diminishing returns, and there is little effect from using more than $2n$ measurements.
+For the cases studied here, increasing $R_{\Delta h}$ improves conditioning within the feasible operating-point bounds. Increasing the number of measurements showed diminishing returns, and there is little effect from using more than $2n$ measurements. The remaining simulations, therefore, use measurement matrices generated from a prescribed pressure-drop range and with $m=2n$ measurements.
 
+\newpage
 \section{Conditioning of Solutions for Many Leaks} \label{sec:cond_many_leaks}
 
-In this section, $\kappa^*$ for pipes with different numbers of leaks will be compared. To obtain general results, many different leak configurations are randomly sampled, so that relevant metrics can be presented as their mean and standard deviation across the configurations. The leak parameters are sampled according to \autoref{alg:SampleLeakConfiguration} with the parameters
-\begin{equation*}
-\delta=0.05, \quad c_{\min}=0.01, \quad c_{\max}=0.2.
-\end{equation*}
+In this section, $\kappa^*$ for pipes with different numbers of leaks will be compared. To obtain general results, many different leak configurations are randomly sampled, so that relevant metrics can be presented as their mean and standard deviation across the configurations. The leak parameters are sampled according to \autoref{alg:SampleLeakConfiguration} with the parameters $\delta=0.05$, $c_{\min}=0.01$ and $c_{\max}=0.2$.\\
 
-\begin{algorithm}[h]
+\begin{algorithm}[ht]
 \caption[Sample of leak configuration]{Method to uniformly sample leak locations, $z_1 < z_2<\dots<z_n$, that have a minimum spacing of $\delta$. Specifically, $z_i\in[\delta,\ell-\delta]$ and $z_{i+1}-z_i > \delta$ for all $i$. Leak coefficients are uniformly sampled between $c_{\min}$ and $c_{\max}$.}
 \label{alg:SampleLeakConfiguration}
-
 \DontPrintSemicolon
 \SetKwFunction{func}{SampleLeakConfiguration}
 \SetKwFunction{sort}{Sort}
@@ -155,7 +150,7 @@ In this section, $\kappa^*$ for pipes with different numbers of leaks will be co
 \SetKwInput{KwNote}{\normalfont Note}
 \Fn{\func{$n,\ell,\delta,c_{\min},c_{\max}$}}{
     $\tilde{\ell} \gets \ell -(n+1)\ \delta$\;
-    $\tilde{z}\gets [\tilde{z}_1,\dots,\tilde{z}_n], \quad z_i \sim \mathcal{U}(0, \tilde{\ell})$ \;
+    $\tilde{z}\gets [\tilde{z}_1,\dots,\tilde{z}_n], \quad \tilde{z}_i \sim \mathcal{U}(0, \tilde{\ell})$ \;
     $z \gets$ \sort{$\tilde{z}$} \;
     \For{$i \gets 1$ \KwTo n}{
         $z[i] = z[i]+i\cdot\delta$ \;
@@ -167,15 +162,11 @@ In this section, $\kappa^*$ for pipes with different numbers of leaks will be co
 }
 \end{algorithm}
 
-\autoref{alg:cond_sol} shows the procedure used to generate the results, using 
-\begin{equation*}
-N_\text{trials} = 10^4, \quad h_0=10.
-\end{equation*}
+\autoref{alg:cond_sol} shows the procedure used to generate the results, using  $N_\text{trials} = 10^4$ and $h_0=10$.\\
 
-\begin{algorithm}[ht]
+\begin{algorithm}[h]
 \caption{Conditioning of solutions}
 \label{alg:cond_sol}
-
 \DontPrintSemicolon
 \SetKwFunction{func}{ConditioningOfSolutions}
 \SetKwFunction{sampleleak}{SampleLeakConfiguration}
@@ -189,16 +180,14 @@ N_\text{trials} = 10^4, \quad h_0=10.
 \SetKwProg{Fn}{Function}{:}{}
 \SetKwInput{KwNote}{\normalfont Note}
 \SetKwRepeat{Try}{try}{until}
-
-\For{$n \gets 2$ \KwTo $8$}{
+\For{$n \gets 2$ \KwTo $10$}{
     $\kappa_n^* \gets [\ ], \quad \varphi_n \gets [\ ]$ \;
     \For{$i \gets 1$ \KwTo $N_\text{trials}$}{
-        $R_{\Delta h} \gets 0.9$ \;
-        $m \gets 2n$ \;
+        $R_{\Delta h} \gets 0.9$, $m \gets 2n$ \;
         $\mathbf{x}^* \gets$ \sampleleak{$n$} \tcp*[r]{\autoref{alg:SampleLeakConfiguration}}
         \Try{$\text{Success}$}{
             $\mathcal{M} \gets$ 
-            \genmes{$\mathbf{x}^*, m, h_0, R_{\Delta h}$} \tcp*[r]{\autoref{alg:generate_measurements}}
+            \genmes{$\mathbf{x}^*, m, R_{\Delta h}, h_0$} \tcp*[r]{\autoref{alg:generate_measurements}}
             
             \If{$\text{Fails}$}{
                 $R_{\Delta h} \gets R_{\Delta h} - 0.01$ \;
@@ -210,12 +199,12 @@ N_\text{trials} = 10^4, \quad h_0=10.
     }
     \save{$\kappa_n^*, \varphi_n$}
 }
-
 \end{algorithm}
 
+\FloatBarrier
+\newpage
 
-
-The results are presented in \autoref{tab:cond_nums}, and show a clear trend where the condition number of the Jacobian increases rapidly as the number of leaks increases. The mean logarithmic condition number grows from approximately $10^{4}$ for $n=2$ to approximately $10^{17}$ for $n=10$. At the same time, the smallest angle between columns of the Jacobian decreases from about $2.2^\circ$ to about $0.25^\circ$. These two measures describe the same geometric property of the residual space. As $n$ increases, the columns of the Jacobian become increasingly aligned, which indicates that different parameters influence the residual in very similar ways.\\
+The results are presented in \autoref{tab:cond_nums} and report both the condition number, $\kappa^*$, and the smallest angle between columns of the Jacobian, $\varphi$, since these describe the geometric property of the residual space. It shows that the conditioning deteriorates rapidly as the number of leaks increases. The mean condition number grows from approximately $10^{4}$ for $n=2$ to approximately $10^{17}$ for $n \geq 8$, while the smallest column angle decreases from about $2.2^\circ$ to about $0.25^\circ$. This means that the columns of the Jacobian become increasingly aligned, so that different parameters influence the residual in very similar ways.\\
 
 \begin{table}[ht]
 \centering
@@ -241,16 +230,14 @@ $n$
 10 & 0.65 & 16.93 & 0.07 & 0.25 & 0.04 \\
 \hline
 \end{tabular}
-\caption[Conditioning metrics of the Jacobian at the solution for different numbers of leaks.]{Conditioning metrics of the Jacobian at the solution for different numbers of leaks, $n$. Here $\kappa^*$ denotes the condition number at the solution and $\varphi$ the smallest angle between any pair of columns of $J$ at the solution. The table provides both the sampled mean and standard deviation from a large sample of leak configurations. $\overline{R_{\Delta h}}$ denotes the mean of the range of pressure drops used to construct the measurement matrices.}
+\caption[Conditioning metrics of the Jacobian at the solution for different numbers of leaks]{Conditioning metrics of the Jacobian at the solution for different numbers of leaks, $n$. Here $\kappa^*$ denotes the condition number at the solution and $\varphi$ the smallest angle between any pair of columns of $J$ at the solution. The table provides both the sampled mean and standard deviation from a large sample of leak configurations. $\overline{R_{\Delta h}}$ denotes the mean of the range of pressure drops used to construct the measurement matrices.}
 \label{tab:cond_nums}
 \end{table}
 
-For $n \geq 7$, both the condition number and the smallest column angle approach a limiting value. The condition number reaches a value on the order of $10^{17}$. Similarly, the smallest column angle approaches $0.25^\circ$ and varies little across configurations. This behavior indicates that the Jacobian becomes nearly singular consistently when many leaks are present. Increasing the number of leaks beyond this point does not significantly change the geometric structure of the Jacobian, as the columns are already almost linearly dependent.\\
-
-The magnitude of the condition number indicates that numerical precision becomes a limiting factor. The solver uses double-precision floating-point arithmetic based on the IEEE 754 binary64 standard \cite{ieeefloat}, which provides 52 bits of precision. The smallest representable relative difference between two numbers is approximately $2^{-52} \approx 2.22 \cdot 10^{-16}$. As $\kappa^*$ approaches $10^{17}$, the residual structure becomes dominated by numerical precision errors, and the local linear approximation of the residual is no longer reliable. Small rounding errors introduced by division and square root operations will also have an increasing effect on the solver as the condition number increases.\\
-
 The decrease in the standard deviation of both $\log \kappa^*$ and $\varphi$ as $n$ increases indicates that the conditioning becomes consistently poor for larger systems. For small values of $n$, the variation between leak configurations is relatively large, which suggests that some configurations are moderately well conditioned while others are poorly conditioned. As $n$ increases, the variation decreases, and the Jacobian becomes almost uniformly ill-conditioned across the sampled configurations. This indicates that poor conditioning is an inherent property of the problem formulation when many leaks are present, rather than a consequence of specific leak locations or coefficients.\\
 
-The table further shows that the mean pressure-drop range, $\overline{R_{\Delta h}}$, decreases with increasing $n$. For small numbers of leaks, measurement matrices can be constructed using a wide range of pressure drops. As the number of leaks increases, it becomes increasingly difficult to find feasible inlet flows that produce large pressure drops across the pipe. This restricts the range of available measurements and reduces the system's excitation. A reduced pressure drop range decreases the sensitivity of the measurements to individual leak parameters, which further contributes to the poor conditioning of the Jacobian.\\
+The magnitude of the condition number also means that numerical precision becomes a limiting factor. The solver uses double-precision floating-point arithmetic based on the IEEE 754 binary64 standard \cite{ieeefloat}, which provides 52 explicit fraction bits. The smallest representable relative difference between two numbers is approximately $2^{-52} \approx 2.22 \cdot 10^{-16}$. When $\kappa^*$ approaches $10^{17}$, the local linear approximation of the residual is no longer reliable, since the effect of small numerical errors becomes comparable to the information carried by the residual. Rounding errors introduced by division and square root operations will therefore have an increasing effect on the solver as the condition number increases.\\
 
-Taken together, the results indicate that the inverse problem becomes increasingly ill-conditioned as the number of leaks increases. The rapid growth of the condition number and the decreasing column angles indicate that the measurements contain limited independent information about each additional leak. For larger values of $n$, the Jacobian becomes nearly singular for almost all sampled configurations, suggesting that identifying many leaks from inlet and outlet measurements alone will become increasingly difficult and may ultimately be infeasible without additional information or measurement locations.
+The table further shows that the mean pressure-drop range, $\overline{R_{\Delta h}}$, decreases as $n$ increases. For small numbers of leaks, measurement matrices can be constructed using a wide range of pressure drops. As the number of leaks increases, it becomes more difficult to find feasible inlet flows that produce large pressure drops across the pipe. This restricts the range of available measurements, reduces the system's excitation, and decreases the sensitivity of the measurements to individual leak parameters.\\
+
+Taken together, the results indicate that the inverse problem becomes increasingly ill-conditioned as the number of leaks increases. For larger values of $n$, the Jacobian becomes nearly singular for almost all sampled configurations, and increasing the number of leaks further does not significantly change its geometric structure. Identifying many leaks from inlet and outlet measurements alone will therefore become increasingly difficult and ultimately infeasible without additional information or measurement locations.
